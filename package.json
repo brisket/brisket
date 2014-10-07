@@ -20,9 +20,9 @@
     "dependencies": {
         "backbone": "~1.1.2",
         "express": "~4.0.0",
-        "jquery": "^1.11.1",
+        "jquery": "~1.11.1",
         "jquery-mockjax": "~1.5.3",
-        "jsdom": "^0.11.1",
+        "jsdom": "~0.11.1",
         "bluebird": "~2.2.1",
         "underscore": "~1.6.0",
         "qs": "1.2.2"
@@ -31,10 +31,15 @@
         "grunt-browserify": "~1.3.0",
         "grunt-contrib-jshint": "~0.7.2",
         "grunt-contrib-jasmine": "~0.5.2",
-        "grunt-jasmine-node": "^0.2.1"
+        "grunt-jasmine-node": "~0.2.1",
+        "grunt-cli": "~0.1.13",
+        "grunt": "~0.4.5"
     },
     "repository": {
         "type": "git",
         "url": "https://github.com/bloomberg/brisket.git"
+    },
+    "scripts": {
+        "test": "grunt test"
     }
 }
