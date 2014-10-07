@@ -72,38 +72,6 @@ describe("Server", function() {
 
         });
 
-        describe("for disableXPoweredBy config", function() {
-
-            describe("when disableXPoweredBy is true", function() {
-                it("disables x-powered-by", function() {
-                    var server = Server.create(validConfigWith({
-                        disableXPoweredBy: true
-                    }));
-
-                    expect(server.disabled("x-powered-by")).toBe(true);
-                });
-            });
-
-            describe("when disableXPoweredBy is false", function() {
-                it("does NOT disable x-powered-by", function() {
-                    var server = Server.create(validConfigWith({
-                        disableXPoweredBy: false
-                    }));
-
-                    expect(server.disabled("x-powered-by")).toBe(false);
-                });
-            });
-
-            describe("when disableXPoweredBy is NOT set", function() {
-                it("does NOT disable x-powered-by", function() {
-                    var server = Server.create(validConfig());
-
-                    expect(server.disabled("x-powered-by")).toBe(false);
-                });
-            });
-
-        });
-
         describe("when ServerApp is not passed in", function() {
 
             it("defaults to internal ServerApp", function() {
