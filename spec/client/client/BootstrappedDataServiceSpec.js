@@ -1,76 +1,59 @@
 "use strict";
 
 var BootstrappedDataService = require("lib/client/BootstrappedDataService");
-var $ = require("lib/application/jquery");
 
 describe("BootstrappedDataService", function() {
 
     var bootstrappedData;
+    var dataForUrl;
     var bootstrappedDataService;
     var method;
     var model;
     var options;
+    var returnData;
 
     beforeEach(function() {
-        method = "GET";
+        method = "read";
         model = {
             url: "/url"
         };
         options = {};
+        returnData = jasmine.createSpy("readData");
     });
 
     afterEach(function() {
-        bootstrappedDataService.clearMockedData();
+        bootstrappedDataService.clearAll();
     });
 
-    describe("#checkAlreadyHasData syncing middleware", function() {
+    describe("#isBootstrapped", function() {
 
-        describe("when it has data", function() {
+        describe("when it has data for url", function() {
 
             beforeEach(function() {
-                bootstrappedData = {
-                    "/url": {
-                        "some": "data"
-                    }
+                dataForUrl = {
+                    "some": "data"
                 };
+
+                bootstrappedData = {
+                    "/url": dataForUrl
+                };
+
                 bootstrappedDataService = new BootstrappedDataService(bootstrappedData);
             });
 
-            it("mocks out the next ajax call which will happen when sync completes", function() {
-                bootstrappedDataService.checkAlreadyHasData(method, model, options);
+            it("calls returnData with bootstrapped data", function() {
+                bootstrappedDataService.isBootstrapped(method, model, options, returnData);
 
-                wait("for ajax call to complete").until(ajaxRequestModelData())
-                    .then(function(data) {
-                        expect(data).toEqual({
-                            "some": "data"
-                        });
-                    });
+                expect(returnData).toHaveBeenCalledWith(dataForUrl);
             });
 
-            describe("when data is requested twice", function() {
+            it("does NOT call returnData on second request for same url", function() {
+                bootstrappedDataService.isBootstrapped(method, model, options, returnData);
 
-                var fetchingTwice;
+                returnData = jasmine.createSpy("secondReturnData");
+                bootstrappedDataService.isBootstrapped(method, model, options, returnData);
 
-                it("does NOT mock the second request", function() {
-                    bootstrappedDataService.checkAlreadyHasData(method, model, options);
-
-                    fetchingTwice = function() {
-                        return ajaxRequestModelData()
-                            .then(function() {
-                                bootstrappedDataService.checkAlreadyHasData(method, model, options);
-
-                                return ajaxRequestModelData();
-                            });
-                    };
-
-                    wait("for ajax call to complete").until(fetchingTwice())
-                        .then(function(data) {
-                            expect(data).not.toEqual({
-                                "some": "data"
-                            });
-                        });
-                });
-
+                expect(returnData).not.toHaveBeenCalled();
             });
 
         });
@@ -81,27 +64,15 @@ describe("BootstrappedDataService", function() {
                 bootstrappedDataService = new BootstrappedDataService();
             });
 
-            it("does NOT mock ajax request", function() {
-                bootstrappedDataService.checkAlreadyHasData(method, model, options);
+            it("does NOT call returnData", function() {
+                bootstrappedDataService.isBootstrapped(method, model, options, returnData);
 
-                wait("for ajax call to complete").until(ajaxRequestModelData())
-                    .then(function(data) {
-                        expect(data).not.toEqual({
-                            "some": "data"
-                        });
-                    });
+                expect(returnData).not.toHaveBeenCalled();
             });
 
         });
 
     });
-
-    function ajaxRequestModelData() {
-        return $.ajax({
-            url: "/url",
-            dataType: "json"
-        });
-    }
 
 });
 
