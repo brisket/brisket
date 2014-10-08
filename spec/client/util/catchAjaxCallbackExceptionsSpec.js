@@ -5,6 +5,7 @@ var catchAjaxCallbackExceptions = require("lib/util/catchAjaxCallbackExceptions"
 describe("catchAjaxCallbackExceptions", function() {
 
     var options;
+    var renderError;
 
     describe("when success, error, complete provided", function() {
 
@@ -15,7 +16,7 @@ describe("catchAjaxCallbackExceptions", function() {
                 complete: noop
             };
 
-            catchAjaxCallbackExceptions(null, null, options, noop);
+            catchAjaxCallbackExceptions(null, null, options, noop, noop);
         });
 
         it("wraps each in a promise", function() {
@@ -34,7 +35,7 @@ describe("catchAjaxCallbackExceptions", function() {
                 error: noop
             };
 
-            catchAjaxCallbackExceptions(null, null, options, noop);
+            catchAjaxCallbackExceptions(null, null, options, noop, noop);
         });
 
         it("wraps success and error in a promise", function() {
@@ -55,11 +56,18 @@ describe("catchAjaxCallbackExceptions", function() {
                 success: callbackThatThrows
             };
 
-            catchAjaxCallbackExceptions(null, null, options, noop);
+            renderError = jasmine.createSpy("renderError");
+
+            catchAjaxCallbackExceptions(null, null, options, noop, renderError);
         });
 
-        it("wraps success in rejected promise", function() {
+        it("wraps success in resolved promise", function() {
             expect(options.success().isResolved()).toBe(true);
+        });
+
+        it("calls renderError", function() {
+            options.success();
+            expect(renderError).toHaveBeenCalled();
         });
 
     });

@@ -41,22 +41,11 @@ var configureGrunt = function(grunt) {
                         "lib/server/**/*.js",
                         "lib/brisket.js"
                     ],
-                    aliasMappings: [
-                        {
-                            cwd: "lib/",
-                            src: ["**/*.js"],
-                            dest: "lib/"
-                        }
-                    ],
-                    shim: {
-                        "jquery-mockjax": {
-                            path: "node_modules/jquery-mockjax/jquery.mockjax.js",
-                            exports: null,
-                            depends: {
-                                jquery: "jQuery"
-                            }
-                        }
-                    }
+                    aliasMappings: [{
+                        cwd: "lib/",
+                        src: ["**/*.js"],
+                        dest: "lib/"
+                    }]
                 }
 
             }

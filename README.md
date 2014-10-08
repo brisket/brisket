@@ -41,30 +41,18 @@ To use Brisket you must install the npm module into your project. Since Brisket 
 }
 ```
 
-While Brisket does not force you to use any particular bundling library, you will be responsible for bundling your application for browser consumption. For now, you will have to ignore Brisket's server components and shim jQuery Mockjax since it is not CommonJS compliant. Here is an example config using [grunt-browserify@1.3.2](https://github.com/jmreidy/grunt-browserify/tree/v1.3.2):
+While Brisket does not force you to use any particular bundling library, you will be responsible for bundling your application for browser consumption. Here is an example config using [grunt-browserify@1.3.2](https://github.com/jmreidy/grunt-browserify/tree/v1.3.2):
 
 ```gruntfile
 browserify: {
     options: {
-        alias: [
-            'node_modules/brisket/node_modules/jquery/dist/jquery.js:jquery'
-        ],
         ignore: [
             'node_modules/brisket/lib/server/*'
-        ],
-        shim: {
-            'jquery-mockjax': {
-                path: 'node_modules/brisket/vendor/javascripts/jquery.mockjax.js',
-                exports: null,
-                depends: { jquery: 'jQuery' }
-            }
-        }
+        ]
     }
 
 }
 ```
-
-Note that jQuery is aliased in this case because it is a dependency of jQuery Mockjax.
 
 ## Compatibility and Requirements
 
