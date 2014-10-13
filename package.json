@@ -17,6 +17,9 @@
         "backbone"
     ],
     "main": "lib/brisket.js",
+    "engines": {
+        "node": "~0.10.0"
+    },
     "dependencies": {
         "backbone": "~1.1.2",
         "express": "~4.0.0",
@@ -35,11 +38,13 @@
         "grunt-cli": "~0.1.13",
         "grunt": "~0.4.5"
     },
+    "scripts": {
+        "test": "grunt test"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/bloomberg/brisket.git"
     },
-    "scripts": {
-        "test": "grunt test"
-    }
+    "bugs": "http://github.com/bloomberg/brisket/issues",
+    "license": "Apache License (Version 2)"
 }
