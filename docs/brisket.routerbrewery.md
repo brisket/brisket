@@ -28,7 +28,7 @@ var BookRouter = Brisket.RouterBrewery.create({
 
     return book.fetch()
       .then(function() {
-        return new BookView({ model: model });
+        return new BookView({ model: book });
       });
   }
 
@@ -68,7 +68,7 @@ var BookRouter = RouterBrewery.create({
 
     return book.fetch()
       .then(function() {
-        return new BookView({ model: model });
+        return new BookView({ model: book });
       });
   }
 

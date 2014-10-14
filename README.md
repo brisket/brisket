@@ -4,6 +4,31 @@ Brisket
 ## About Brisket
 Brisket is a framework for building single page web apps using isomorphic JavaScript. A Brisket app is both a traditional web site AND a single page web application at the same time. Brisket provides the tools that you need to spend your time focusing on your application's logic rather than on "what environment is my code running in?".
 
+## Getting Started
+Using [generator-brisket](https://github.com/wawjr3d/generator-brisket) is the fastest way to get started.
+
+Brisket requires that `phantomjs` is installed on your machine. You can find instructions [here](http://phantomjs.org/download.html).
+
+Once `phantomjs` is installed, install [Yeoman](http://yeoman.io):
+
+```bash
+npm install -g yo
+```
+
+To install generator-brisket from npm, run:
+
+```bash
+npm install -g generator-brisket
+```
+
+Finally, initiate the generator and run your app:
+
+```bash
+yo brisket && grunt
+```
+
+Your first brisket app will be available at http://localhost:8080
+
 ## Documentation
 
 ### Brisket's Parts
@@ -30,15 +55,12 @@ Brisket is a framework for building single page web apps using isomorphic JavaSc
 * [**Child Views**](docs/brisket.childviews.md): Brisket provides a system to help you manage a View's child views.
 
 ## Using Brisket in your project
-To use Brisket you must install the npm module into your project. Since Brisket is not yet distributed in any public NPM repositories, you'll need to add it to your `package.json`. Use a hash at the end of the Git url to specify the version you want to use:
+Make sure that [`phantomjs`](http://phantomjs.org/download.html) is installed on your machine.
 
-```packagejson
-{
-    'name': 'your project',
-    'dependencies': {
-        'brisket': 'git+https://github.com/bloomberg/brisket.git#v0.20.5',
-    }
-}
+Install the Brisket into your project:
+
+```bash
+npm install brisket --save
 ```
 
 While Brisket does not force you to use any particular bundling library, you will be responsible for bundling your application for browser consumption. For now, you will have to ignore Brisket's server components and shim jQuery Mockjax since it is not CommonJS compliant. Here is an example config using [grunt-browserify@1.3.2](https://github.com/jmreidy/grunt-browserify/tree/v1.3.2):
@@ -68,15 +90,18 @@ Note that jQuery is aliased in this case because it is a dependency of jQuery Mo
 
 ## Compatibility and Requirements
 
-Brisket currently works with the following libraries:
+Brisket requires that `phantomjs` is installed.
 
-* jQuery ^1.11.1
-* jsdom ^1.11.1
+Brisket also depends on the following libraries:
+
+* jQuery ~1.11.1
+* jsdom ~0.11.1
 * Underscore ~1.6.0
 * Backbone ~1.1.2
-* bluebird ~2.1.3
+* bluebird ~2.2.1
 * jquery-mockjax ~1.5.3
 * express ~4.0.0
+* qs 1.2.2
 
 ### Browser Support
 Chrome, Firefox, Safari, iOS 6+, Android 4+, Internet Explorer 9+
