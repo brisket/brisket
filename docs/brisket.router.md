@@ -40,7 +40,7 @@ var BookRouter = Brisket.RouterBrewery.create({
 
     return book.fetch()
       .then(function() {
-        return new BookView({ model: model });
+        return new BookView({ model: book });
       });
   }
 
@@ -74,7 +74,7 @@ var BookRouter = Brisket.RouterBrewery.create({
       .then(function() {
         throw new Error("There is some problem");
 
-        return new BookView({ model: model });
+        return new BookView({ model: book });
       });
   }
 
@@ -107,7 +107,7 @@ var BookRouter = Brisket.RouterBrewery.create({
 
     return book.fetch() // API returns 400 response code
       .then(function() {
-        return new BookView({ model: model });
+        return new BookView({ model: book });
       });
   }
 
