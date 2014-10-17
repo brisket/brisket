@@ -14,20 +14,15 @@ describe("Server", function() {
         spyOn(ServerApp.prototype, "start");
     });
 
-    forEach({
-        "clientAppRequirePath is missing": undefined,
-        "clientAppRequirePath is null": null,
-        "clientAppRequirePath is not a string": 12312
-    })
-        .it("throws if {{clientAppRequirePath is NOT string}}", function(clientAppRequirePath) {
-            var creatingServerWithoutClientAppRequirePathString = function() {
-                Server.create(validConfigWith({
-                    clientAppRequirePath: clientAppRequirePath
-                }));
-            };
+    it("throws if clientAppRequirePath is NOT string", function() {
+        function creatingServerWithoutClientAppRequirePathString() {
+            Server.create(validConfigWith({
+                clientAppRequirePath: 123
+            }));
+        }
 
-            expect(creatingServerWithoutClientAppRequirePathString).toThrow();
-        });
+        expect(creatingServerWithoutClientAppRequirePathString).toThrow();
+    });
 
     describe("#create", function() {
 
@@ -87,20 +82,15 @@ describe("Server", function() {
 
     describe("apiHost", function() {
 
-        forEach({
-            "apiHost is missing": undefined,
-            "apiHost is null": null,
-            "apiHost is not a string": 12312
-        })
-            .it("throws if {{apiHost is NOT string}}", function(apiHost) {
-                var creatingServerWithoutApiHostString = function() {
-                    Server.create(validConfigWith({
-                        apiHost: apiHost
-                    }));
-                };
+        it("throws if apiHost is NOT string", function() {
+            function creatingServerWithoutApiHostString() {
+                Server.create(validConfigWith({
+                    apiHost: 123
+                }));
+            }
 
-                expect(creatingServerWithoutApiHostString).toThrow();
-            });
+            expect(creatingServerWithoutApiHostString).toThrow();
+        });
 
     });
 
