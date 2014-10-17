@@ -1,6 +1,6 @@
 {
     "name": "brisket",
-    "version": "0.20.7",
+    "version": "0.20.8",
     "description": "Framework for building single page web apps using isomorphic javascript",
     "author": [
         "Wayne Warner",
@@ -26,7 +26,7 @@
         "jquery": "~1.11.1",
         "jquery-mockjax": "~1.5.3",
         "jsdom": "~0.11.1",
-        "bluebird": "~2.2.1",
+        "bluebird": "~2.3.1",
         "underscore": "~1.6.0",
         "qs": "1.2.2"
     },
