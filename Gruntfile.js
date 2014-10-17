@@ -87,7 +87,9 @@ var configureGrunt = function(grunt) {
                         "spec/helpers/**/*.js"
                     ],
                     template: "spec/customTemplate/helpersAfterSrcRunner.tmpl",
-                    keepRunner: true
+                    keepRunner: true,
+                    display: "short",
+                    summary: true
                 }
             }
         }

@@ -2,8 +2,8 @@
     "use strict";
 
     function executes(test, subject) {
-        return function() {
-            test(subject);
+        return function(done) {
+            test(subject, done);
         };
     }
 

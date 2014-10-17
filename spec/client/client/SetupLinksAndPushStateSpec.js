@@ -1,16 +1,16 @@
 "use strict";
 
-var SetupLinksAndPushState = require("lib/client/SetupLinksAndPushState");
-var Url = require("lib/util/Url");
-var ClientRequest = require("lib/client/ClientRequest");
-var Backbone = require("lib/application/Backbone");
-var $ = require("lib/application/jquery");
-
 describe("SetupLinksAndPushState", function() {
+    var SetupLinksAndPushState = require("lib/client/SetupLinksAndPushState");
+    var Url = require("lib/util/Url");
+    var ClientRequest = require("lib/client/ClientRequest");
+    var Backbone = require("lib/application/Backbone");
+    var $ = require("lib/application/jquery");
+
     var $fixture;
 
     beforeEach(function() {
-        spyOn(Url, "location").andReturn({
+        spyOn(Url, "location").and.returnValue({
             href: "http://www.bloombergview.com/aRoute",
             pathname: "/aRoute"
         });
@@ -18,7 +18,7 @@ describe("SetupLinksAndPushState", function() {
         spyOn(Backbone.history, "start");
         spyOn(Backbone.history, "loadUrl");
         spyOn(Backbone.history, "navigate");
-        spyOn(Backbone.history, "getFragment").andReturn("aRoute");
+        spyOn(Backbone.history, "getFragment").and.returnValue("aRoute");
 
         spyOn(ClientRequest, "isFromLinkClick");
 
@@ -56,12 +56,12 @@ describe("SetupLinksAndPushState", function() {
         });
 
         it("starts Backbone history with pushState enabled", function() {
-            expect(Backbone.history.start.mostRecentCall.args[0])
+            expect(Backbone.history.start.calls.mostRecent().args[0])
                 .toHaveKeyValue("pushState", true);
         });
 
         it("starts Backbone history silently", function() {
-            expect(Backbone.history.start.mostRecentCall.args[0])
+            expect(Backbone.history.start.calls.mostRecent().args[0])
                 .toHaveKeyValue("silent", true);
         });
 
@@ -84,46 +84,97 @@ describe("SetupLinksAndPushState", function() {
             expect(ClientRequest.isFromLinkClick).toHaveBeenCalled();
         });
 
-        forEach({
-            "alt + click": $.Event("click", {
-                altKey: true
-            }),
-            "ctrl + click": $.Event("click", {
-                ctrlKey: true
-            }),
-            "meta + click": $.Event("click", {
-                metaKey: true
-            }),
-            "shift + click": $.Event("click", {
-                shiftKey: true
-            })
-        })
-            .it("does NOT navigate Backbone history on {{a usability click}}", function(e) {
-                var $link = $fixture.find("a.applink");
+        describe("does NOT navigate Backbone history on", function() {
+            var $link;
 
+            beforeEach(function() {
+                $link = $fixture.find("a.applink");
                 expect($link).toExist();
+            });
 
-                $link.trigger(e);
+            it("alt + click", function() {
+                $link.trigger($.Event("click", {
+                    altKey: true
+                }));
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
 
-        forEach({
-            "hash link": "#",
-            "fully qualified link": "http",
-            "absolute path link": "/",
-            "mailto link": "mailto",
-            "javascript code link": "javascript"
-        })
-            .it("does NOT set up {{a NON application link}} to navigate Backbone history", function(linkStartsWith) {
-                var $link = $fixture.find("a[href^='" + linkStartsWith + "']");
+            it("ctrl + click", function() {
+                $link.trigger($.Event("click", {
+                    ctrlKey: true
+                }));
 
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+            it("meta + click", function() {
+                $link.trigger($.Event("click", {
+                    metaKey: true
+                }));
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+            it("shift + click", function() {
+                $link.trigger($.Event("click", {
+                    shiftKey: true
+                }));
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+        });
+
+        describe("NOT Backbone navigating to NON application links", function() {
+            var $link;
+
+            it("hash links", function() {
+                $link = $fixture.find("a[href^='#']");
                 expect($link).toExist();
 
                 $link.click();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
+
+            it("fully qualified link", function() {
+                $link = $fixture.find("a[href^='http']");
+                expect($link).toExist();
+
+                $link.click();
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+            it("absolute path link", function() {
+                $link = $fixture.find("a[href^='/']");
+                expect($link).toExist();
+
+                $link.click();
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+            it("mailto link", function() {
+                $link = $fixture.find("a[href^='mailto']");
+                expect($link).toExist();
+
+                $link.click();
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+            it("javascript code link", function() {
+                $link = $fixture.find("a[href^='javascript']");
+                expect($link).toExist();
+
+                $link.click();
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+        });
 
     });
 
@@ -141,32 +192,74 @@ describe("SetupLinksAndPushState", function() {
         });
 
         it("starts Backbone history with pushState disabled", function() {
-            expect(Backbone.history.start.mostRecentCall.args[0])
+            expect(Backbone.history.start.calls.mostRecent().args[0])
                 .toHaveKeyValue("pushState", false);
         });
 
         it("starts Backbone history silently", function() {
-            expect(Backbone.history.start.mostRecentCall.args[0])
+            expect(Backbone.history.start.calls.mostRecent().args[0])
                 .toHaveKeyValue("silent", true);
         });
 
-        forEach({
-            "application link": ".applink",
-            "hash link": "[href^='#']",
-            "fully qualified link": "[href^='http']",
-            "absolute path link": "[href^='/']",
-            "mailto link": "[href^='mailto']",
-            "javascript code link": "[href^='javascript']"
-        })
-            .it("does NOT set up {{any link}} to navigate Backbone history", function(linkSelector) {
-                var $link = $("a" + linkSelector);
+        describe("NOT Backbone navigating to ANY links", function() {
+            var $link;
 
+            it("application links", function() {
+                $link = $fixture.find("a.applink");
                 expect($link).toExist();
 
                 $link.click();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
+
+            it("hash links", function() {
+                $link = $fixture.find("a[href^='#']");
+                expect($link).toExist();
+
+                $link.click();
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+            it("fully qualified link", function() {
+                $link = $fixture.find("a[href^='http']");
+                expect($link).toExist();
+
+                $link.click();
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+            it("absolute path link", function() {
+                $link = $fixture.find("a[href^='/']");
+                expect($link).toExist();
+
+                $link.click();
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+            it("mailto link", function() {
+                $link = $fixture.find("a[href^='mailto']");
+                expect($link).toExist();
+
+                $link.click();
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+            it("javascript code link", function() {
+                $link = $fixture.find("a[href^='javascript']");
+                expect($link).toExist();
+
+                $link.click();
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+        });
+
     });
 
     describe("when setting the root", function() {
@@ -183,7 +276,7 @@ describe("SetupLinksAndPushState", function() {
         });
 
         it("starts Backbone history with pushState disabled", function() {
-            expect(Backbone.history.start.mostRecentCall.args[0])
+            expect(Backbone.history.start.calls.mostRecent().args[0])
                 .toHaveKeyValue("root", "some/root");
         });
     });

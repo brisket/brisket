@@ -34,11 +34,6 @@ describe("View", function() {
             expect(closeParentViewWithoutOnClose).not.toThrow();
         });
 
-        it("identifies which View is missing onClose by template", function() {
-            var implementOnCloseMessage = View.implementOnCloseMessage(parentView);
-
-            expect(closeParentViewWithoutOnClose).toThrow(implementOnCloseMessage);
-        });
     });
 
     describe("when view does NOT have child views", function() {

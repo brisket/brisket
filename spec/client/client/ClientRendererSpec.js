@@ -141,7 +141,7 @@ describe("ClientRenderer", function() {
     describe("setting extra render instructions in layout", function() {
 
         beforeEach(function() {
-            layout.render.andCallThrough();
+            layout.render.and.callThrough();
         });
 
         describe("when should initialize layout AND layout has NOT been rendered yet", function() {

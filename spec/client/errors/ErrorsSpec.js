@@ -1,9 +1,7 @@
 "use strict";
 
-var $ = require("lib/application/jquery");
-var Errors = require("lib/errors/Errors");
-
 describe("Errors", function() {
+    var Errors = require("lib/errors/Errors");
 
     var error;
 
@@ -11,6 +9,21 @@ describe("Errors", function() {
 
         beforeEach(function() {
             spyOn(console, "error");
+        });
+
+        it("console.errors a string", function() {
+            Errors.log("there was an error");
+            expect(console.error).toHaveBeenCalledWith("there was an error");
+        });
+
+        it("console.errors objects", function() {
+            Errors.log({
+                some: "object"
+            });
+
+            expect(console.error.calls.mostRecent().args[0]).toEqual({
+                some: "object"
+            });
         });
 
         describe("when error is an Error object", function() {
@@ -42,15 +55,6 @@ describe("Errors", function() {
             });
 
         });
-
-        forEach({
-            "string": "there was an error",
-            "error jqxhr": $.ajax()
-        })
-            .it("console.errors a {{error}}", function(error) {
-                Errors.log(error);
-                expect(console.error).toHaveBeenCalledWith(error);
-            });
 
     });
 

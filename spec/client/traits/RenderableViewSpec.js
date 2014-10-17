@@ -1,10 +1,9 @@
 "use strict";
 
-var RenderableView = require("lib/traits/RenderableView");
-var Backbone = require("lib/application/Backbone");
-var TemplateAdapter = require("lib/templating/TemplateAdapter");
-
 describe("RenderableView", function() {
+    var RenderableView = require("lib/traits/RenderableView");
+    var Backbone = require("lib/application/Backbone");
+    var TemplateAdapter = require("lib/templating/TemplateAdapter");
 
     var model;
     var BaseRenderableView;
@@ -31,7 +30,7 @@ describe("RenderableView", function() {
             });
 
             it("combines the data in the model and returned from logic", function() {
-                expect(view.templateData()).toBeEqualTo({
+                expect(view.templateData()).toEqual({
                     "from_model": "model data",
                     "from_logic": "logic data"
                 });
@@ -48,7 +47,7 @@ describe("RenderableView", function() {
             });
 
             it("exposes the data from the view model", function() {
-                expect(view.templateData()).toBeEqualTo({
+                expect(view.templateData()).toEqual({
                     "from_view_model": "view model data"
                 });
             });
@@ -64,7 +63,7 @@ describe("RenderableView", function() {
             });
 
             it("exposes the data from the model", function() {
-                expect(view.templateData()).toBeEqualTo({
+                expect(view.templateData()).toEqual({
                     "from_model": "model data"
                 });
             });
@@ -105,9 +104,9 @@ describe("RenderableView", function() {
             });
 
             it("renders any unrendered child views in expected positions", function() {
-                expect(view.$(".last").next()).toBe(childView1.$el);
-                expect(view.$(".descendant").children()).toBe(childView2.$el);
-                expect(view.$(".first").children().first()).toBe(childView3.$el);
+                expect(view.$(".last").next()).$toBe(childView1.$el);
+                expect(view.$(".descendant").children()).$toBe(childView2.$el);
+                expect(view.$(".first").children().first()).$toBe(childView3.$el);
             });
 
         });
@@ -183,19 +182,16 @@ describe("RenderableView", function() {
                 secondDecorateFunction = jasmine.createSpy();
 
                 ViewThatRenders = BaseRenderableView.extend({
-                    decorators: [
-                        {
-                            decorate: firstDecorateFunction
-                        },
-                        {
-                            decorate: secondDecorateFunction
-                        }
-                    ]
+                    decorators: [{
+                        decorate: firstDecorateFunction
+                    }, {
+                        decorate: secondDecorateFunction
+                    }]
                 });
 
                 view = new ViewThatRenders();
 
-                spyOn(view, "runDecorators").andCallThrough();
+                spyOn(view, "runDecorators").and.callThrough();
 
                 view.render();
             });
@@ -220,7 +216,7 @@ describe("RenderableView", function() {
 
             beforeEach(function() {
                 view = new BaseRenderableView();
-                spyOn(view, "runDecorators").andCallThrough();
+                spyOn(view, "runDecorators").and.callThrough();
             });
 
             it("runs decorators", function() {
@@ -338,7 +334,7 @@ describe("RenderableView", function() {
                 ViewThatRenders = BaseRenderableView.extend({
                     template: "some template",
                     templateAdapter: TemplateAdapter.extend({
-                        templateToHTML: jasmine.createSpy().andReturn("expected html")
+                        templateToHTML: jasmine.createSpy().and.returnValue("expected html")
                     })
                 });
                 view = new ViewThatRenders();
@@ -357,7 +353,7 @@ describe("RenderableView", function() {
                 ViewThatRenders = BaseRenderableView.extend({
                     template: null,
                     templateAdapter: TemplateAdapter.extend({
-                        templateToHTML: jasmine.createSpy().andReturn("expected html")
+                        templateToHTML: jasmine.createSpy().and.returnValue("expected html")
                     })
                 });
                 view = new ViewThatRenders();
@@ -435,7 +431,7 @@ describe("RenderableView", function() {
             });
 
             it("invokes onDOM once", function() {
-                expect(view.onDOM.calls.length).toBe(1);
+                expect(view.onDOM.calls.count()).toBe(1);
             });
 
         });
@@ -447,7 +443,7 @@ describe("RenderableView", function() {
             });
 
             it("invokes onDOM once", function() {
-                expect(view.onDOM.calls.length).toBe(1);
+                expect(view.onDOM.calls.count()).toBe(1);
             });
 
         });
@@ -461,7 +457,7 @@ describe("RenderableView", function() {
             });
 
             it("invokes onDOM twice", function() {
-                expect(view.onDOM.calls.length).toBe(2);
+                expect(view.onDOM.calls.count()).toBe(2);
             });
 
         });

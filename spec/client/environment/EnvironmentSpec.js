@@ -5,11 +5,11 @@ var Environment = require("lib/environment/Environment");
 describe("Environment", function() {
 
     it("can be fully mocked out by just setting isServer", function() {
-        spyOn(Environment, "isServer").andReturn(true);
+        spyOn(Environment, "isServer").and.returnValue(true);
         expect(Environment.isServer()).toBe(true);
         expect(Environment.isClient()).toBe(false);
 
-        Environment.isServer.andReturn(false);
+        Environment.isServer.and.returnValue(false);
         expect(Environment.isServer()).toBe(false);
         expect(Environment.isClient()).toBe(true);
     });

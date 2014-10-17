@@ -158,15 +158,15 @@ describe("Layout", function() {
             onRender = jasmine.createSpy();
         });
 
-        forEach({
-            "a string": "some string",
-            "a number": 1,
-            "falsy": null
-        })
-            .it("sets extraRenderInstructions to be null when onRender is {{NOT a function}}", function(onRender) {
+        describe("handling invalid onRender", function() {
+
+            it("sets extraRenderInstructions to be null when onRender is not a function", function() {
+                onRender = null;
                 layout.setExtraRenderInstructions(onRender);
                 expect(layout.extraRenderInstructions).toBeNull();
             });
+
+        });
 
         describe("when layout has been rendered", function() {
 

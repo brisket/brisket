@@ -70,6 +70,17 @@ describe("catchAjaxCallbackExceptions", function() {
         throw new Error("Expected error for testing catchAjaxCallbackExceptions");
     }
 
+    function itWrapsCallbackInAPromise(callback) {
+        it("wraps " + callback + " in a promise", function(done) {
+            var promise = options[callback]();
+
+            promise.then(function() {
+                expect(promise.isFulfilled()).toBe(true);
+                done();
+            });
+        });
+    }
+
 });
 
 // ----------------------------------------------------------------------------

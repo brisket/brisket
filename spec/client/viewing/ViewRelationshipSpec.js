@@ -173,19 +173,19 @@ describe("ViewRelationshipSpec", function() {
             it("appends a child view", function() {
                 parentView.createChildView(childView).andAppendIt();
 
-                expect($lastElement().next()).toBe(childView.el);
+                expect($lastElement().next()).$toBe(childView.el);
             });
 
             it("inserts a child view into a descendant element", function() {
                 parentView.createChildView(childView).andInsertInto(".descendant");
 
-                expect($descendantElement().children()).toBe(childView.$el);
+                expect($descendantElement().children()).$toBe(childView.$el);
             });
 
             it("inserts a child view after a descendant element", function() {
                 parentView.createChildView(childView).andInsertAfter(".descendant");
 
-                expect($descendantElement().next()).toBe(childView.$el);
+                expect($descendantElement().next()).$toBe(childView.$el);
             });
 
             it("replaces a descendant element with a child view", function() {
@@ -195,20 +195,20 @@ describe("ViewRelationshipSpec", function() {
                 parentView.createChildView(childView).andReplace(".descendant");
 
                 expect($descendantElement()).not.toExist();
-                expect(childView.$el.nextAll()).toBe($descendantElementNext);
-                expect(childView.$el.prevAll()).toBe($descendantElementPrev);
+                expect(childView.$el.nextAll()).$toBe($descendantElementNext);
+                expect(childView.$el.prevAll()).$toBe($descendantElementPrev);
             });
 
             it("appends a child view to a descendant element", function() {
                 $descendantElement().append("<div class='some_element' />");
                 parentView.createChildView(childView).andAppendItTo(".descendant");
-                expect($descendantElement().children().last()).toBe(childView.$el);
+                expect($descendantElement().children().last()).$toBe(childView.$el);
             });
 
             it("prepends a descendant element with a child view", function() {
                 $descendantElement().append("<div class='some_element' />");
                 parentView.createChildView(childView).andPrependItTo(".descendant");
-                expect($descendantElement().children().first()).toBe(childView.$el);
+                expect($descendantElement().children().first()).$toBe(childView.$el);
             });
 
         });

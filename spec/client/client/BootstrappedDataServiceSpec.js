@@ -36,46 +36,50 @@ describe("BootstrappedDataService", function() {
                 bootstrappedDataService = new BootstrappedDataService(bootstrappedData);
             });
 
-            it("mocks out the next ajax call which will happen when sync completes", function() {
+            it("mocks out the next ajax call which will happen when sync completes", function(done) {
                 bootstrappedDataService.checkAlreadyHasData(method, model, options);
 
-                wait("for ajax call to complete").until(ajaxRequestModelData())
-                    .then(function(data) {
-                        expect(data).toEqual({
-                            "some": "data"
-                        });
+                ajaxRequestModelData().then(function(data) {
+                    expect(data).toEqual({
+                        "some": "data"
                     });
+
+                    done();
+                });
             });
 
             describe("when data is requested twice", function() {
 
                 var fetchingTwice;
 
-                it("does NOT mock the second request", function() {
+                it("does NOT mock the second request", function(done) {
                     bootstrappedDataService.checkAlreadyHasData(method, model, options);
 
-                    fetchingTwice = function() {
-                        return ajaxRequestModelData()
-                            .then(function() {
-                                bootstrappedDataService.checkAlreadyHasData(method, model, options);
+                    fetchingTwice = ajaxRequestModelData()
+                        .then(function() {
+                            bootstrappedDataService.checkAlreadyHasData(method, model, options);
 
-                                return ajaxRequestModelData();
-                            });
-                    };
-
-                    wait("for ajax call to complete").until(fetchingTwice())
-                        .then(function(data) {
-                            expect(data).not.toEqual({
-                                "some": "data"
-                            });
+                            return ajaxRequestModelData();
                         });
+
+                    // using always because this is a jquery promise AND it fails on the second
+                    //  call since an ajax call to /url in the tests won't succeed. this
+                    //  expectation only cares that the mock data is NOT returned again so that's ok.
+                    //  wawjr3d 10/17/2014
+                    fetchingTwice.always(function(data) {
+                        expect(data).not.toEqual({
+                            "some": "data"
+                        });
+
+                        done();
+                    });
                 });
 
             });
 
         });
 
-        describe("when it does NOT have data", function() {
+        describe("when it does NOT have data", function(done) {
 
             beforeEach(function() {
                 bootstrappedDataService = new BootstrappedDataService();
@@ -84,12 +88,14 @@ describe("BootstrappedDataService", function() {
             it("does NOT mock ajax request", function() {
                 bootstrappedDataService.checkAlreadyHasData(method, model, options);
 
-                wait("for ajax call to complete").until(ajaxRequestModelData())
-                    .then(function(data) {
-                        expect(data).not.toEqual({
-                            "some": "data"
-                        });
+                ajaxRequestModelData().then(function(data) {
+                    expect(data).not.toEqual({
+                        "some": "data"
                     });
+
+                    done();
+                });
+
             });
 
         });
