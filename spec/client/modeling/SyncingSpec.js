@@ -24,7 +24,12 @@ describe("Syncing", function() {
             });
 
             it("returns a rejected promise", function() {
-                expect(Syncing.sync().isRejected()).toBe(true);
+                var sync = Syncing.sync();
+
+                wait("for sync").until(sync)
+                    .then(function() {
+                        expect(sync.isRejected()).toBe(true);
+                    });
             });
 
         });
@@ -36,7 +41,12 @@ describe("Syncing", function() {
             });
 
             it("returns a fulfilled promise", function() {
-                expect(Syncing.sync().isFulfilled()).toBe(true);
+                var sync = Syncing.sync();
+
+                wait("for sync").until(sync)
+                    .then(function() {
+                        expect(sync.isFulfilled()).toBe(true);
+                    });
             });
 
         });

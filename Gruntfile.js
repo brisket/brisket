@@ -34,20 +34,18 @@ var configureGrunt = function(grunt) {
                     alias: [
                         "node_modules/backbone/backbone.js:backbone",
                         "node_modules/underscore/underscore.js:underscore",
-                        "node_modules/bluebird/zalgo.js:bluebird",
+                        "node_modules/bluebird/js/main/bluebird.js:bluebird",
                         "node_modules/jquery/dist/jquery.js:jquery"
                     ],
                     ignore: [
                         "lib/server/**/*.js",
                         "lib/brisket.js"
                     ],
-                    aliasMappings: [
-                        {
-                            cwd: "lib/",
-                            src: ["**/*.js"],
-                            dest: "lib/"
-                        }
-                    ],
+                    aliasMappings: [{
+                        cwd: "lib/",
+                        src: ["**/*.js"],
+                        dest: "lib/"
+                    }],
                     shim: {
                         "jquery-mockjax": {
                             path: "node_modules/jquery-mockjax/jquery.mockjax.js",
