@@ -10,7 +10,7 @@ describe("RouterBrewery on client", function() {
     var router;
 
     beforeEach(function() {
-        spyOn(Environment, "isServer").andReturn(false);
+        spyOn(Environment, "isServer").and.returnValue(false);
     });
 
     describe("#create", function() {
@@ -31,21 +31,15 @@ describe("RouterBrewery on client", function() {
             expect(router instanceof Backbone.Router).toBe(true);
         });
 
-        forEach({
-            "a string": "some string",
-            "is falsy": null,
-            "is an object": {},
-            "is a number": 1
-        })
-            .it("throws an error when onRender is {{not a function}}", function(onRender) {
-                var creatingRouterWithoutValidOnRender = function() {
-                    RouterBrewery.create({
-                        onRender: onRender
-                    });
-                };
+        it("throws an error when onRender is not a function", function() {
+            var creatingRouterWithoutValidOnRender = function() {
+                RouterBrewery.create({
+                    onRender: null
+                });
+            };
 
-                expect(creatingRouterWithoutValidOnRender).toThrow();
-            });
+            expect(creatingRouterWithoutValidOnRender).toThrow();
+        });
 
     });
 

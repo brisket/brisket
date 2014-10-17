@@ -33,19 +33,13 @@ describe("HasChildViews", function() {
 
     describe("when creating a child view", function() {
 
-        forEach({
-            "null": null,
-            "undefined": undefined,
-            "empty string": "",
-            "zero": 0
-        })
-            .it("it does NOT allow you to create a child view with a(n) {{falsy child view}}", function(falsyValue) {
-                function creatingChildViewWithFalsyChildView() {
-                    parentView.createChildView(falsyValue);
-                }
+        it("it does NOT allow you to create a child view with a falsy child view", function() {
+            function creatingChildViewWithFalsyChildView() {
+                parentView.createChildView(null);
+            }
 
-                expect(creatingChildViewWithFalsyChildView).toThrow();
-            });
+            expect(creatingChildViewWithFalsyChildView).toThrow();
+        });
 
         it("creates a child view from a View constructor", function() {
             createChildViewByConstructor();
@@ -121,7 +115,7 @@ describe("HasChildViews", function() {
 
             it("removes existing child view from unrendered child views", function() {
                 viewRelationship.andAppendIt();
-                spyOn(parentView, "removeUnrenderedChildView").andCallThrough();
+                spyOn(parentView, "removeUnrenderedChildView").and.callThrough();
 
                 parentView.replaceChildView("identifier", anotherChildView);
 

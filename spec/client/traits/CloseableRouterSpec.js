@@ -31,7 +31,7 @@ describe("CloseableRouter", function() {
 
             beforeEach(function() {
                 error = new Error();
-                router.onClose.andCallFake(function() {
+                router.onClose.and.callFake(function() {
                     throw error;
                 });
 

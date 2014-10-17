@@ -1,17 +1,21 @@
-<!doctype html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <meta charset="utf-8">
   <title>Jasmine Spec Runner</title>
-<% css.forEach(function(style){ %>
+
+  <% css.forEach(function(style){ %>
   <link rel="stylesheet" type="text/css" href="<%= style %>">
-<% }) %>
-<% with (scripts) { %>
-  <% [].concat(polyfills, jasmine, vendor, src, helpers, specs, reporters, start).forEach(function(script){ %>
-  <script src="<%= script %>"></script>
   <% }) %>
-<% }; %>
+
+  <% with (scripts) { %>
+  <% [].concat(polyfills, jasmine, boot, vendor, src, helpers, specs, reporters).forEach(function(script){ %>
+  <script type="text/javascript" src="<%= script %>"></script>
+  <% }) %>
+  <% }; %>
+
 </head>
+
 <body>
 </body>
 </html>

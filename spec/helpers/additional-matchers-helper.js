@@ -1,69 +1,88 @@
 (function(global, undefined) {
     "use strict";
 
-    var _ = require("underscore");
-
     var additionalMatchers = {
 
-        // enhancing toBe the same way jquery jasmine did
-        toBe: function(selector) {
-            var builtInToBe = jasmine.Matchers.prototype.toBe;
+        $toBe: function() {
+            return {
+                compare: function($actual, selector) {
+                    if ($actual && ($actual.jquery || jasmine.isDomNode($actual))) {
+                        return passIf($actual.is(selector));
+                    }
 
-            if (this.actual && (this.actual.jquery || jasmine.isDomNode(this.actual))) {
-                return this.actual.is(selector);
-            }
-
-            return builtInToBe.apply(this, arguments);
+                    return fail();
+                }
+            };
         },
 
-        toBeEqualTo: function(expected) {
-            return _.isEqual(expected, this.actual);
-        },
+        toContainText: function() {
+            return {
+                comapre: function(actual, text) {
+                    var trimmedText = actual.text().trim();
 
-        toContainText: function(text) {
-            var trimmedText = this.actual.text().trim();
+                    if (text && typeof text.test === "function") {
+                        return passIf(text.test(trimmedText));
+                    }
 
-            if (text && typeof text.test === "function") {
-                return text.test(trimmedText);
-            }
-
-            return trimmedText.indexOf(text) != -1;
+                    return passIf(trimmedText.indexOf(text) != -1);
+                }
+            };
         },
 
         toExist: function() {
-            return this.actual.length > 0;
+            return {
+                compare: function(actual) {
+                    return passIf(actual.length > 0);
+                }
+            };
         },
 
         toBeAttachedToDom: function() {
-            var $el = this.actual;
-            return $el.closest("body").length > 0;
+            return {
+                compare: function(actual) {
+                    var $el = actual;
+                    return passIf($el.closest("body").length > 0);
+                }
+            };
         },
 
-        toBeHTMLEqual: function(expected) {
-            return stripWhiteSpaceBecauseItsNotRelevantToTest(this.actual) ===
-                stripWhiteSpaceBecauseItsNotRelevantToTest(expected);
+        toBeHTMLEqual: function() {
+            return {
+                compare: function(actual, expected) {
+                    return passIf(stripWhiteSpaceBecauseItsNotRelevantToTest(actual) ===
+                        stripWhiteSpaceBecauseItsNotRelevantToTest(expected));
+                }
+            };
         },
 
-        toHaveKey: function(key) {
-            if (key === null || key === undefined) {
-                throw new Error(
-                    "You cannot ask if something has a key " +
-                    "without the key to look for"
-                );
-            }
+        toHaveKey: function() {
+            return {
+                compare: function(actual, key) {
+                    if (key === null || key === undefined) {
+                        throw new Error(
+                            "You cannot ask if something has a key " +
+                            "without the key to look for"
+                        );
+                    }
 
-            return key in this.actual;
+                    return passIf(key in actual);
+                }
+            };
         },
 
-        toHaveKeyValue: function(key, value) {
-            if (key === null || key === undefined) {
-                throw new Error(
-                    "You cannot ask if something has a key " +
-                    "without the key to look for"
-                );
-            }
+        toHaveKeyValue: function() {
+            return {
+                compare: function(actual, key, value) {
+                    if (key === null || key === undefined) {
+                        throw new Error(
+                            "You cannot ask if something has a key " +
+                            "without the key to look for"
+                        );
+                    }
 
-            return key in this.actual && this.actual[key] === value;
+                    return passIf(key in actual && actual[key] === value);
+                }
+            };
         }
 
     };
@@ -79,8 +98,28 @@
         return stripped;
     }
 
+    function fail() {
+        return {
+            pass: false
+        };
+    }
+
+    function passIf(value) {
+        return {
+            pass: value
+        };
+    }
+
     beforeEach(function() {
-        this.addMatchers(additionalMatchers);
+        if (typeof this.addMatchers === "function") {
+            this.addMatchers(additionalMatchers);
+            return;
+        }
+
+        if (typeof jasmine.addMatchers === "function") {
+            jasmine.addMatchers(additionalMatchers);
+            return;
+        }
     });
 
     global.additionalMatchers = additionalMatchers;

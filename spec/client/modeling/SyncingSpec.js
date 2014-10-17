@@ -8,7 +8,7 @@ describe("Syncing", function() {
 
     beforeEach(function() {
         Syncing.clearMiddlewares();
-        spyOn(Backbone, "sync").andReturn(Promise.resolve());
+        spyOn(Backbone, "sync").and.returnValue(Promise.resolve());
     });
 
     afterEach(function() {
@@ -23,8 +23,13 @@ describe("Syncing", function() {
                 Syncing.beforeSync(forceRejectSyncMiddleware);
             });
 
-            it("returns a rejected promise", function() {
-                expect(Syncing.sync().isRejected()).toBe(true);
+            it("returns a rejected promise", function(done) {
+                var sync = Syncing.sync();
+
+                sync.lastly(function() {
+                    expect(sync.isRejected()).toBe(true);
+                    done();
+                });
             });
 
         });
@@ -35,8 +40,13 @@ describe("Syncing", function() {
                 Syncing.beforeSync(doNotRejectSyncMiddleware);
             });
 
-            it("returns a fulfilled promise", function() {
-                expect(Syncing.sync().isFulfilled()).toBe(true);
+            it("returns a fulfilled promise", function(done) {
+                var sync = Syncing.sync();
+
+                sync.lastly(function() {
+                    expect(sync.isFulfilled()).toBe(true);
+                    done();
+                });
             });
 
         });

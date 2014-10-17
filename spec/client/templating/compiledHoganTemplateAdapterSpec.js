@@ -72,7 +72,7 @@ describe("compiledHoganTemplateAdapter", function() {
             it("renders template with passed data", function() {
                 CompiledHoganTemplateAdapter.templateToHTML(templateId, data);
 
-                expect(template.render.mostRecentCall.args[0]).toBe(data);
+                expect(template.render.calls.mostRecent().args[0]).toBe(data);
             });
 
             it("renders template with resolved partials", function() {
@@ -80,7 +80,7 @@ describe("compiledHoganTemplateAdapter", function() {
                     "aPartialName": "partial1"
                 });
 
-                expect(template.render.mostRecentCall.args[1]).toEqual({
+                expect(template.render.calls.mostRecent().args[1]).toEqual({
                     "aPartialName": partial
                 });
             });
@@ -106,7 +106,7 @@ describe("compiledHoganTemplateAdapter", function() {
 
     function validHoganTemplate(html) {
         return {
-            render: jasmine.createSpy().andReturn(html)
+            render: jasmine.createSpy().and.returnValue(html)
         };
     }
 

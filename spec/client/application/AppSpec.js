@@ -53,12 +53,12 @@ describe("App", function() {
             });
 
             it("executes available start method bodies", function() {
-                spyOn(App.prototype, "start").andCallThrough();
+                spyOn(App.prototype, "start").and.callThrough();
 
                 app.start();
 
                 expect(App.prototype.start).toHaveBeenCalled();
-                expect(App.prototype.start.callCount).toBe(1);
+                expect(App.prototype.start.calls.count()).toBe(1);
                 expect(valueToInspectStart).toEqual(true);
             });
 
@@ -81,7 +81,7 @@ describe("App", function() {
             });
 
             it("executes available start method bodies", function() {
-                spyOn(App.prototype, "start").andCallThrough();
+                spyOn(App.prototype, "start").and.callThrough();
 
                 app.start();
 
@@ -95,7 +95,7 @@ describe("App", function() {
             var originalStart;
 
             beforeEach(function() {
-                originalStart = jasmine.createSpy().andCallFake(function() {
+                originalStart = jasmine.createSpy().and.callFake(function() {
                     valueToInspectStart = true;
                 });
 
@@ -113,7 +113,7 @@ describe("App", function() {
                         x: 1
                     };
 
-                    spyOn(app, "start").andCallThrough();
+                    spyOn(app, "start").and.callThrough();
                     app.start(testConfig);
                 });
 
@@ -126,7 +126,7 @@ describe("App", function() {
                 });
 
                 it("seamlessly chains overridden start with base start", function() {
-                    spyOn(App.prototype, "start").andCallThrough();
+                    spyOn(App.prototype, "start").and.callThrough();
 
                     app.start();
 

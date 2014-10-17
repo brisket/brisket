@@ -18,11 +18,9 @@ describe("catchAjaxCallbackExceptions", function() {
             catchAjaxCallbackExceptions(null, null, options, noop);
         });
 
-        it("wraps each in a promise", function() {
-            expect(options.success().isFulfilled()).toBe(true);
-            expect(options.error().isFulfilled()).toBe(true);
-            expect(options.complete().isFulfilled()).toBe(true);
-        });
+        itWrapsCallbackInAPromise("success");
+        itWrapsCallbackInAPromise("error");
+        itWrapsCallbackInAPromise("complete");
 
     });
 
@@ -37,10 +35,8 @@ describe("catchAjaxCallbackExceptions", function() {
             catchAjaxCallbackExceptions(null, null, options, noop);
         });
 
-        it("wraps success and error in a promise", function() {
-            expect(options.success().isFulfilled()).toBe(true);
-            expect(options.error().isFulfilled()).toBe(true);
-        });
+        itWrapsCallbackInAPromise("success");
+        itWrapsCallbackInAPromise("error");
 
         it("does nothing to complete", function() {
             expect(options.complete).toBeUndefined();
@@ -58,9 +54,7 @@ describe("catchAjaxCallbackExceptions", function() {
             catchAjaxCallbackExceptions(null, null, options, noop);
         });
 
-        it("wraps success in rejected promise", function() {
-            expect(options.success().isResolved()).toBe(true);
-        });
+        itWrapsCallbackInAPromise("success");
 
     });
 
@@ -68,6 +62,17 @@ describe("catchAjaxCallbackExceptions", function() {
 
     function callbackThatThrows() {
         throw new Error("Expected error for testing catchAjaxCallbackExceptions");
+    }
+
+    function itWrapsCallbackInAPromise(callback) {
+        it("wraps " + callback + " in a promise", function(done) {
+            var promise = options[callback]();
+
+            promise.then(function() {
+                expect(promise.isFulfilled()).toBe(true);
+                done();
+            });
+        });
     }
 
 });

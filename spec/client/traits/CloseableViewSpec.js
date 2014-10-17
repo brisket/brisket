@@ -46,7 +46,7 @@ describe("CloseableView", function() {
 
             beforeEach(function() {
                 error = new Error();
-                view.onClose.andCallFake(function() {
+                view.onClose.and.callFake(function() {
                     throw error;
                 });
 
@@ -122,7 +122,7 @@ describe("CloseableView", function() {
 
             beforeEach(function() {
                 error = new Error();
-                view.onClose.andCallFake(function() {
+                view.onClose.and.callFake(function() {
                     throw error;
                 });
 

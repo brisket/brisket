@@ -1,15 +1,14 @@
 "use strict";
 
-var ClientRenderingWorkflow = require("lib/client/ClientRenderingWorkflow");
-var ClientRenderer = require("lib/client/ClientRenderer");
-var ClientRequest = require("lib/client/ClientRequest");
-var Layout = require("lib/viewing/Layout");
-var Backbone = require("lib/application/Backbone");
-var ErrorViewMapping = require("lib/errors/ErrorViewMapping");
-var Errors = require("lib/errors/Errors");
-var Promise = require("bluebird");
-
 describe("ClientRenderingWorkflow", function() {
+    var ClientRenderingWorkflow = require("lib/client/ClientRenderingWorkflow");
+    var ClientRenderer = require("lib/client/ClientRenderer");
+    var ClientRequest = require("lib/client/ClientRequest");
+    var Layout = require("lib/viewing/Layout");
+    var Backbone = require("lib/application/Backbone");
+    var ErrorViewMapping = require("lib/errors/ErrorViewMapping");
+    var Errors = require("lib/errors/Errors");
+    var Promise = require("bluebird");
 
     var originalHandler;
     var expectedView;
@@ -59,11 +58,13 @@ describe("ClientRenderingWorkflow", function() {
             close: jasmine.createSpy()
         };
 
-        spyOn(ClientRenderer, "render").andReturn("page was rendered");
+        spyOn(Errors, "log");
+
+        spyOn(ClientRenderer, "render").and.returnValue("page was rendered");
 
         mockBrisketRequest = {};
 
-        spyOn(ClientRequest, "from").andReturn(mockBrisketRequest);
+        spyOn(ClientRequest, "from").and.returnValue(mockBrisketRequest);
         spyOn(Layout.prototype, "close");
     });
 
@@ -77,12 +78,11 @@ describe("ClientRenderingWorkflow", function() {
             originalHandler = jasmine.createSpy();
         });
 
-        it("calls original handler with params and brisketRequest", function() {
-            handlerReturns = callAugmentedRouterHandlerWith(originalHandler, "param1", "param2");
-
-            wait("for handler to return").until(handlerReturns)
+        it("calls original handler with params and brisketRequest", function(done) {
+            callAugmentedRouterHandlerWith(originalHandler, "param1", "param2")
                 .then(function() {
                     expect(originalHandler).toHaveBeenCalledWith("param1", "param2", mockBrisketRequest);
+                    done();
                 });
         });
 
@@ -96,12 +96,11 @@ describe("ClientRenderingWorkflow", function() {
             };
         });
 
-        it("ensures original handler's scope is bound to router", function() {
-            handlerReturns = callAugmentedRouterHandler();
-
-            wait("for handler to return").until(handlerReturns)
+        it("ensures original handler's scope is bound to router", function(done) {
+            callAugmentedRouterHandler()
                 .then(function() {
                     expect(fakeRouter.otherMethod).toHaveBeenCalled();
+                    done();
                 });
         });
 
@@ -117,17 +116,19 @@ describe("ClientRenderingWorkflow", function() {
             handlerReturns = callAugmentedRouterHandler();
         });
 
-        it("renders page", function() {
-            wait("for handler to return").until(handlerReturns)
+        it("renders page", function(done) {
+            handlerReturns
                 .then(function() {
                     expectRenderFor(expectedView);
+                    done();
                 });
         });
 
-        it("returns promise of rendered page", function() {
-            wait("for handler to return").until(handlerReturns)
+        it("returns promise of rendered page", function(done) {
+            handlerReturns
                 .then(function(html) {
                     expect(html).toBe("page was rendered");
+                    done();
                 });
         });
 
@@ -144,18 +145,20 @@ describe("ClientRenderingWorkflow", function() {
             handlerReturns = callAugmentedRouterHandler();
         });
 
-        it("render page", function() {
-            wait("for handler to return").until(handlerReturns)
+        it("render page", function(done) {
+            handlerReturns
                 .then(function() {
                     expectRenderFor(expectedView);
+                    done();
                 });
 
         });
 
-        it("returns promise of rendered page", function() {
-            wait("handler to return").until(handlerReturns)
+        it("returns promise of rendered page", function(done) {
+            handlerReturns
                 .then(function(html) {
                     expect(html).toBe("page was rendered");
+                    done();
                 });
         });
 
@@ -169,16 +172,14 @@ describe("ClientRenderingWorkflow", function() {
                 return Promise.reject("any error");
             };
 
-            spyOn(Errors, "log");
-
             handlerReturns = callAugmentedRouterHandler();
         });
 
-        it("logs the error to console", function() {
-
-            wait("for handler to return").until(handlerReturns)
+        it("logs the error to console", function(done) {
+            handlerReturns
                 .then(function() {
                     expect(Errors.log).toHaveBeenCalledWith("any error");
+                    done();
                 });
         });
 
@@ -197,10 +198,21 @@ describe("ClientRenderingWorkflow", function() {
             handlerReturns = callAugmentedRouterHandler();
         });
 
-        it("renders 404 view", function() {
-            wait("for handler to return").until(handlerReturns)
+        it("renders 404 view", function(done) {
+            handlerReturns
                 .then(function() {
                     expectRenderFor(jasmine.any(PageNotFoundView));
+                    done();
+                });
+        });
+
+        it("logs the jqxhr to console", function(done) {
+            handlerReturns
+                .then(function() {
+                    expect(Errors.log.calls.mostRecent().args[0]).toEqual({
+                        status: 404
+                    });
+                    done();
                 });
         });
 
@@ -219,10 +231,21 @@ describe("ClientRenderingWorkflow", function() {
             handlerReturns = callAugmentedRouterHandler();
         });
 
-        it("renders error view", function() {
-            wait("for handler to return").until(handlerReturns)
+        it("renders error view", function(done) {
+            handlerReturns
                 .then(function() {
                     expectRenderFor(jasmine.any(ErrorView));
+                    done();
+                });
+        });
+
+        it("logs the jqxhr to console", function(done) {
+            handlerReturns
+                .then(function() {
+                    expect(Errors.log.calls.mostRecent().args[0]).toEqual({
+                        status: 500
+                    });
+                    done();
                 });
         });
 
@@ -241,10 +264,21 @@ describe("ClientRenderingWorkflow", function() {
             handlerReturns = callAugmentedRouterHandler();
         });
 
-        it("renders error view", function() {
-            wait("for handler to return").until(handlerReturns)
+        it("renders error view", function(done) {
+            handlerReturns
                 .then(function() {
                     expectRenderFor(jasmine.any(ErrorView));
+                    done();
+                });
+        });
+
+        it("logs the jqxhr to console", function(done) {
+            handlerReturns
+                .then(function() {
+                    expect(Errors.log.calls.mostRecent().args[0]).toEqual({
+                        status: 503
+                    });
+                    done();
                 });
         });
 
@@ -252,19 +286,31 @@ describe("ClientRenderingWorkflow", function() {
     });
 
     describe("when original handler has an uncaught error", function() {
+        var error;
 
         beforeEach(function() {
+            error = new Error("something blew up");
+
             originalHandler = function() {
-                throw new Error("something blew up");
+                throw error;
             };
 
             handlerReturns = callAugmentedRouterHandler();
         });
 
-        it("renders error view", function() {
-            wait("for handler to return").until(handlerReturns)
+        it("renders error view", function(done) {
+            handlerReturns
                 .then(function() {
                     expectRenderFor(jasmine.any(ErrorView));
+                    done();
+                });
+        });
+
+        it("logs the jqxhr to console", function(done) {
+            handlerReturns
+                .then(function() {
+                    expect(Errors.log).toHaveBeenCalledWith(error);
+                    done();
                 });
         });
 
@@ -282,18 +328,26 @@ describe("ClientRenderingWorkflow", function() {
             handlerReturns = callAugmentedRouterHandler();
         });
 
-        it("fetches layout data", function() {
-            wait("for handler to return").until(handlerReturns)
+        it("fetches layout data", function(done) {
+            handlerReturns
                 .then(function() {
                     expect(Layout.prototype.fetchData).toHaveBeenCalled();
+                    done();
                 });
         });
 
-        it("requests that ClientRenderer initialize layout", function() {
-            wait("for handler to return").until(handlerReturns)
+        it("requests that ClientRenderer initialize layout", function(done) {
+            handlerReturns
                 .then(function() {
-                    expect(ClientRenderer.render)
-                        .toHaveBeenCalledWith(jasmine.any(Layout), true, expectedView, onRender, 1);
+                    expect(ClientRenderer.render).toHaveBeenCalledWith(
+                        jasmine.any(Layout),
+                        true,
+                        expectedView,
+                        onRender,
+                        1
+                    );
+
+                    done();
                 });
         });
 
@@ -334,18 +388,26 @@ describe("ClientRenderingWorkflow", function() {
                 bothReturn = Promise.all([firstHandlerReturns, handlerReturns]);
             });
 
-            it("fetches layout data for new layout", function() {
-                wait("for handler to return").until(bothReturn)
+            it("fetches layout data for new layout", function(done) {
+                bothReturn
                     .then(function() {
-                        expect(NewLayout.prototype.fetchData.callCount).toBe(1);
+                        expect(NewLayout.prototype.fetchData.calls.count()).toBe(1);
+                        done();
                     });
             });
 
-            it("requests that ClientRenderer initializes new layout", function() {
-                wait("for handler to return").until(bothReturn)
+            it("requests that ClientRenderer initializes new layout", function(done) {
+                bothReturn
                     .then(function() {
-                        expect(ClientRenderer.render)
-                            .toHaveBeenCalledWith(jasmine.any(NewLayout), true, expectedView2, onRender, 2);
+                        expect(ClientRenderer.render).toHaveBeenCalledWith(
+                            jasmine.any(NewLayout),
+                            true,
+                            expectedView2,
+                            onRender,
+                            2
+                        );
+
+                        done();
                     });
             });
 
@@ -367,29 +429,37 @@ describe("ClientRenderingWorkflow", function() {
                 bothReturn = Promise.all([firstHandlerReturns, handlerReturns]);
             });
 
-            it("does NOT fetch layout data for second request", function() {
-                expectCurrentLayoutToNotBeFetchedAgainOnSecondRequest();
+            it("does NOT fetch layout data for second request", function(done) {
+                expectCurrentLayoutToNotBeFetchedAgainOnSecondRequest(done);
             });
 
-            it("does NOT request that ClientRenderer initializes layout for second request", function() {
-                wait("for handler to return").until(handlerReturns)
+            it("does NOT request that ClientRenderer initializes layout for second request", function(done) {
+                handlerReturns
                     .then(function() {
-                        expect(ClientRenderer.render)
-                            .toHaveBeenCalledWith(jasmine.any(CurrentLayout), false, expectedView2, onRender, 2);
+                        expect(ClientRenderer.render).toHaveBeenCalledWith(
+                            jasmine.any(CurrentLayout),
+                            false,
+                            expectedView2,
+                            onRender,
+                            2
+                        );
+
+                        done();
                     });
             });
 
             var expectCurrentLayoutToBeFetchedAfterFirstRequest = function() {
-                wait("for first handler to return").until(firstHandlerReturns)
+                firstHandlerReturns
                     .then(function() {
-                        expect(CurrentLayout.prototype.fetchData.callCount).toBe(1);
+                        expect(CurrentLayout.prototype.fetchData.calls.count()).toBe(1);
                     });
             };
 
-            var expectCurrentLayoutToNotBeFetchedAgainOnSecondRequest = function() {
-                wait("for second request to return").until(bothReturn)
+            var expectCurrentLayoutToNotBeFetchedAgainOnSecondRequest = function(done) {
+                bothReturn
                     .then(function() {
-                        expect(CurrentLayout.prototype.fetchData.callCount).toBe(1);
+                        expect(CurrentLayout.prototype.fetchData.calls.count()).toBe(1);
+                        done();
                     });
             };
 
@@ -402,49 +472,77 @@ describe("ClientRenderingWorkflow", function() {
 
     describe("when original handler returns cancelled request", function() {
 
-        forEach({
-            "readyState is 0": function() {
-                return Promise.reject({
-                    readyState: 0
-                });
-            },
+        describe("when readyState is 0", function() {
 
-            "statusCode is 0": function() {
-                return Promise.reject({
-                    status: 0
-                });
-            }
-        })
-            .it("should NOT render when {{request is cancelled}}", function(cancelledRequest) {
-                originalHandler = cancelledRequest;
+            beforeEach(function() {
+                originalHandler = function() {
+                    return Promise.reject({
+                        readyState: 0
+                    });
+                };
+            });
 
-                handlerReturns = callAugmentedRouterHandler();
-
-                wait("for handler to return").until(handlerReturns)
+            it("should NOT render", function(done) {
+                callAugmentedRouterHandler()
                     .then(function() {
                         expect(ClientRenderer.render).not.toHaveBeenCalled();
-                    });
-            })
-            .it("does NOT clean up layout when {{request is cancelled}}", function(cancelledRequest) {
-                originalHandler = cancelledRequest;
-
-                handlerReturns = callAugmentedRouterHandler();
-
-                wait("for handler to return").until(handlerReturns)
-                    .then(function() {
-                        expect(Layout.prototype.close).not.toHaveBeenCalled();
-                    });
-            })
-            .it("cleans up router when {{request is cancelled}}", function(cancelledRequest) {
-                originalHandler = cancelledRequest;
-
-                handlerReturns = callAugmentedRouterHandler();
-
-                wait("for handler to return").until(handlerReturns)
-                    .then(function() {
-                        expect(fakeRouter.close).toHaveBeenCalled();
+                        done();
                     });
             });
+
+            it("does NOT clean up layout", function(done) {
+                callAugmentedRouterHandler()
+                    .then(function() {
+                        expect(Layout.prototype.close).not.toHaveBeenCalled();
+                        done();
+                    });
+            });
+
+            it("cleans up router", function(done) {
+                callAugmentedRouterHandler()
+                    .then(function() {
+                        expect(fakeRouter.close).toHaveBeenCalled();
+                        done();
+                    });
+            });
+
+        });
+
+        describe("when statusCode is 0", function() {
+
+            beforeEach(function() {
+                originalHandler = function() {
+                    return Promise.reject({
+                        status: 0
+                    });
+                };
+            });
+
+            it("should NOT render when", function(done) {
+                callAugmentedRouterHandler()
+                    .then(function() {
+                        expect(ClientRenderer.render).not.toHaveBeenCalled();
+                        done();
+                    });
+            });
+
+            it("does NOT clean up layout", function(done) {
+                callAugmentedRouterHandler()
+                    .then(function() {
+                        expect(Layout.prototype.close).not.toHaveBeenCalled();
+                        done();
+                    });
+            });
+
+            it("cleans up router", function(done) {
+                callAugmentedRouterHandler()
+                    .then(function() {
+                        expect(fakeRouter.close).toHaveBeenCalled();
+                        done();
+                    });
+            });
+
+        });
 
     });
 
@@ -473,19 +571,33 @@ describe("ClientRenderingWorkflow", function() {
                 runBothHandlers();
             });
 
-            it("does NOT render the first request", function() {
-                wait("for both handlers to return").until(bothReturn)
+            it("does NOT render the first request", function(done) {
+                bothReturn
                     .then(function() {
-                        expect(ClientRenderer.render)
-                            .not.toHaveBeenCalledWith(jasmine.any(Layout), false, expectedView, onRender, jasmine.any(Number));
+                        expect(ClientRenderer.render).not.toHaveBeenCalledWith(
+                            jasmine.any(Layout),
+                            false,
+                            expectedView,
+                            onRender,
+                            jasmine.any(Number)
+                        );
+
+                        done();
                     });
             });
 
-            it("renders the latest request", function() {
-                wait("for both handlers to return").until(bothReturn)
+            it("renders the latest request", function(done) {
+                bothReturn
                     .then(function() {
-                        expect(ClientRenderer.render)
-                            .toHaveBeenCalledWith(jasmine.any(Layout), false, expectedView2, onRender, 2);
+                        expect(ClientRenderer.render).toHaveBeenCalledWith(
+                            jasmine.any(Layout),
+                            false,
+                            expectedView2,
+                            onRender,
+                            2
+                        );
+
+                        done();
                     });
             });
 
@@ -514,24 +626,34 @@ describe("ClientRenderingWorkflow", function() {
                 runBothHandlers();
             });
 
-            it("does NOT render the first request", function() {
-
-                wait("for both handlers to return").until(bothReturn)
+            it("does NOT render the first request", function(done) {
+                bothReturn
                     .then(function() {
-                        expect(ClientRenderer.render)
-                            .not.toHaveBeenCalledWith(jasmine.any(Layout), false, jasmine.any(PageNotFoundView), onRender, jasmine.any(Number));
-                    });
+                        expect(ClientRenderer.render).not.toHaveBeenCalledWith(
+                            jasmine.any(Layout),
+                            false,
+                            jasmine.any(PageNotFoundView),
+                            onRender,
+                            jasmine.any(Number)
+                        );
 
+                        done();
+                    });
             });
 
-            it("renders the latest request", function() {
-
-                wait("for both handlers to return").until(bothReturn)
+            it("renders the latest request", function(done) {
+                bothReturn
                     .then(function() {
-                        expect(ClientRenderer.render)
-                            .toHaveBeenCalledWith(jasmine.any(Layout), false, expectedView2, onRender, 2);
-                    });
+                        expect(ClientRenderer.render).toHaveBeenCalledWith(
+                            jasmine.any(Layout),
+                            false,
+                            expectedView2,
+                            onRender,
+                            2
+                        );
 
+                        done();
+                    });
             });
 
             itDoesNotCleanUpLayout();
@@ -559,24 +681,34 @@ describe("ClientRenderingWorkflow", function() {
                 runBothHandlers();
             });
 
-            it("does NOT render the first request", function() {
-
-                wait("for both handlers to return").until(bothReturn)
+            it("does NOT render the first request", function(done) {
+                bothReturn
                     .then(function() {
-                        expect(ClientRenderer.render)
-                            .not.toHaveBeenCalledWith(jasmine.any(Layout), false, expectedView, onRender, jasmine.any(Number));
-                    });
+                        expect(ClientRenderer.render).not.toHaveBeenCalledWith(
+                            jasmine.any(Layout),
+                            false,
+                            expectedView,
+                            onRender,
+                            jasmine.any(Number)
+                        );
 
+                        done();
+                    });
             });
 
-            it("renders the latest request", function() {
-
-                wait("for both handlers to return").until(bothReturn)
+            it("renders the latest request", function(done) {
+                bothReturn
                     .then(function() {
-                        expect(ClientRenderer.render)
-                            .toHaveBeenCalledWith(jasmine.any(Layout), false, jasmine.any(PageNotFoundView), onRender, 2);
-                    });
+                        expect(ClientRenderer.render).toHaveBeenCalledWith(
+                            jasmine.any(Layout),
+                            false,
+                            jasmine.any(PageNotFoundView),
+                            onRender,
+                            2
+                        );
 
+                        done();
+                    });
             });
 
             itDoesNotCleanUpLayout();
@@ -606,22 +738,33 @@ describe("ClientRenderingWorkflow", function() {
                 runBothHandlers();
             });
 
-            it("does NOT render the first request", function() {
-
-                wait("for both handlers to return").until(bothReturn)
+            it("does NOT render the first request", function(done) {
+                bothReturn
                     .then(function() {
-                        expect(ClientRenderer.render)
-                            .not.toHaveBeenCalledWith(jasmine.any(Layout), false, jasmine.any(ErrorView), onRender, jasmine.any(Number));
-                    });
+                        expect(ClientRenderer.render).not.toHaveBeenCalledWith(
+                            jasmine.any(Layout),
+                            false,
+                            jasmine.any(ErrorView),
+                            onRender,
+                            jasmine.any(Number)
+                        );
 
+                        done();
+                    });
             });
 
-            it("renders the latest request", function() {
-
-                wait("for both handlers to return").until(bothReturn)
+            it("renders the latest request", function(done) {
+                bothReturn
                     .then(function() {
-                        expect(ClientRenderer.render)
-                            .toHaveBeenCalledWith(jasmine.any(Layout), false, jasmine.any(PageNotFoundView), onRender, 2);
+                        expect(ClientRenderer.render).toHaveBeenCalledWith(
+                            jasmine.any(Layout),
+                            false,
+                            jasmine.any(PageNotFoundView),
+                            onRender,
+                            2
+                        );
+
+                        done();
                     });
 
             });
@@ -655,14 +798,15 @@ describe("ClientRenderingWorkflow", function() {
 
         describe("when route ends", function() {
 
-            it("fires the on route end handler from the router", function() {
+            it("fires the on route end handler from the router", function(done) {
                 handlerReturns = callAugmentedRouterHandler();
 
                 expect(onRouteComplete).not.toHaveBeenCalled();
 
-                wait("for handler to return").until(handlerReturns)
+                handlerReturns
                     .then(function() {
                         expect(onRouteComplete).toHaveBeenCalledWith(jasmine.any(Layout), mockBrisketRequest);
+                        done();
                     });
             });
 
@@ -680,17 +824,17 @@ describe("ClientRenderingWorkflow", function() {
                 runBothHandlers();
             });
 
-            it("only fires onRouteComplete for second request", function() {
-
-                wait("for second handler to return").until(secondReturns)
+            it("only fires onRouteComplete for second request", function(done) {
+                secondReturns
                     .then(function() {
                         expect(onRouteComplete).toHaveBeenCalledWith(jasmine.any(Layout), mockBrisketRequest);
-                        expect(onRouteComplete.callCount).toBe(1);
+                        expect(onRouteComplete.calls.count()).toBe(1);
                     });
 
-                wait("for both handlers to return").until(bothReturn)
+                bothReturn
                     .then(function() {
-                        expect(onRouteComplete.callCount).toBe(1);
+                        expect(onRouteComplete.calls.count()).toBe(1);
+                        done();
                     });
             });
 
@@ -699,38 +843,42 @@ describe("ClientRenderingWorkflow", function() {
     });
 
     function itCleansUpRouter() {
-        it("cleans up router", function() {
-            wait("for route to complete").until(handlerReturns)
+        it("cleans up router", function(done) {
+            handlerReturns
                 .then(function() {
                     expect(fakeRouter.close).toHaveBeenCalled();
+                    done();
                 });
         });
     }
 
     function itCleansUpBothRouters() {
-        it("cleans up router for both requests", function() {
-            wait("for both handlers to return").until(bothReturn)
+        it("cleans up router for both requests", function(done) {
+            bothReturn
                 .then(function() {
-                    expect(fakeRouter.close.callCount).toBe(2);
+                    expect(fakeRouter.close.calls.count()).toBe(2);
+                    done();
                 });
         });
     }
 
     function itDoesNotCleanUpLayout() {
-        it("cleans up layout", function() {
-            wait("for route to complete").until(handlerReturns)
+        it("does NOT clean up layout", function(done) {
+            handlerReturns
                 .then(function() {
                     expect(Layout.prototype.close).not.toHaveBeenCalled();
+                    done();
                 });
         });
     }
 
     function itCleansUpLayout() {
 
-        it("cleans up layout", function() {
-            wait("for route to complete").until(handlerReturns)
+        it("cleans up layout", function(done) {
+            handlerReturns
                 .then(function() {
                     expect(Layout.prototype.close).toHaveBeenCalled();
+                    done();
                 });
         });
 
