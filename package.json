@@ -1,6 +1,6 @@
 {
     "name": "brisket",
-    "version": "0.20.9",
+    "version": "0.20.10",
     "description": "Framework for building single page web apps using isomorphic javascript",
     "author": [
         "Wayne Warner",
