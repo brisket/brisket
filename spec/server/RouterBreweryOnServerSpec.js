@@ -10,7 +10,7 @@ describe("RouterBrewery on server", function() {
     var router;
 
     beforeEach(function() {
-        spyOn(Environment, "isServer").andReturn(true);
+        spyOn(Environment, "isServer").and.returnValue(true);
     });
 
     it("creates ServerRouters", function() {
