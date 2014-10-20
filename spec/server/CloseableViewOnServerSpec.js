@@ -15,7 +15,7 @@ describe("closing CloseableView on server", function() {
         beforeEach(function() {
             Backbone.$ = $;
 
-            spyOn(Environment, "isServer").andReturn(true);
+            spyOn(Environment, "isServer").and.returnValue(true);
 
             ViewThatCloses = Backbone.View.extend(_.extend({}, CloseableView));
             view = new ViewThatCloses();

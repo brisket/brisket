@@ -12,8 +12,8 @@ describe("ServerResponseWorkflow", function() {
 
     beforeEach(function() {
         mockResponse = {
-            send: jasmine.createSpy(),
-            status: jasmine.createSpy(),
+            send: jasmine.createSpy("response.send"),
+            status: jasmine.createSpy("response.status")
         };
 
         mockNext = jasmine.createSpy();
@@ -23,14 +23,13 @@ describe("ServerResponseWorkflow", function() {
 
         beforeEach(function() {
             whenContentIsReturned = Promise.resolve("successful content");
-            whenAppResonseReturns();
         });
 
-        it("sends back the successful content", function() {
-            wait("for response to return").until(whenContentIsReturned)
-                .then(function() {
-                    expect(mockResponse.send).toHaveBeenCalledWith("successful content");
-                });
+        it("sends back the successful content", function(done) {
+            whenAppResponseReturns().lastly(function() {
+                expect(mockResponse.send).toHaveBeenCalledWith("successful content");
+                done();
+            });
         });
 
     });
@@ -44,15 +43,13 @@ describe("ServerResponseWorkflow", function() {
                     html: "unsuccessful content",
                     status: 403
                 });
-
-                whenAppResonseReturns();
             });
 
-            it("sends back the successful content", function() {
-                wait("for response to return").until(whenContentIsReturned)
-                    .then(function() {
-                        expect(mockResponse.send).toHaveBeenCalledWith(403, "unsuccessful content");
-                    });
+            it("sends back the successful content", function(done) {
+                whenAppResponseReturns().lastly(function() {
+                    expect(mockResponse.send).toHaveBeenCalledWith(403, "unsuccessful content");
+                    done();
+                });
             });
 
         });
@@ -65,44 +62,42 @@ describe("ServerResponseWorkflow", function() {
                 error = new Error();
                 whenContentIsReturned = Promise.reject(error);
                 spyOn(Errors, "log");
-
-                whenAppResonseReturns();
             });
 
-            it("does NOT send back a response", function() {
-                wait("for response to return").until(whenContentIsReturned)
-                    .then(function() {
-                        expect(mockResponse.send).not.toHaveBeenCalled();
-                    });
+            it("does NOT send back a response", function(done) {
+                whenAppResponseReturns().lastly(function() {
+                    expect(mockResponse.send).not.toHaveBeenCalled();
+                    done();
+                });
             });
 
-            it("sets the response to 500", function() {
-                wait("for response to return").until(whenContentIsReturned)
-                    .then(function() {
-                        expect(mockResponse.status).toHaveBeenCalledWith(500);
-                    });
+            it("sets the response to 500", function(done) {
+                whenAppResponseReturns().lastly(function() {
+                    expect(mockResponse.status).toHaveBeenCalledWith(500);
+                    done();
+                });
             });
 
-            it("logs the error", function() {
-                wait("for response to return").until(whenContentIsReturned)
-                    .then(function() {
-                        expect(Errors.log).toHaveBeenCalledWith(error);
-                    });
+            it("logs the error", function(done) {
+                whenAppResponseReturns().lastly(function() {
+                    expect(Errors.log).toHaveBeenCalledWith(error);
+                    done();
+                });
             });
 
-            it("continues to the next middleware", function() {
-                wait("for response to return").until(whenContentIsReturned)
-                    .then(function() {
-                        expect(mockNext).toHaveBeenCalled();
-                    });
+            it("continues to the next middleware", function(done) {
+                whenAppResponseReturns().lastly(function() {
+                    expect(mockNext).toHaveBeenCalled();
+                    done();
+                });
             });
 
         });
 
     });
 
-    function whenAppResonseReturns() {
-        ServerResponseWorkflow.sendResponseFor(whenContentIsReturned, mockResponse, mockNext);
+    function whenAppResponseReturns() {
+        return ServerResponseWorkflow.sendResponseFor(whenContentIsReturned, mockResponse, mockNext);
     }
 
 });

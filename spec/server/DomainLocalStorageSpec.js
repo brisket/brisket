@@ -9,50 +9,52 @@ describe("DomainLocalStorage", function() {
 
         var request;
         var response;
-        var next;
 
         beforeEach(function() {
             request = {};
             response = {};
-            next = jasmine.createSpy();
         });
 
-        it("binds a domain to the next middleware", function() {
-            next = function() {
+        it("binds a domain to the next middleware", function(done) {
+            function next() {
                 expect(process.domain).toBeDefined();
-            };
+                done();
+            }
 
             DomainLocalStorage.middleware(request, response, next);
         });
 
-        it("creates a field on the domain to store data", function() {
-            next = function() {
+        it("creates a field on the domain to store data", function(done) {
+            function next() {
                 expect(process.domain["brisket:domainLocalStorage"]).toBeDefined();
-            };
+                done();
+            }
 
             DomainLocalStorage.middleware(request, response, next);
         });
 
-        it("adds request as an event emitter to the domain in case it throws an error", function() {
-            next = function() {
+        it("adds request as an event emitter to the domain in case it throws an error", function(done) {
+            function next() {
                 expect(process.domain.members).toContain(request);
-            };
+                done();
+            }
 
             DomainLocalStorage.middleware(request, response, next);
         });
 
-        it("adds response as an event emitter to the domain in case it throws an error", function() {
-            next = function() {
+        it("adds response as an event emitter to the domain in case it throws an error", function(done) {
+            function next() {
                 expect(process.domain.members).toContain(response);
-            };
+                done();
+            }
 
             DomainLocalStorage.middleware(request, response, next);
         });
 
         describe("when there is an active domain AND it had been created by middleware", function() {
 
-            it("sets data onto and gets data from the active domain", function() {
-                next = function() {
+            it("sets data onto and gets data from the active domain", function(done) {
+                function next() {
                     DomainLocalStorage.set("key1", "value1");
                     DomainLocalStorage.set("key2", "value2");
 
@@ -63,7 +65,9 @@ describe("DomainLocalStorage", function() {
                         "key1": "value1",
                         "key2": "value2"
                     });
-                };
+
+                    done();
+                }
 
                 DomainLocalStorage.middleware(request, response, next);
             });
@@ -72,8 +76,8 @@ describe("DomainLocalStorage", function() {
 
         describe("when there is an active domain AND it had NOT been created by middleware", function() {
 
-            it("cannot set data onto nor get data from the active domain", function() {
-                next = function() {
+            it("cannot set data onto nor get data from the active domain", function(done) {
+                function next() {
                     DomainLocalStorage.set("key1", "value1");
                     DomainLocalStorage.set("key2", "value2");
 
@@ -81,7 +85,8 @@ describe("DomainLocalStorage", function() {
                     expect(DomainLocalStorage.get("key2")).toBeNull();
 
                     expect(DomainLocalStorage.getAll()).toBeNull();
-                };
+                    done();
+                }
 
                 var domain = createDomain();
 
@@ -94,8 +99,8 @@ describe("DomainLocalStorage", function() {
 
         describe("when there is NOT an active domain", function() {
 
-            it("cannot set data onto nor get data from the active domain", function() {
-                next = function() {
+            it("cannot set data onto nor get data from the active domain", function(done) {
+                function next() {
                     DomainLocalStorage.set("key1", "value1");
                     DomainLocalStorage.set("key2", "value2");
 
@@ -103,7 +108,8 @@ describe("DomainLocalStorage", function() {
                     expect(DomainLocalStorage.get("key2")).toBeNull();
 
                     expect(DomainLocalStorage.getAll()).toBeNull();
-                };
+                    done();
+                }
 
                 next();
             });

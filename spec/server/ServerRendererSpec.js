@@ -46,7 +46,7 @@ describe("ServerRenderer", function() {
             protocol: "https"
         };
 
-        spyOn(Environment, "isServer").andReturn(true);
+        spyOn(Environment, "isServer").and.returnValue(true);
         spyOn(DomainLocalStorage, "getAll");
     });
 
@@ -145,7 +145,7 @@ describe("ServerRenderer", function() {
                             some: "data"
                         }
                     };
-                    DomainLocalStorage.getAll.andReturn(bootstrappedData);
+                    DomainLocalStorage.getAll.and.returnValue(bootstrappedData);
                 });
 
                 it("injects the bootstrappedData into the client app start up script", function() {
@@ -166,7 +166,7 @@ describe("ServerRenderer", function() {
                         }
                     };
 
-                    DomainLocalStorage.getAll.andReturn(bootstrappedData);
+                    DomainLocalStorage.getAll.and.returnValue(bootstrappedData);
                 });
 
                 it("escapes <script> closing tags", function() {
@@ -237,9 +237,9 @@ describe("ServerRenderer", function() {
     describe("when view is NOT Brisket.View", function() {
 
         it("does NOT throw", function() {
-            var renderingBackboneView = function() {
+            function renderingBackboneView() {
                 ServerRenderer.render(layout, view, onRender, host, null, null, request);
-            };
+            }
 
             expect(renderingBackboneView).not.toThrow();
         });

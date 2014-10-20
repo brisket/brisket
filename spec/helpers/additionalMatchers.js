@@ -87,9 +87,6 @@
 
     };
 
-    // TODO: make this an additionalMatcher - toBeHTMLEqual
-    //  The rules would also need to account for intentional spaces
-    //  since not all HTML is minified
     function stripWhiteSpaceBecauseItsNotRelevantToTest(transformed) {
         var stripped = transformed;
         stripped = stripped.replace(/>[\s]+([\S]+)/g, ">$1");

@@ -1,6 +1,6 @@
 "use strict";
 
-var Testing = require("lib/testing/Testing");
+var Testing = require("../../lib/testing/Testing");
 
 beforeEach(function() {
     Testing.setup();
