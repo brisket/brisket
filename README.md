@@ -33,26 +33,26 @@ Your first brisket app will be available at http://localhost:8080
 ## Documentation
 
 ### Brisket's Parts
-* [**Brisket.RouterBrewery**](docs/brisket.routerbrewery.md): Brews routers that know how to route on the server and the client. Allows you to make your own RouterBrewery.
+* [**Brisket.createServer**](docs/brisket.createserver.md): A function that returns an express engine that you can use in your application to run the server.
 * [**Brisket.Routers**](docs/brisket.routers.md): A helper object to help you initialize Backbone Routers.
+* [**Brisket.ServerApp**](docs/brisket.serverapp.md): An application that will do the necessary wiring on the server. Inherit to add your own functionality.
+* [**Brisket.ClientApp**](docs/brisket.clientapp.md): An application that will do the necessary wiring on the client. Inherit to add your own functionality.
+* [**Brisket.RouterBrewery**](docs/brisket.routerbrewery.md): Brews routers that know how to route on the server and the client. Allows you to make your own RouterBrewery.
 * [**Brisket.Controller**](docs/brisket.controller.md): A helper object to move functionality off of the router (it doesn't provide any functionality; just semantics).
 * [**Brisket.Model**](docs/brisket.model.md): Our version of a Backbone.Model that knows how to sync on the server and the client.
 * [**Brisket.Collection**](docs/brisket.collection.md): Our version of a Backbone.Collection that knows how to sync on the server and the client.
 * [**Brisket.View**](docs/brisket.view.md): Our version of a Backbone.View that allows support for some of the core features - reattaching views, child view management, memory management, etc.
-* [**Brisket.ErrorViewMapping**](docs/brisket.errorviewmapping.md): Creates errorViewMappings for your routers (e.g. 404 should show Page Not Found).
 * [**Brisket.Layout**](docs/brisket.layout.md): A specialized View that handles meta tags, page title, etc.
 * Brisket.Layout.Metatags: Use this class to make metatags for "pages".
 * [**Brisket.Templating.TemplateAdapter**](docs/brisket.templating.templateadapter.md): Inherit from this to tell Brisket how to render templates.
 * [**Brisket.Templating.StringTemplateAdapter**](docs/brisket.templating.stringtemplateadapter.md): The default template adapter. Set a View's template key to be a string template to get started.
 * [**Brisket.Templating.compiledHoganTemplateAdapter**](docs/brisket.templating.compiledhogantemplateadapter.md): An alternate template adapter that lets your Views use templates from a compiled templates hash.
-* [**Brisket.ServerApp**](docs/brisket.serverapp.md): An application that will do the necessary wiring on the server. Inherit to add your own functionality.
-* [**Brisket.ClientApp**](docs/brisket.clientapp.md): An application that will do the necessary wiring on the client. Inherit to add your own functionality.
-* [**Brisket.createServer**](docs/brisket.createserver.md): A function that returns an express engine that you can use in your application to run the server.
-
+* [**Brisket.ErrorViewMapping**](docs/brisket.errorviewmapping.md): Creates errorViewMappings for your routers (e.g. 404 should show Page Not Found).
 
 ### Brisket Concepts And High Level Systems
-* [**Brisket Router vs Backbone.Router**](docs/brisket.router.md): What makes a Brisket Router different from a regular Backbone.Router.
 * [**Application Links**](docs/brisket.applicationlinks.md): How to link from one route to another in a Brisket app.
+* [**Brisket Router vs Backbone.Router**](docs/brisket.router.md): What makes a Brisket Router different from a regular Backbone.Router.
+* [**Brisket Request Object**](docs/brisket.requestobject.md): The Brisket request object normalizes access to important data about the current request.
 * [**Child Views**](docs/brisket.childviews.md): Brisket provides a system to help you manage a View's child views.
 
 ## Using Brisket in your project
