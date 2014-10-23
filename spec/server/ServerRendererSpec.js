@@ -6,7 +6,7 @@ var View = require("../../lib/viewing/View");
 var Layout = require("../../lib/viewing/Layout");
 var Environment = require("../../lib/environment/Environment");
 var HasPageLevelData = require("../../lib/traits/HasPageLevelData");
-var DomainLocalStorage = require("../../lib/server/DomainLocalStorage");
+var AjaxCallsForCurrentRequest = require("../../lib/server/AjaxCallsForCurrentRequest");
 var $ = require("../../lib/application/jquery");
 
 describe("ServerRenderer", function() {
@@ -47,7 +47,7 @@ describe("ServerRenderer", function() {
         };
 
         spyOn(Environment, "isServer").and.returnValue(true);
-        spyOn(DomainLocalStorage, "getAll");
+        spyOn(AjaxCallsForCurrentRequest, "all");
     });
 
     describe("when appRoot is specified", function() {
@@ -145,7 +145,7 @@ describe("ServerRenderer", function() {
                             some: "data"
                         }
                     };
-                    DomainLocalStorage.getAll.and.returnValue(bootstrappedData);
+                    AjaxCallsForCurrentRequest.all.and.returnValue(bootstrappedData);
                 });
 
                 it("injects the bootstrappedData into the client app start up script", function() {
@@ -166,7 +166,7 @@ describe("ServerRenderer", function() {
                         }
                     };
 
-                    DomainLocalStorage.getAll.and.returnValue(bootstrappedData);
+                    AjaxCallsForCurrentRequest.all.and.returnValue(bootstrappedData);
                 });
 
                 it("escapes <script> closing tags", function() {
