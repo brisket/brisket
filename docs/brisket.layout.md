@@ -22,7 +22,7 @@ var Layout = Brisket.Layout.extend();
 This layout will not actually create a very useful page - it will be a blank screen for the user. Let's add a template.
 
 ### The Layout Template
-A Layout is an implementation of [Brisket.View](brisket.view.md). Therefore, specifying a template for a layout is the same as for a view - [set up a templating engine](brisket.view.md#setting-a-templating-engine) and add a template. For this example, we'll use the built in [StringTemplateAdapter](#brisket.templating.stringtemplateadapter.md):
+A Layout is an implementation of [Brisket.View](brisket.view.md). Therefore, specifying a template for a layout is the same as for a view - [set up a templating engine](brisket.view.md#setting-a-templating-engine) and add a template. For this example, we'll use the built in [StringTemplateAdapter](brisket.templating.stringtemplateadapter.md):
 
 ```js
 var Layout = Brisket.Layout.extend({
