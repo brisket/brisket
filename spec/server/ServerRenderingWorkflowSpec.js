@@ -1,16 +1,15 @@
 "use strict";
 
-var Backbone = require("../../lib/application/Backbone");
-var $ = require("../../lib/application/jquery");
-var Promise = require("bluebird");
-var ServerRenderingWorkflow = require("../../lib/server/ServerRenderingWorkflow");
-var ServerRenderer = require("../../lib/server/ServerRenderer");
-var ServerRequest = require("../../lib/server/ServerRequest");
-var Layout = require("../../lib/viewing/Layout");
-var ErrorViewMapping = require("../../lib/errors/ErrorViewMapping");
-var Errors = require("../../lib/errors/Errors");
-
 describe("ServerRenderingWorkflow", function() {
+    var Backbone = require("../../lib/application/Backbone");
+    var $ = require("../../lib/application/jquery");
+    var Promise = require("bluebird");
+    var ServerRenderingWorkflow = require("../../lib/server/ServerRenderingWorkflow");
+    var ServerRenderer = require("../../lib/server/ServerRenderer");
+    var ServerRequest = require("../../lib/server/ServerRequest");
+    var Layout = require("../../lib/viewing/Layout");
+    var ErrorViewMapping = require("../../lib/errors/ErrorViewMapping");
+    var Errors = require("../../lib/errors/Errors");
 
     var originalHandler;
     var expectedView;
@@ -90,6 +89,39 @@ describe("ServerRenderingWorkflow", function() {
 
     });
 
+    describe("when original handler does NOT return a View NOR promise of View", function() {
+
+        beforeEach(function() {
+            originalHandler = function() {
+                return null;
+            };
+
+            handlerReturns = callAugmentedRouterHandler();
+        });
+
+        it("does NOT render page without View", function(done) {
+            handlerReturns.lastly(function() {
+                expectNotToRender(jasmine.any(Layout), null);
+                done();
+            });
+        });
+
+        it("renders error view", function(done) {
+            handlerReturns.lastly(function() {
+                expectRenderFor(jasmine.any(Layout), jasmine.any(ErrorView));
+                done();
+            });
+        });
+
+        it("returns status of 500", function(done) {
+            handlerReturns.caught(function(errorResponse) {
+                expect(errorResponse.status).toBe(500);
+                done();
+            });
+        });
+
+    });
+
     describe("when original handler returns View", function() {
 
         beforeEach(function() {
@@ -146,7 +178,6 @@ describe("ServerRenderingWorkflow", function() {
     });
 
     describe("when original handler returns rejected promise", function() {
-
         var error;
 
         beforeEach(function() {
@@ -385,6 +416,18 @@ describe("ServerRenderingWorkflow", function() {
 
     function expectRenderFor(layout, view) {
         expect(ServerRenderer.render).toHaveBeenCalledWith(
+            layout,
+            view,
+            onRender,
+            host,
+            environmentConfig,
+            "app/ClientApp",
+            ServerRequest.from(mockExpressRequest())
+        );
+    }
+
+    function expectNotToRender(layout, view) {
+        expect(ServerRenderer.render).not.toHaveBeenCalledWith(
             layout,
             view,
             onRender,
