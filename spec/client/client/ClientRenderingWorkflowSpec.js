@@ -106,6 +106,33 @@ describe("ClientRenderingWorkflow", function() {
 
     });
 
+    describe("when original handler does NOT return a View NOR promise of View", function() {
+
+        beforeEach(function() {
+            originalHandler = function() {
+                return null;
+            };
+
+            handlerReturns = callAugmentedRouterHandler();
+        });
+
+        it("does NOT render without View", function(done) {
+            handlerReturns.lastly(function() {
+                expectNotToRender(null);
+                done();
+            });
+        });
+
+        it("renders error view", function(done) {
+            handlerReturns
+                .then(function() {
+                    expectRenderFor(jasmine.any(ErrorView));
+                    done();
+                });
+        });
+
+    });
+
     describe("when original handler returns View", function() {
 
         beforeEach(function() {
@@ -893,6 +920,16 @@ describe("ClientRenderingWorkflow", function() {
 
     function expectRenderFor(view) {
         expect(ClientRenderer.render).toHaveBeenCalledWith(
+            jasmine.any(Layout),
+            true,
+            view,
+            onRender,
+            1
+        );
+    }
+
+    function expectNotToRender(view) {
+        expect(ClientRenderer.render).not.toHaveBeenCalledWith(
             jasmine.any(Layout),
             true,
             view,
