@@ -99,10 +99,10 @@ Brisket also depends on the following libraries:
 * jsdom ~0.11.1
 * Underscore ~1.6.0
 * Backbone ~1.1.2
-* bluebird ~2.2.1
-* jquery-mockjax ~1.5.3
-* express ~4.0.0
-* qs 1.2.2
+* bluebird ~2.3.1
+* jquery-mockjax ~1.6.1
+* express ~4.9.0
+* qs 2.2.4
 
 ### Browser Support
 Chrome, Firefox, Safari, iOS 6+, Android 4+, Internet Explorer 9+

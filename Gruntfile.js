@@ -37,7 +37,7 @@ function configureGrunt(grunt) {
                     }],
                     shim: {
                         "jquery-mockjax": {
-                            path: "node_modules/jquery-mockjax/jquery.mockjax.js",
+                            path: "vendor/javascripts/jquery.mockjax.js",
                             exports: null,
                             depends: {
                                 jquery: "jQuery"
