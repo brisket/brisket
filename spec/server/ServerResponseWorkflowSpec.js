@@ -13,7 +13,9 @@ describe("ServerResponseWorkflow", function() {
     beforeEach(function() {
         mockResponse = {
             send: jasmine.createSpy("response.send"),
-            status: jasmine.createSpy("response.status")
+            status: jasmine.createSpy("response.status").and.callFake(function() {
+                return mockResponse;
+            })
         };
 
         mockNext = jasmine.createSpy();
@@ -47,7 +49,8 @@ describe("ServerResponseWorkflow", function() {
 
             it("sends back the successful content", function(done) {
                 whenAppResponseReturns().lastly(function() {
-                    expect(mockResponse.send).toHaveBeenCalledWith(403, "unsuccessful content");
+                    expect(mockResponse.status).toHaveBeenCalledWith(403);
+                    expect(mockResponse.send).toHaveBeenCalledWith("unsuccessful content");
                     done();
                 });
             });
