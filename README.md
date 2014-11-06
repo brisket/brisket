@@ -48,6 +48,7 @@ Your first brisket app will be available at http://localhost:8080
 * [**Brisket.Templating.StringTemplateAdapter**](docs/brisket.templating.stringtemplateadapter.md): The default template adapter. Set a View's template key to be a string template to get started.
 * [**Brisket.Templating.compiledHoganTemplateAdapter**](docs/brisket.templating.compiledhogantemplateadapter.md): An alternate template adapter that lets your Views use templates from a compiled templates hash.
 * [**Brisket.ErrorViewMapping**](docs/brisket.errorviewmapping.md): Creates errorViewMappings for your routers (e.g. 404 should show Page Not Found).
+* [**Brisket.onError**](docs/brisket.onerror.md): Registers error callback.
 
 ### Brisket Concepts And High Level Systems
 * [**Application Links**](docs/brisket.applicationlinks.md): How to link from one route to another in a Brisket app.

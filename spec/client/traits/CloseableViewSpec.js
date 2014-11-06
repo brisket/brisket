@@ -50,7 +50,7 @@ describe("CloseableView", function() {
                     throw error;
                 });
 
-                spyOn(Errors, "log");
+                spyOn(Errors, "notify");
 
                 view.close();
             });
@@ -64,7 +64,7 @@ describe("CloseableView", function() {
             });
 
             it("reports the error to the console", function() {
-                expect(Errors.log).toHaveBeenCalledWith(error);
+                expect(Errors.notify).toHaveBeenCalledWith(error);
             });
 
         });
@@ -126,7 +126,7 @@ describe("CloseableView", function() {
                     throw error;
                 });
 
-                spyOn(Errors, "log");
+                spyOn(Errors, "notify");
 
                 view.closeAsChild();
             });
@@ -140,7 +140,7 @@ describe("CloseableView", function() {
             });
 
             it("reports the error to the console", function() {
-                expect(Errors.log).toHaveBeenCalledWith(error);
+                expect(Errors.notify).toHaveBeenCalledWith(error);
             });
 
             it("stops listening to new events", function() {
