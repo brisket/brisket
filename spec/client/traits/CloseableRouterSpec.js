@@ -35,13 +35,13 @@ describe("CloseableRouter", function() {
                     throw error;
                 });
 
-                spyOn(Errors, "log");
+                spyOn(Errors, "notify");
 
                 router.close();
             });
 
             it("reports the error to the console", function() {
-                expect(Errors.log).toHaveBeenCalledWith(error);
+                expect(Errors.notify).toHaveBeenCalledWith(error);
             });
 
         });

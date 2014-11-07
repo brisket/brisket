@@ -187,14 +187,14 @@ describe("ServerRenderingWorkflow", function() {
                 return Promise.reject(error);
             };
 
-            spyOn(Errors, "log");
+            spyOn(Errors, "notify");
 
             handlerReturns = callAugmentedRouterHandler();
         });
 
         it("logs the error", function(done) {
             handlerReturns.lastly(function() {
-                expect(Errors.log).toHaveBeenCalledWith(error);
+                expect(Errors.notify).toHaveBeenCalledWith(error);
                 done();
             });
         });

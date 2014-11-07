@@ -58,7 +58,7 @@ describe("ClientRenderingWorkflow", function() {
             close: jasmine.createSpy()
         };
 
-        spyOn(Errors, "log");
+        spyOn(Errors, "notify");
 
         spyOn(ClientRenderer, "render").and.returnValue("page was rendered");
 
@@ -205,7 +205,7 @@ describe("ClientRenderingWorkflow", function() {
         it("logs the error to console", function(done) {
             handlerReturns
                 .then(function() {
-                    expect(Errors.log).toHaveBeenCalledWith("any error");
+                    expect(Errors.notify).toHaveBeenCalledWith("any error");
                     done();
                 });
         });
@@ -236,7 +236,7 @@ describe("ClientRenderingWorkflow", function() {
         it("logs the jqxhr to console", function(done) {
             handlerReturns
                 .then(function() {
-                    expect(Errors.log.calls.mostRecent().args[0]).toEqual({
+                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual({
                         status: 404
                     });
                     done();
@@ -269,7 +269,7 @@ describe("ClientRenderingWorkflow", function() {
         it("logs the jqxhr to console", function(done) {
             handlerReturns
                 .then(function() {
-                    expect(Errors.log.calls.mostRecent().args[0]).toEqual({
+                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual({
                         status: 500
                     });
                     done();
@@ -302,7 +302,7 @@ describe("ClientRenderingWorkflow", function() {
         it("logs the jqxhr to console", function(done) {
             handlerReturns
                 .then(function() {
-                    expect(Errors.log.calls.mostRecent().args[0]).toEqual({
+                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual({
                         status: 503
                     });
                     done();
@@ -336,7 +336,7 @@ describe("ClientRenderingWorkflow", function() {
         it("logs the jqxhr to console", function(done) {
             handlerReturns
                 .then(function() {
-                    expect(Errors.log).toHaveBeenCalledWith(error);
+                    expect(Errors.notify).toHaveBeenCalledWith(error);
                     done();
                 });
         });

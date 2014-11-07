@@ -64,7 +64,7 @@ describe("ServerResponseWorkflow", function() {
             beforeEach(function() {
                 error = new Error();
                 whenContentIsReturned = Promise.reject(error);
-                spyOn(Errors, "log");
+                spyOn(Errors, "notify");
             });
 
             it("does NOT send back a response", function(done) {
@@ -83,7 +83,7 @@ describe("ServerResponseWorkflow", function() {
 
             it("logs the error", function(done) {
                 whenAppResponseReturns().lastly(function() {
-                    expect(Errors.log).toHaveBeenCalledWith(error);
+                    expect(Errors.notify).toHaveBeenCalledWith(error);
                     done();
                 });
             });

@@ -3,55 +3,88 @@
 describe("Errors", function() {
     var Errors = require("lib/errors/Errors");
 
+    var eventHandler;
     var error;
 
-    describe("#log", function() {
+    beforeEach(function() {
+        spyOn(console, "error");
+
+        eventHandler = jasmine.createSpy("event-handler");
+        Errors.onError(eventHandler);
+    });
+
+    describe("when error is a string", function() {
 
         beforeEach(function() {
-            spyOn(console, "error");
+            Errors.notify("there was an error");
         });
 
         it("console.errors a string", function() {
-            Errors.log("there was an error");
             expect(console.error).toHaveBeenCalledWith("there was an error");
         });
 
-        it("console.errors objects", function() {
-            Errors.log({
+        it("calls event handler with string", function() {
+            expect(eventHandler).toHaveBeenCalledWith("there was an error");
+        });
+
+    });
+
+    describe("when error is a plain object", function() {
+
+        beforeEach(function() {
+            Errors.notify({
                 some: "object"
             });
+        });
 
+        it("console.errors objects", function() {
             expect(console.error.calls.mostRecent().args[0]).toEqual({
                 some: "object"
             });
         });
 
-        describe("when error is an Error object", function() {
+        it("calls event handler with object", function() {
+            expect(eventHandler).toHaveBeenCalledWith({
+                some: "object"
+            });
+        });
 
-            describe("when Error object has stack property (i.e. Node, modern browser)", function() {
+    });
 
-                beforeEach(function() {
-                    error = errorWithStack();
-                    Errors.log(error);
-                });
 
-                it("console.errors the error's stack trace", function() {
-                    expect(console.error).toHaveBeenCalledWith(error.stack);
-                });
 
+    describe("when error is an Error object", function() {
+
+        describe("when Error object has stack property (i.e. Node, modern browser)", function() {
+
+            beforeEach(function() {
+                error = errorWithStack();
+                Errors.notify(error);
             });
 
-            describe("when Error object does NOT have stack property (i.e. old browsers)", function() {
+            it("console.errors the error's stack trace", function() {
+                expect(console.error).toHaveBeenCalledWith(error.stack);
+            });
 
-                beforeEach(function() {
-                    error = errorWithoutStack();
-                    Errors.log(error);
-                });
+            it("calls event handler with error", function() {
+                expect(eventHandler).toHaveBeenCalledWith(error);
+            });
 
-                it("console.errors the error", function() {
-                    expect(console.error).toHaveBeenCalledWith(error);
-                });
+        });
 
+        describe("when Error object does NOT have stack property (i.e. old browsers)", function() {
+
+            beforeEach(function() {
+                error = errorWithoutStack();
+                Errors.notify(error);
+            });
+
+            it("console.errors the error", function() {
+                expect(console.error).toHaveBeenCalledWith(error);
+            });
+
+            it("calls event handler with error", function() {
+                expect(eventHandler).toHaveBeenCalledWith(error);
             });
 
         });
