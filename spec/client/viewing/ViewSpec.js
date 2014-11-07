@@ -5,56 +5,10 @@ var Backbone = require("lib/application/Backbone");
 
 describe("View", function() {
 
-    var ParentView;
-    var parentView;
-
     it("is an extension of Backbone.View", function() {
         expect(View.prototype instanceof Backbone.View).toBe(true);
     });
 
-    describe("when view has child views", function() {
-
-        beforeEach(function() {
-            ParentView = View.extend({
-                template: "some/template",
-                render: jasmine.createSpy()
-            });
-
-            parentView = new ParentView();
-            parentView.createChildView(View);
-        });
-
-        it("forces you to implement an onClose", function() {
-            expect(closeParentViewWithoutOnClose).toThrow();
-
-            parentView.onClose = function() {
-                this.closeChildViews();
-            };
-
-            expect(closeParentViewWithoutOnClose).not.toThrow();
-        });
-
-    });
-
-    describe("when view does NOT have child views", function() {
-
-        beforeEach(function() {
-            ParentView = View.extend({
-                template: "some/template",
-                render: jasmine.createSpy()
-            });
-
-            parentView = new ParentView();
-        });
-
-        it("does NOT force you to implement an onClose", function() {
-            expect(closeParentViewWithoutOnClose).not.toThrow();
-        });
-    });
-
-    function closeParentViewWithoutOnClose() {
-        parentView.onClose();
-    }
 });
 
 // ----------------------------------------------------------------------------

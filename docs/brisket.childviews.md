@@ -119,10 +119,6 @@ var ChildView = Brisket.View.extend({
 var ParentView = Brisket.View.extend({
     template: 'parent view',
 
-    onClose: function() {
-        this.closeChildViews();
-    },
-
     beforeRender: function() {
         this.createChildView(ChildView)
             .andAppendIt();
@@ -147,10 +143,6 @@ var ChildView = Brisket.View.extend({
 
 var ParentView = Brisket.View.extend({
     template: 'parent view <div class="destination">destination</div>',
-
-    onClose: function() {
-        this.closeChildViews();
-    },
 
     beforeRender: function() {
         this.createChildView(ChildView)
@@ -177,10 +169,6 @@ var ChildView = Brisket.View.extend({
 var ParentView = Brisket.View.extend({
     template: 'parent view',
 
-    onClose: function() {
-        this.closeChildViews();
-    },
-
     beforeRender: function() {
         this.createChildView(ChildView)
             .andPrependIt();
@@ -205,10 +193,6 @@ var ChildView = Brisket.View.extend({
 
 var ParentView = Brisket.View.extend({
     template: 'parent view <div class="destination">destination</div>',
-
-    onClose: function() {
-        this.closeChildViews();
-    },
 
     beforeRender: function() {
         this.createChildView(ChildView)
@@ -235,10 +219,6 @@ var ChildView = Brisket.View.extend({
 var ParentView = Brisket.View.extend({
     template: 'parent view <div class="destination">destination</div>',
 
-    onClose: function() {
-        this.closeChildViews();
-    },
-
     beforeRender: function() {
         this.createChildView(ChildView)
             .andInsertInto('.destination');
@@ -263,10 +243,6 @@ var ChildView = Brisket.View.extend({
 
 var ParentView = Brisket.View.extend({
     template: 'parent view <div class="destination">destination</div>',
-
-    onClose: function() {
-        this.closeChildViews();
-    },
 
     beforeRender: function() {
         this.createChildView(ChildView)
@@ -293,10 +269,6 @@ var ChildView = Brisket.View.extend({
 var ParentView = Brisket.View.extend({
     template: 'parent view <div class="destination">destination</div> after destination',
 
-    onClose: function() {
-        this.closeChildViews();
-    },
-
     beforeRender: function() {
         this.createChildView(ChildView)
             .andInsertAfter('.destination');
@@ -322,10 +294,6 @@ var ChildView = Brisket.View.extend({
 var ParentView = Brisket.View.extend({
     template: 'parent view <div class="destination">destination</div>',
 
-    onClose: function() {
-        this.closeChildViews();
-    },
-
     beforeRender: function() {
         this.createChildView(ChildView)
             .andReplace('.destination');
@@ -342,14 +310,14 @@ console.log(parentView.render().el.innerHTML);
 ## Closing Child Views
 
 ### Closing all child views
-To close all created child views, call `closeChildViews` on the parent view:
+Child views are automatically closed when a view is cleaned up. To manually close child views for a view, call view.closeChildViews().
 
 ```js
 var ChildView = Brisket.View.extend();
 
 var ParentView = Brisket.View.extend({
 
-    onClose: function() {
+    removeAllChildViews: function() {
         this.closeChildViews();
     },
 
@@ -362,8 +330,6 @@ var ParentView = Brisket.View.extend({
 
 ```
 
-**Important - Always call `closeChildViews` in the parent view's `onClose` method.** If your parent view creates child views, Brisket will require that you implement an `onClose` method but it's up to you to make sure you call `closeChildViews` to clean up all child views.
-
 ### Closing one child view
 Use `closeChildView` on the parent view to close a child view by identifier:
 
@@ -372,7 +338,7 @@ var ChildView = Brisket.View.extend();
 
 var ParentView = Brisket.View.extend({
 
-    onClose: function() {
+    removeAChildView: function() {
         this.closeChildView('child-view-id');
     },
 
@@ -385,7 +351,7 @@ var ParentView = Brisket.View.extend({
 
 ```
 
-**Note:** Unless you create a child view with an identifier, you won't be able to target it with `closeChildView`. You will need to use `closeChildViews` to ensure it is closed.
+**Note:** Unless you create a child view with an identifier, you won't be able to target it with `closeChildView`.
 
 ## Replacing Child Views
 To replace a parent-child view relationship, use `replaceChildView`.
@@ -404,10 +370,6 @@ var OtherChildView = Brisket.View.extend({
 var ParentView = Brisket.View.extend({
 
     template: 'parent view',
-
-    onClose: function() {
-        this.closeChildViews();
-    },
 
     beforeRender: function() {
         this.createChildView('child-view-id', ChildView)
