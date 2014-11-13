@@ -1,7 +1,7 @@
 Brisket Request Object
 ======================
 
-The last parameter of every route handler is a Brisket request object - a normalized view of the current request.
+The second to last parameter of every route handler is a Brisket request object - a normalized view of the current request.
 
 ## Documentation Index
 
@@ -10,23 +10,23 @@ The last parameter of every route handler is a Brisket request object - a normal
 
 ## Accessing the Request Object
 
-### Last parameter of a route handler
+### Second to last parameter of a route handler
 
 ```js
 var BookRouter = Brisket.RouterBrewery.create({
 
   routes: {
-    "books": "books",
-    "books/:id": "book"
+    'books': 'books',
+    'books/:id': 'book'
   },
 
-  books: function(request) {
-    console.log(request.host); // "example.com:8080"
+  books: function(request, response) {
+    console.log(request.host); // 'example.com:8080'
 
     return new BookView();
   },
 
-  book: function(id, request) {
+  book: function(id, request, response) {
     var book = new Book({ id: id });
 
     console.log(request.isNotClick); // true/false
@@ -45,11 +45,11 @@ var BookRouter = Brisket.RouterBrewery.create({
 ```js
 var RouterBrewery = Brisket.RouterBrewery.makeBreweryWithDefaults({
 
-  onRouteStart: function(layout, request) {
+  onRouteStart: function(layout, request, response) {
     console.log(request.isFirstRequest); // true/false
   },
 
-  onRouteComplete: function(layout, request) {
+  onRouteComplete: function(layout, request, response) {
     console.log(request.requestId); // 1, 2, 3,...
   }
 
@@ -61,7 +61,7 @@ var RouterBrewery = Brisket.RouterBrewery.makeBreweryWithDefaults({
 Here is a listing of all the data provided by the Brisket request object.
 
 ### request.host
-The host of the url including the port e.g. "example.com:8080".
+The host of the url including the port e.g. 'example.com:8080'.
 
 ### request.isFirstRequest
 A boolean that let's you know if this is the first request to your Brisket application e.g. the initial request for your application, a page refresh.
@@ -70,10 +70,10 @@ A boolean that let's you know if this is the first request to your Brisket appli
 A boolean that let's you know if the current request was **NOT** triggered by a user click e.g. forward/back button press.
 
 ### request.path
-The path of the URL with a preceding "/" e.g. "/path/to/route".
+The path of the URL with a preceding '/' e.g. '/path/to/route'.
 
 ### request.protocol
-The protocol scheme of the URL, **NOT** including the ":" e.g. "http", "https".
+The protocol scheme of the URL, **NOT** including the ':' e.g. 'http', 'https'.
 
 ### request.query
 An object with the parsed values from the query string. It is the same as express' request.query.

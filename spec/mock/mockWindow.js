@@ -1,16 +1,24 @@
 "use strict";
 
-var noop = require("../util/noop");
+function mockWindow() {
+    return {
+        document: {
+            referrer: "theReferrer"
+        },
+        location: {
+            protocol: "http:",
+            host: "example.com:8080",
+            pathname: "/requested/path",
+            search: "?some=param&another[param]=value",
+            replace: jasmine.createSpy("mockWindow.location.replace")
+        },
+        navigator: {
+            userAgent: "A wonderful computer"
+        }
+    };
+}
 
-var HandlesRouteStartAndEnd = {
-
-    onRouteStart: noop.thatWillBeCalledWith( /* layout, request, response */ ),
-
-    onRouteComplete: noop.thatWillBeCalledWith( /* layout, request, response */ )
-
-};
-
-module.exports = HandlesRouteStartAndEnd;
+module.exports = mockWindow;
 
 // ----------------------------------------------------------------------------
 // Copyright (C) 2014 Bloomberg Finance L.P.

@@ -1,21 +1,26 @@
 "use strict";
 
-var ServerResponseWorkflow = require("../../lib/server/ServerResponseWorkflow");
-var Errors = require("../../lib/errors/Errors");
-var Promise = require("bluebird");
-
 describe("ServerResponseWorkflow", function() {
+    var ServerResponseWorkflow = require("../../lib/server/ServerResponseWorkflow");
+    var ServerResponse = require("../../lib/server/ServerResponse");
+    var Errors = require("../../lib/errors/Errors");
+    var Promise = require("bluebird");
 
-    var mockResponse;
+    var mockExpressResponse;
     var mockNext;
     var whenContentIsReturned;
+    var serverResponse;
+    var error;
 
     beforeEach(function() {
-        mockResponse = {
+        serverResponse = new ServerResponse();
+
+        mockExpressResponse = {
             send: jasmine.createSpy("response.send"),
             status: jasmine.createSpy("response.status").and.callFake(function() {
-                return mockResponse;
-            })
+                return mockExpressResponse;
+            }),
+            redirect: jasmine.createSpy("response.redirect")
         };
 
         mockNext = jasmine.createSpy();
@@ -23,13 +28,109 @@ describe("ServerResponseWorkflow", function() {
 
     describe("when content is returned from server app successfully", function() {
 
+        it("sends back the successful content", function(done) {
+            whenAppResponseReturnsSuccessfully(function() {
+                expect(mockExpressResponse.status).toHaveBeenCalledWith(200);
+                expect(mockExpressResponse.send).toHaveBeenCalledWith("successful content");
+                done();
+            });
+        });
+
+    });
+
+    describe("when custom status code is requested", function() {
+
         beforeEach(function() {
-            whenContentIsReturned = Promise.resolve("successful content");
+            serverResponse.status(204);
         });
 
         it("sends back the successful content", function(done) {
-            whenAppResponseReturns().lastly(function() {
-                expect(mockResponse.send).toHaveBeenCalledWith("successful content");
+            whenAppResponseReturnsSuccessfully(function() {
+                expect(mockExpressResponse.status).toHaveBeenCalledWith(204);
+                expect(mockExpressResponse.send).toHaveBeenCalledWith("successful content");
+                done();
+            });
+        });
+
+    });
+
+    describe("when app requests redirect", function() {
+
+        it("does NOT response.send", function(done) {
+            givenAnyRedirect();
+
+            whenAppResponseReturnsSuccessfully(function() {
+                expect(mockExpressResponse.send).not.toHaveBeenCalled();
+                done();
+            });
+        });
+
+        it("redirects to application paths WITHOUT appRoot set", function(done) {
+            givenRedirectWithApplicationPath();
+
+            whenAppResponseReturnsSuccessfully(function() {
+                expect(mockExpressResponse.redirect).toHaveBeenCalledWith(302, "/somewhere/in/app");
+                done();
+            });
+        });
+
+        it("redirects to application paths WITH appRoot set", function(done) {
+            givenAppRootSet();
+            givenRedirectWithApplicationPath();
+
+            whenAppResponseReturnsSuccessfully(function() {
+                expect(mockExpressResponse.redirect).toHaveBeenCalledWith(302, "/appRoot/somewhere/in/app");
+                done();
+            });
+        });
+
+        it("redirects to absolute paths WITHOUT appRoot set", function(done) {
+            givenRedirectWithAbsolutePath();
+
+            whenAppResponseReturnsSuccessfully(function() {
+                expect(mockExpressResponse.redirect).toHaveBeenCalledWith(302, "/somewhere/in/app");
+                done();
+            });
+        });
+
+        it("redirects to absolute paths WITH appRoot set", function(done) {
+            givenAppRootSet();
+            givenRedirectWithAbsolutePath();
+
+            whenAppResponseReturnsSuccessfully(function() {
+                expect(mockExpressResponse.redirect).toHaveBeenCalledWith(302, "/somewhere/in/app");
+                done();
+            });
+        });
+
+        it("redirects to fully qualified urls WITHOUT appRoot set", function(done) {
+            givenRedirectWithFullyQualifiedUrl();
+
+            whenAppResponseReturnsSuccessfully(function() {
+                expect(mockExpressResponse.redirect).toHaveBeenCalledWith(302, "http://www.fullyqualified.com");
+                done();
+            });
+        });
+
+        it("redirects to fully qualified urls WITH appRoot set", function(done) {
+            givenAppRootSet();
+            givenRedirectWithFullyQualifiedUrl();
+
+            whenAppResponseReturnsSuccessfully(function() {
+                expect(mockExpressResponse.redirect).toHaveBeenCalledWith(302, "http://www.fullyqualified.com");
+                done();
+            });
+        });
+
+    });
+
+    describe("when redirect with custom status had been requested", function() {
+
+        it("redirects to requested destination with custom status", function(done) {
+            givenRedirectWithCustomStatus();
+
+            whenAppResponseReturnsSuccessfully(function() {
+                expect(mockExpressResponse.redirect).toHaveBeenCalledWith(301, "/redirect/with/status");
                 done();
             });
         });
@@ -38,51 +139,46 @@ describe("ServerResponseWorkflow", function() {
 
     describe("when content is returned from server app UNsuccessfully", function() {
 
-        describe("when the server app returns a rejected promise", function() {
+        describe("when the server app handles an error", function() {
 
             beforeEach(function() {
-                whenContentIsReturned = Promise.reject({
-                    html: "unsuccessful content",
-                    status: 403
+                serverResponse.status(403);
+            });
+
+            it("sends back the UNsuccessful content", function(done) {
+                whenAppHandlesError(function() {
+                    expect(mockExpressResponse.send).toHaveBeenCalledWith("unsuccessful content");
+                    done();
                 });
             });
 
-            it("sends back the successful content", function(done) {
-                whenAppResponseReturns().lastly(function() {
-                    expect(mockResponse.status).toHaveBeenCalledWith(403);
-                    expect(mockResponse.send).toHaveBeenCalledWith("unsuccessful content");
+            it("sends back the error code", function(done) {
+                whenAppHandlesError(function() {
+                    expect(mockExpressResponse.status).toHaveBeenCalledWith(403);
                     done();
                 });
             });
 
         });
 
-        describe("when the server app unexpectedly sends the error", function() {
-
-            var error;
-
-            beforeEach(function() {
-                error = new Error();
-                whenContentIsReturned = Promise.reject(error);
-                spyOn(Errors, "notify");
-            });
+        describe("when the server app CANNOT handle an error", function() {
 
             it("does NOT send back a response", function(done) {
-                whenAppResponseReturns().lastly(function() {
-                    expect(mockResponse.send).not.toHaveBeenCalled();
+                whenAppCannotHandleError(function() {
+                    expect(mockExpressResponse.send).not.toHaveBeenCalled();
                     done();
                 });
             });
 
             it("logs the error", function(done) {
-                whenAppResponseReturns().lastly(function() {
+                whenAppCannotHandleError(function() {
                     expect(Errors.notify).toHaveBeenCalledWith(error);
                     done();
                 });
             });
 
-            it("continues to the next middleware", function(done) {
-                whenAppResponseReturns().lastly(function() {
+            it("continues to the next middleware with error", function(done) {
+                whenAppCannotHandleError(function() {
                     expect(mockNext).toHaveBeenCalledWith(error);
                     done();
                 });
@@ -92,8 +188,75 @@ describe("ServerResponseWorkflow", function() {
 
     });
 
-    function whenAppResponseReturns() {
-        return ServerResponseWorkflow.sendResponseFor(whenContentIsReturned, mockResponse, mockNext);
+    function sendResponse() {
+        return ServerResponseWorkflow.sendResponseFor(whenContentIsReturned, mockExpressResponse, mockNext);
+    }
+
+    function whenAppResponseReturnsSuccessfully(expectThings) {
+        whenContentIsReturned = Promise.resolve({
+            html: "successful content",
+            serverResponse: serverResponse
+        });
+
+        return sendResponse()
+            .lastly(expectThings);
+    }
+
+    function whenAppHandlesError(expectThings) {
+        whenContentIsReturned = Promise.reject({
+            html: "unsuccessful content",
+            serverResponse: serverResponse
+        });
+
+        return sendResponse()
+            .lastly(expectThings);
+    }
+
+    function whenAppCannotHandleError(expectThings) {
+        error = new Error();
+        whenContentIsReturned = Promise.reject(error);
+
+        spyOn(Errors, "notify");
+
+        return sendResponse()
+            .lastly(expectThings);
+    }
+
+    function redirectWithStatus(status, destination) {
+        try {
+            serverResponse.redirect(status, destination);
+        } catch (e) {}
+    }
+
+    function redirectTo(destination) {
+        try {
+            serverResponse.redirect(destination);
+        } catch (e) {}
+    }
+
+    function givenAnyRedirect() {
+        givenRedirectWithApplicationPath();
+    }
+
+    function givenRedirectWithCustomStatus() {
+        redirectWithStatus(301, "/redirect/with/status");
+    }
+
+    function givenRedirectWithApplicationPath() {
+        redirectTo("somewhere/in/app");
+    }
+
+    function givenRedirectWithAbsolutePath() {
+        redirectTo("/somewhere/in/app");
+    }
+
+    function givenRedirectWithFullyQualifiedUrl() {
+        redirectTo("http://www.fullyqualified.com");
+    }
+
+    function givenAppRootSet() {
+        ServerResponse.setAppRoot("/appRoot");
+        serverResponse = new ServerResponse();
     }
 
 });
