@@ -1,6 +1,7 @@
 "use strict";
 
 var CloseableView = require("lib/traits/CloseableView");
+var HasChildViews = require("lib/traits/HasChildViews");
 var Backbone = require("lib/application/Backbone");
 var Errors = require("lib/errors/Errors");
 var _ = require("underscore");
@@ -38,6 +39,68 @@ describe("CloseableView", function() {
 
         it("calls view's onClose handler", function() {
             expect(view.onClose).toHaveBeenCalled();
+        });
+
+        describe("when the view does NOT extend HasChildViews", function() {
+
+            beforeEach(function() {
+                view = new ViewThatCloses();
+            });
+
+            it("does NOT have the method hasChildViews", function() {
+                expect(view.hasChildViews).not.toBeDefined();
+            });
+
+        });
+
+        describe("when the view extends HasChildViews", function() {
+
+            beforeEach(function() {
+                var ParentView = ViewThatCloses.extend(HasChildViews);
+                view = new ParentView();
+                spyOn(view, "closeChildViews").and.callThrough();
+            });
+
+            describe("when the view has child views", function() {
+
+                beforeEach(function() {
+                    view.createChildView(ViewThatCloses);
+                });
+
+                it("ensures that all child views will be closed", function() {
+                    view.close();
+
+                    expect(view.closeChildViews).toHaveBeenCalled();
+                });
+
+                describe("when closeChildViews was called explicitly", function() {
+
+                    beforeEach(function() {
+                        view.closeChildViews();
+                    });
+
+                    it("avoids calling closeChildViews again", function() {
+                        view.close();
+
+                        expect(view.closeChildViews.calls.count()).toBe(1);
+                    });
+
+                });
+
+            });
+
+            describe("when the view does NOT have any child view", function() {
+
+                beforeEach(function() {
+                    view.close();
+                });
+
+                it("does NOT call closeChildViews", function() {
+                    expect(view.closeChildViews).not.toHaveBeenCalled();
+                });
+
+            });
+
         });
 
         describe("when there is an error in onClose", function() {
