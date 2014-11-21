@@ -25,13 +25,13 @@ describe("ClientRenderer", function() {
         spyOn(view, "enterDOM");
         spyOn(view, "setUid");
 
-        onRender = jasmine.createSpy();
+        onRender = jasmine.createSpy("onRender");
     });
 
     describe("on all renders", function() {
 
         beforeEach(function() {
-            ClientRenderer.render(layout, false, view, onRender, 1);
+            ClientRenderer.render(layout, view, onRender, 1);
         });
 
         it("attempts to reattach view", function() {
@@ -44,10 +44,11 @@ describe("ClientRenderer", function() {
 
     });
 
-    describe("when it should initialize layout", function() {
+    describe("when layout has NOT been rendered", function() {
 
         beforeEach(function() {
-            ClientRenderer.render(layout, true, view, onRender, 1);
+            layout.hasBeenRendered = false;
+            ClientRenderer.render(layout, view, onRender, 1);
         });
 
         it("should reattach layout", function() {
@@ -64,10 +65,11 @@ describe("ClientRenderer", function() {
 
     });
 
-    describe("when it should NOT initialize layout", function() {
+    describe("when it layout has been rendered", function() {
 
         beforeEach(function() {
-            ClientRenderer.render(layout, false, view, onRender, 1);
+            layout.hasBeenRendered = true;
+            ClientRenderer.render(layout, view, onRender, 1);
         });
 
         it("should reattach layout", function() {
@@ -88,7 +90,7 @@ describe("ClientRenderer", function() {
 
         beforeEach(function() {
             view.isAttached = true;
-            ClientRenderer.render(layout, false, view, onRender, 1);
+            ClientRenderer.render(layout, view, onRender, 1);
         });
 
         it("renders the view", function() {
@@ -109,7 +111,7 @@ describe("ClientRenderer", function() {
 
         beforeEach(function() {
             view.isAttached = false;
-            ClientRenderer.render(layout, false, view, onRender, 1);
+            ClientRenderer.render(layout, view, onRender, 1);
         });
 
         it("does NOT render the view directly", function() {
@@ -129,7 +131,7 @@ describe("ClientRenderer", function() {
     describe("when view is Brisket.View", function() {
 
         beforeEach(function() {
-            ClientRenderer.render(layout, false, view, onRender, 1);
+            ClientRenderer.render(layout, view, onRender, 1);
         });
 
         it("sets uid to reflect current request and it's creation order", function() {
@@ -138,17 +140,17 @@ describe("ClientRenderer", function() {
 
     });
 
-    describe("setting extra render instructions in layout", function() {
+    describe("resetting layout to normal AND executing custom code per Router", function() {
 
         beforeEach(function() {
             layout.render.and.callThrough();
         });
 
-        describe("when should initialize layout AND layout has NOT been rendered yet", function() {
+        describe("when layout has NOT been rendered yet", function() {
 
             beforeEach(function() {
                 layout.hasBeenRendered = false;
-                ClientRenderer.render(layout, true, view, onRender, 1);
+                ClientRenderer.render(layout, view, onRender, 1);
             });
 
             it("resets layout to normal", function() {
@@ -161,11 +163,11 @@ describe("ClientRenderer", function() {
 
         });
 
-        describe("when should NOT initialize layout AND it has already been rendered", function() {
+        describe("when layout has been rendered", function() {
 
             beforeEach(function() {
                 layout.hasBeenRendered = true;
-                ClientRenderer.render(layout, false, view, onRender, 1);
+                ClientRenderer.render(layout, view, onRender, 1);
             });
 
             it("resets layout to normal", function() {

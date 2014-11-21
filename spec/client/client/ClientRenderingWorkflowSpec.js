@@ -363,21 +363,6 @@ describe("ClientRenderingWorkflow", function() {
                 });
         });
 
-        it("requests that ClientRenderer initialize layout", function(done) {
-            handlerReturns
-                .then(function() {
-                    expect(ClientRenderer.render).toHaveBeenCalledWith(
-                        jasmine.any(Layout),
-                        true,
-                        expectedView,
-                        onRender,
-                        1
-                    );
-
-                    done();
-                });
-        });
-
         itCleansUpRouter();
     });
 
@@ -423,21 +408,6 @@ describe("ClientRenderingWorkflow", function() {
                     });
             });
 
-            it("requests that ClientRenderer initializes new layout", function(done) {
-                bothReturn
-                    .then(function() {
-                        expect(ClientRenderer.render).toHaveBeenCalledWith(
-                            jasmine.any(NewLayout),
-                            true,
-                            expectedView2,
-                            onRender,
-                            2
-                        );
-
-                        done();
-                    });
-            });
-
             itCleansUpLayout();
 
             itCleansUpBothRouters();
@@ -451,7 +421,7 @@ describe("ClientRenderingWorkflow", function() {
                     return expectedView2;
                 });
 
-                expectCurrentLayoutToBeFetchedAfterFirstRequest();
+                expectCurrentLayoutToBeFetchedOnFirstRequest();
 
                 bothReturn = Promise.all([firstHandlerReturns, handlerReturns]);
             });
@@ -460,22 +430,7 @@ describe("ClientRenderingWorkflow", function() {
                 expectCurrentLayoutToNotBeFetchedAgainOnSecondRequest(done);
             });
 
-            it("does NOT request that ClientRenderer initializes layout for second request", function(done) {
-                handlerReturns
-                    .then(function() {
-                        expect(ClientRenderer.render).toHaveBeenCalledWith(
-                            jasmine.any(CurrentLayout),
-                            false,
-                            expectedView2,
-                            onRender,
-                            2
-                        );
-
-                        done();
-                    });
-            });
-
-            var expectCurrentLayoutToBeFetchedAfterFirstRequest = function() {
+            var expectCurrentLayoutToBeFetchedOnFirstRequest = function() {
                 firstHandlerReturns
                     .then(function() {
                         expect(CurrentLayout.prototype.fetchData.calls.count()).toBe(1);
@@ -603,7 +558,6 @@ describe("ClientRenderingWorkflow", function() {
                     .then(function() {
                         expect(ClientRenderer.render).not.toHaveBeenCalledWith(
                             jasmine.any(Layout),
-                            false,
                             expectedView,
                             onRender,
                             jasmine.any(Number)
@@ -618,7 +572,6 @@ describe("ClientRenderingWorkflow", function() {
                     .then(function() {
                         expect(ClientRenderer.render).toHaveBeenCalledWith(
                             jasmine.any(Layout),
-                            false,
                             expectedView2,
                             onRender,
                             2
@@ -658,7 +611,6 @@ describe("ClientRenderingWorkflow", function() {
                     .then(function() {
                         expect(ClientRenderer.render).not.toHaveBeenCalledWith(
                             jasmine.any(Layout),
-                            false,
                             jasmine.any(PageNotFoundView),
                             onRender,
                             jasmine.any(Number)
@@ -673,7 +625,6 @@ describe("ClientRenderingWorkflow", function() {
                     .then(function() {
                         expect(ClientRenderer.render).toHaveBeenCalledWith(
                             jasmine.any(Layout),
-                            false,
                             expectedView2,
                             onRender,
                             2
@@ -713,7 +664,6 @@ describe("ClientRenderingWorkflow", function() {
                     .then(function() {
                         expect(ClientRenderer.render).not.toHaveBeenCalledWith(
                             jasmine.any(Layout),
-                            false,
                             expectedView,
                             onRender,
                             jasmine.any(Number)
@@ -728,7 +678,6 @@ describe("ClientRenderingWorkflow", function() {
                     .then(function() {
                         expect(ClientRenderer.render).toHaveBeenCalledWith(
                             jasmine.any(Layout),
-                            false,
                             jasmine.any(PageNotFoundView),
                             onRender,
                             2
@@ -770,7 +719,6 @@ describe("ClientRenderingWorkflow", function() {
                     .then(function() {
                         expect(ClientRenderer.render).not.toHaveBeenCalledWith(
                             jasmine.any(Layout),
-                            false,
                             jasmine.any(ErrorView),
                             onRender,
                             jasmine.any(Number)
@@ -785,7 +733,6 @@ describe("ClientRenderingWorkflow", function() {
                     .then(function() {
                         expect(ClientRenderer.render).toHaveBeenCalledWith(
                             jasmine.any(Layout),
-                            false,
                             jasmine.any(PageNotFoundView),
                             onRender,
                             2
@@ -921,7 +868,6 @@ describe("ClientRenderingWorkflow", function() {
     function expectRenderFor(view) {
         expect(ClientRenderer.render).toHaveBeenCalledWith(
             jasmine.any(Layout),
-            true,
             view,
             onRender,
             1
@@ -931,7 +877,6 @@ describe("ClientRenderingWorkflow", function() {
     function expectNotToRender(view) {
         expect(ClientRenderer.render).not.toHaveBeenCalledWith(
             jasmine.any(Layout),
-            true,
             view,
             onRender,
             1

@@ -79,16 +79,16 @@ describe("BootstrappedDataService", function() {
 
         });
 
-        describe("when it does NOT have data", function(done) {
+        describe("when it does NOT have data", function() {
 
             beforeEach(function() {
                 bootstrappedDataService = new BootstrappedDataService();
             });
 
-            it("does NOT mock ajax request", function() {
+            it("does NOT mock ajax request", function(done) {
                 bootstrappedDataService.checkAlreadyHasData(method, model, options);
 
-                ajaxRequestModelData().then(function(data) {
+                ajaxRequestModelData().always(function(data) {
                     expect(data).not.toEqual({
                         "some": "data"
                     });
