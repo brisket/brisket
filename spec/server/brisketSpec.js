@@ -44,10 +44,6 @@ describe("public interface to Brisket", function() {
         expect(Brisket.Templating.StringTemplateAdapter).toBe(requireFromLib("templating/StringTemplateAdapter"));
     });
 
-    it("exposes Brisket.Templating.compiledHoganTemplateAdapter", function() {
-        expect(Brisket.Templating.compiledHoganTemplateAdapter).toBe(requireFromLib("templating/compiledHoganTemplateAdapter"));
-    });
-
     it("exposes Brisket.ServerApp", function() {
         expect(Brisket.ServerApp).toBe(requireFromLib("server/ServerApp"));
     });
