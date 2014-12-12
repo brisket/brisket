@@ -73,28 +73,31 @@ Now every page's page title will be 'My first Brisket app' unless you set a cust
 You will likely want to expose some data from your [environmentConfig](brisket.createserver.md#environmentConfig) to the Layout template. The `environmentConfig` will be accessible to your Layout's methods as `this.environmentConfig`. Expose the environmentConfig through the logic method ([read here for more details](brisket.view.md#exposing-data-to-a-template)).
 
 ```js
-var templates = {
-    'layout': new Hogan.Template(...)
-    // actual template is
-    //  <!DOCTYPE html>
-    //  <html>
-    //  <head>
-    //    <title>My first Brisket app</title>
-    //  </head>
-    //  <body>
-    //    <main class="main-content"><!-- Views go here --></main>
-    //    <div class="environment-some-data">
-    //      {{environmentConfig.some}}
-    //    </div>
-    //  </body>
-    //  </html>
-};
+
+var MustacheTemplateAdapter = TemplateAdapter.extend({
+
+    templateToHTML: function(template, data, partials) {
+        return Mustache.render(template, data, partials);
+    }
+
+});
 
 var Layout = Brisket.Layout.extend({
 
-    templateAdapter: Brisket.Templating.compiledHoganTemplateAdapter(templates),
+    templateAdapter: MustacheTemplateAdapter,
 
-    template: 'layout',
+    template: '<!DOCTYPE html> \
+        <html> \
+        <head> \
+            <title>My first Brisket app</title>
+        </head> \
+        <body> \
+            <main class="main-content"><!-- Views go here --></main> \
+            <div class="environment-some-data"> \
+                {{environmentConfig.some}} \
+            </div> \
+        </body> \
+        </html>',
 
     content: '.main-content',
 
@@ -113,22 +116,13 @@ The template will display the value "data" if environmentConfig is `{ "some": "d
 If your layout's display depends on data fetched from an API, implement the `fetchData` method. The return value of your implementation should be a promise. Here's an example:
 
 ```js
-var templates = {
-    'layout': new Hogan.Template(...)
-    // actual template is
-    //  <!DOCTYPE html>
-    //  <html>
-    //  <head>
-    //    <title>My first Brisket app</title>
-    //  </head>
-    //  <body>
-    //    <main class="main-content"><!-- Views go here --></main>
-    //    <div class="model-data">
-    //      {{model.some}}
-    //    </div>
-    //  </body>
-    //  </html>
-};
+var MustacheTemplateAdapter = TemplateAdapter.extend({
+
+    templateToHTML: function(template, data, partials) {
+        return Mustache.render(template, data, partials);
+    }
+
+});
 
 var Model = Brisket.Model.extend({
     url: '/api/model' // returns { some: "modeldata" }
@@ -136,9 +130,20 @@ var Model = Brisket.Model.extend({
 
 var Layout = Brisket.Layout.extend({
 
-    templateAdapter: Brisket.Templating.compiledHoganTemplateAdapter(templates),
+    templateAdapter: MustacheTemplateAdapter,
 
-    template: 'layout',
+    template: '<!DOCTYPE html> \
+        <html> \
+        <head> \
+            <title>My first Brisket app</title>
+        </head> \
+        <body> \
+            <main class="main-content"><!-- Views go here --></main> \
+            <div class="environment-some-data"> \
+                {{model.some}} \
+            </div> \
+        </body> \
+        </html>',
 
     content: '.main-content',
 

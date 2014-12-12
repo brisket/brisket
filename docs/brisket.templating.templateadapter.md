@@ -4,7 +4,7 @@ Brisket.Templating.TemplateAdapter is the base class for all TemplateAdapters th
 
 
 ## Implementing Your Own TemplateAdapter
-While Brisket ships with two TemplateAdapters - ([Brisket.Templating.StringTemplateAdapter](brisket.templating.stringtemplateadapter.md) and [Brisket.Templating.compiledHoganTemplateAdapter](brisket.templating.compiledhogantemplateadapter.md)) - you might want to build your own template adapter.
+While Brisket ships with only one TemplateAdapter - ([Brisket.Templating.StringTemplateAdapter](brisket.templating.stringtemplateadapter.md) - you might want to build your own template adapter.
 
 To build your own TemplateAdapter, build an object that extends from Brisket.Templating.TemplateAdapter and implement the method `templateToHTML`. `templateToHTML` will be passed three parameters - `templateId`, `data`, and `partials` and is expected to return a string.
 
@@ -38,48 +38,14 @@ var StringTemplateAdapter = Brisket.Templating.TemplateAdapter.extend({
 
 The StringTemplateAdapter uses the `templateId` but it ignores `data` and `partials`.
 
-Below is the implementation of the compiledHoganTemplateAdapter. It uses all three parameters:
+Below is an example implementation of a Mustache TemplateAdapter. It uses all three parameters:
 
 ```js
-var CompiledHoganTemplateAdapter = TemplateAdapter.extend({
+var MustacheTemplateAdapter = TemplateAdapter.extend({
 
-    templateToHTML: function(templateId, data, partials) {
-        var template = this.compiledTemplates[templateId];
-
-        if (!template) {
-            throw new Error("Could not find template: " + templateId);
-        }
-
-        var resolvedPartials = resolvePartials(partials, this.compiledTemplates);
-
-        return template.render(data, resolvedPartials);
+    templateToHTML: function(template, data, partials) {
+        return Mustache.render(template, data, partials);
     }
 
 });
-
-function resolvePartials(partials, compiledTemplates) {
-    var resolvedPartials = {};
-
-    for (var partialName in partials) {
-        if (partials.hasOwnProperty(partialName)) {
-            var partialPath = partials[partialName];
-            resolvedPartials[partialName] = compiledTemplates[partialPath];
-        }
-    }
-
-    return resolvedPartials;
-}
-
-var compiledHoganTemplateAdapter = function(compiledTemplates) {
-    if (typeof compiledTemplates != "object") {
-        throw new Error(
-            "You must pass compiled templates to create a " +
-            "CompiledHoganTemplateAdapter."
-        );
-    }
-
-    return CompiledHoganTemplateAdapter.extend({
-        compiledTemplates: compiledTemplates
-    });
-};
 ```

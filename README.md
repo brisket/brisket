@@ -51,7 +51,6 @@ Your first brisket app will be available at http://localhost:8080
 * Brisket.Layout.Metatags: Use this class to make metatags for "pages".
 * [**Brisket.Templating.TemplateAdapter**](docs/brisket.templating.templateadapter.md): Inherit from this to tell Brisket how to render templates.
 * [**Brisket.Templating.StringTemplateAdapter**](docs/brisket.templating.stringtemplateadapter.md): The default template adapter. Set a View's template key to be a string template to get started.
-* [**Brisket.Templating.compiledHoganTemplateAdapter**](docs/brisket.templating.compiledhogantemplateadapter.md): An alternate template adapter that lets your Views use templates from a compiled templates hash.
 * [**Brisket.ErrorViewMapping**](docs/brisket.errorviewmapping.md): Creates errorViewMappings for your routers (e.g. 404 should show Page Not Found).
 * [**Brisket.onError**](docs/brisket.onerror.md): Registers error callback.
 

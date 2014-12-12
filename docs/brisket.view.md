@@ -52,35 +52,27 @@ Use the `onDOM` callback to make changes to your view when it has entered the DO
 During a View's [Rendering Workflow](rendering.workflow.md), on both the server AND client, you can expect that `beforeRender` will be called before `afterRender`. On the client, `onDOM` will be called only when the View enters the DOM - that will always occur `afterRender`.
 
 ## Setting A Templating Engine
-By default, all Brisket.Views use [Brisket.Templating.StringTemplateAdapter](brisket.templating.stringtemplateadapter.md) to render templates. Brisket also provides an adapter for compiled Hogan templates ([Brisket.Templating.compiledHoganTemplateAdapter](brisket.templating.compiledhogantemplateadapter.md)) that you can use. To specify a TemplateAdapter other than the default, set the templateAdapter field on a View:
+By default, all Brisket.Views use [Brisket.Templating.StringTemplateAdapter](brisket.templating.stringtemplateadapter.md) to render templates. To specify a TemplateAdapter other than the default, set the templateAdapter field on a View:
 
 ```js
-var templates = {
-    'article': new Hogan.Template(...),
-    // actual template is "article {{> authorPartial}}"
+var AddsSmilesTemplateAdapter = TemplateAdapter.extend({
 
-    'author': new Hogan.Template(...)
-    // actual template is "author name"
-}
-
-var View = Brisket.View.extend({
-
-    templateAdapter: Brisket.Templating.compiledHoganTemplateAdapter(templates)
-
-});
-
-var HoganifiedView = View.extend({
-
-    template: 'article',
-
-    partials: {
-        'authorPartial': 'author'
+    templateToHTML: function(template, data) {
+        return template + ' :) :)';
     }
 
 });
 
-var view = new HoganifiedView();
-console.log(view.render().el.innerHTML); // 'article author name'
+var SmileView = Brisket.View.extend({
+
+    templateAdapter: AddsSmilesTemplateAdapter,
+
+    template: '3 smiles look like :)'
+
+});
+
+var view = new SmileView();
+console.log(view.render().el.innerHTML); // '3 smiles look like :) :) :)'
 ```
 
 ## Exposing Data to A Template
@@ -89,17 +81,23 @@ With just about every templating engine, you will end up passing data from your 
 
 By default, Brisket will pass a json representation (model.toJSON()) of the View's `model` to the template as data. Using Mustache as an example:
 
-```template
-// my/template
-
-{{field}}
-```
-
 ```js
+var MustacheTemplateAdapter = TemplateAdapter.extend({
+
+    templateToHTML: function(template, data, partials) {
+        return Mustache.render(template, data, partials);
+    }
+
+});
+
 var Model = Brisket.Model.extend();
 
 var View = Brisket.View.extend({
-    template: 'my/template'
+
+    templateAdapter: MustacheTemplateAdapter,
+
+    template: '{{field}}'
+
 });
 
 var model = new Model();
@@ -118,10 +116,21 @@ While the data in your model may be sufficient to construct the template, someti
 ```
 
 ```js
+var MustacheTemplateAdapter = TemplateAdapter.extend({
+
+    templateToHTML: function(template, data, partials) {
+        return Mustache.render(template, data, partials);
+    }
+
+});
+
 var Model = Brisket.Model.extend();
 
 var View = Brisket.View.extend({
-    template: 'my/template',
+
+    templateAdapter: MustacheTemplateAdapter,
+
+    template: '{{field}} {{fromLogic}}',
 
     logic: function() {
         return {
@@ -148,10 +157,21 @@ In some cases however you may not have a Backbone.Model as the `model` but you h
 ```
 
 ```js
+var MustacheTemplateAdapter = TemplateAdapter.extend({
+
+    templateToHTML: function(template, data, partials) {
+        return Mustache.render(template, data, partials);
+    }
+
+});
+
 var Model = Brisket.Model.extend();
 
 var View = Brisket.View.extend({
-    template: 'my/template',
+
+    templateAdapter: MustacheTemplateAdapter,
+
+    template: '{{fromCustomModel}}',
 
     modelForView: function() {
         return {
