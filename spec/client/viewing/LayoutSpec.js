@@ -229,6 +229,19 @@ describe("Layout", function() {
 
     });
 
+    describe("#render", function() {
+
+        it("executes extra render instructions after rendering is complete", function(done) {
+            layout.setExtraRenderInstructions(function(layout) {
+                expect(layout.hasBeenRendered).toBe(true);
+                done();
+            });
+
+            layout.render();
+        });
+
+    });
+
 });
 
 // ----------------------------------------------------------------------------
