@@ -90,7 +90,7 @@ describe("ServerResponseWorkflow", function() {
 
             it("continues to the next middleware", function(done) {
                 whenAppResponseReturns().lastly(function() {
-                    expect(mockNext).toHaveBeenCalled();
+                    expect(mockNext).toHaveBeenCalledWith(error);
                     done();
                 });
             });
