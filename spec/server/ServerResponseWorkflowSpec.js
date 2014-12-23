@@ -74,13 +74,6 @@ describe("ServerResponseWorkflow", function() {
                 });
             });
 
-            it("sets the response to 500", function(done) {
-                whenAppResponseReturns().lastly(function() {
-                    expect(mockResponse.status).toHaveBeenCalledWith(500);
-                    done();
-                });
-            });
-
             it("logs the error", function(done) {
                 whenAppResponseReturns().lastly(function() {
                     expect(Errors.notify).toHaveBeenCalledWith(error);
