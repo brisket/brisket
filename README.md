@@ -58,6 +58,7 @@ Your first brisket app will be available at http://localhost:8080
 * [**Application Links**](docs/brisket.applicationlinks.md): How to link from one route to another in a Brisket app.
 * [**Brisket Router vs Backbone.Router**](docs/brisket.router.md): What makes a Brisket Router different from a regular Backbone.Router.
 * [**Brisket Request Object**](docs/brisket.requestobject.md): The Brisket request object normalizes access to important data about the current request.
+* [**Brisket Response Object**](docs/brisket.responseobject.md): The Brisket response object normalizes modifying the current response.
 * [**Child Views**](docs/brisket.childviews.md): Brisket provides a system to help you manage a View's child views.
 
 ## Using Brisket in your project
