@@ -1,16 +1,16 @@
 "use strict";
 
-var Backbone = require("../../lib/application/Backbone");
-var ServerRenderer = require("../../lib/server/ServerRenderer");
-var View = require("../../lib/viewing/View");
-var Layout = require("../../lib/viewing/Layout");
-var Environment = require("../../lib/environment/Environment");
-var HasPageLevelData = require("../../lib/traits/HasPageLevelData");
-var AjaxCallsForCurrentRequest = require("../../lib/server/AjaxCallsForCurrentRequest");
-var $ = require("../../lib/application/jquery");
-
 describe("ServerRenderer", function() {
-    var host;
+    var Backbone = require("../../lib/application/Backbone");
+    var ServerRenderer = require("../../lib/server/ServerRenderer");
+    var View = require("../../lib/viewing/View");
+    var Layout = require("../../lib/viewing/Layout");
+    var Environment = require("../../lib/environment/Environment");
+    var HasPageLevelData = require("../../lib/traits/HasPageLevelData");
+    var AjaxCallsForCurrentRequest = require("../../lib/server/AjaxCallsForCurrentRequest");
+    var $ = require("../../lib/application/jquery");
+    var _ = require("underscore");
+
     var view;
     var html;
     var metatags;
@@ -18,12 +18,11 @@ describe("ServerRenderer", function() {
     var environmentConfig;
     var onRender;
     var ViewWithPageLevelData;
-    var request;
+    var mockServerRequest;
 
     beforeEach(function() {
         Backbone.$ = $;
 
-        host = "host.com";
         view = new Backbone.View();
 
         layout = new Layout();
@@ -42,9 +41,7 @@ describe("ServerRenderer", function() {
 
         ViewWithPageLevelData = Backbone.View.extend(HasPageLevelData);
 
-        request = {
-            protocol: "https"
-        };
+        mockServerRequest = validMockServerRequest();
 
         spyOn(Environment, "isServer").and.returnValue(true);
         spyOn(AjaxCallsForCurrentRequest, "all");
@@ -59,14 +56,14 @@ describe("ServerRenderer", function() {
         describe("when protocol is http", function() {
 
             beforeEach(function() {
-                request = {
+                mockServerRequest = validMockServerRequest({
                     protocol: "http"
-                };
+                });
             });
 
             it("injects base tag with appRoot", function() {
-                html = ServerRenderer.render(layout, view, null, host, environmentConfig, null, request);
-                expect(html).toMatch(/<base href="http:\/\/host.com\/subdir\/">/);
+                html = ServerRenderer.render(layout, view, null, environmentConfig, null, mockServerRequest);
+                expect(html).toMatch(/<base href='http:\/\/host.com\/subdir\/'>/);
             });
 
         });
@@ -74,14 +71,14 @@ describe("ServerRenderer", function() {
         describe("when protocol is https", function() {
 
             beforeEach(function() {
-                request = {
+                mockServerRequest = validMockServerRequest({
                     protocol: "https"
-                };
+                });
             });
 
             it("injects base tag with appRoot", function() {
-                html = ServerRenderer.render(layout, view, null, host, environmentConfig, null, request);
-                expect(html).toMatch(/<base href="https:\/\/host.com\/subdir\/">/);
+                html = ServerRenderer.render(layout, view, null, environmentConfig, null, mockServerRequest);
+                expect(html).toMatch(/<base href='https:\/\/host.com\/subdir\/'>/);
             });
 
         });
@@ -97,14 +94,14 @@ describe("ServerRenderer", function() {
         describe("when protocol is http", function() {
 
             beforeEach(function() {
-                request = {
+                mockServerRequest = validMockServerRequest({
                     protocol: "http"
-                };
+                });
             });
 
             it("injects base tag WITHOUT appRoot", function() {
-                html = ServerRenderer.render(layout, view, null, host, environmentConfig, null, request);
-                expect(html).toMatch(/<base href="http:\/\/host.com\/">/);
+                html = ServerRenderer.render(layout, view, null, environmentConfig, null, mockServerRequest);
+                expect(html).toMatch(/<base href='http:\/\/host.com\/'>/);
             });
 
         });
@@ -112,14 +109,14 @@ describe("ServerRenderer", function() {
         describe("when protocol is https", function() {
 
             beforeEach(function() {
-                request = {
+                mockServerRequest = validMockServerRequest({
                     protocol: "https"
-                };
+                });
             });
 
             it("injects base tag WITHOUT appRoot", function() {
-                html = ServerRenderer.render(layout, view, null, host, environmentConfig, null, request);
-                expect(html).toMatch(/<base href="https:\/\/host.com\/">/);
+                html = ServerRenderer.render(layout, view, null, environmentConfig, null, mockServerRequest);
+                expect(html).toMatch(/<base href='https:\/\/host.com\/'>/);
             });
 
         });
@@ -129,7 +126,7 @@ describe("ServerRenderer", function() {
     describe("when layout has a body", function() {
 
         it("injects the client app start up script", function() {
-            html = ServerRenderer.render(layout, view, null, host, environmentConfig, "app/ClientApp", request);
+            html = ServerRenderer.render(layout, view, null, environmentConfig, "app/ClientApp", mockServerRequest);
 
             expect(html).toMatch(clientStartScript(environmentConfig, "app/ClientApp", null));
         });
@@ -149,7 +146,7 @@ describe("ServerRenderer", function() {
                 });
 
                 it("injects the bootstrappedData into the client app start up script", function() {
-                    html = ServerRenderer.render(layout, view, null, host, environmentConfig, "app/ClientApp", request);
+                    html = ServerRenderer.render(layout, view, null, environmentConfig, "app/ClientApp", mockServerRequest);
 
                     expect(html).toMatch(clientStartScript(environmentConfig, "app/ClientApp", bootstrappedData));
                 });
@@ -170,7 +167,7 @@ describe("ServerRenderer", function() {
                 });
 
                 it("escapes <script> closing tags", function() {
-                    html = ServerRenderer.render(layout, view, null, host, environmentConfig, "app/ClientApp", request);
+                    html = ServerRenderer.render(layout, view, null, environmentConfig, "app/ClientApp", mockServerRequest);
 
                     escapedBootstrappedData = bootstrappedData;
                     escapedBootstrappedData["/url"].body = "<script type='text/javascript' src='some.js'><\\/script>";
@@ -191,7 +188,7 @@ describe("ServerRenderer", function() {
         });
 
         it("does NOT inject the client app start script", function() {
-            html = ServerRenderer.render(layout, view, null, host, environmentConfig, "app/ClientApp", request);
+            html = ServerRenderer.render(layout, view, null, environmentConfig, "app/ClientApp", mockServerRequest);
 
             expect(html).not.toMatch(clientStartScript(environmentConfig, "app/ClientApp", null));
         });
@@ -201,7 +198,7 @@ describe("ServerRenderer", function() {
     describe("when an onRender function is passed", function() {
 
         it("calls the onRender function", function() {
-            html = ServerRenderer.render(layout, view, onRender, host, null, null, request);
+            html = ServerRenderer.render(layout, view, onRender, null, null, mockServerRequest);
             expect(onRender).toHaveBeenCalled();
             expect(onRender).toHaveBeenCalledWith(layout);
         });
@@ -211,7 +208,7 @@ describe("ServerRenderer", function() {
     describe("exposing environment config to the layout", function() {
 
         beforeEach(function() {
-            html = ServerRenderer.render(layout, view, null, host, environmentConfig, "app/ClientApp", request);
+            html = ServerRenderer.render(layout, view, null, environmentConfig, "app/ClientApp", mockServerRequest);
         });
 
         it("sets the layout environmentConfig", function() {
@@ -225,7 +222,7 @@ describe("ServerRenderer", function() {
         beforeEach(function() {
             view = new View();
             spyOn(view, "setUid");
-            ServerRenderer.render(layout, view, onRender, host, null, null, request);
+            ServerRenderer.render(layout, view, onRender, null, null, mockServerRequest);
         });
 
         it("sets uid to reflect initial request and it's creation order", function() {
@@ -238,7 +235,7 @@ describe("ServerRenderer", function() {
 
         it("does NOT throw", function() {
             function renderingBackboneView() {
-                ServerRenderer.render(layout, view, onRender, host, null, null, request);
+                ServerRenderer.render(layout, view, onRender, null, null, mockServerRequest);
             }
 
             expect(renderingBackboneView).not.toThrow();
@@ -257,7 +254,7 @@ describe("ServerRenderer", function() {
                 .withTitle("Title")
                 .withMetatags(metatags);
 
-            ServerRenderer.render(layout, view, onRender, host, null, null, request);
+            ServerRenderer.render(layout, view, onRender, null, null, mockServerRequest);
         });
 
         it("sets the layout title", function() {
@@ -277,7 +274,7 @@ describe("ServerRenderer", function() {
     describe("when view does NOT have page level data", function() {
 
         beforeEach(function() {
-            ServerRenderer.render(layout, view, onRender, host, null, null, request);
+            ServerRenderer.render(layout, view, onRender, null, null, mockServerRequest);
         });
 
         it("sets the layout title with null", function() {
@@ -312,6 +309,13 @@ describe("ServerRenderer", function() {
 
     function stringifyData(data) {
         return JSON.stringify(data || {});
+    }
+
+    function validMockServerRequest(props) {
+        return _.extend({
+            host: "host.com",
+            protocol: "https"
+        }, props);
     }
 
 });

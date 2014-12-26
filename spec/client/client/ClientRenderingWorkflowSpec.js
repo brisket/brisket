@@ -4,9 +4,11 @@ describe("ClientRenderingWorkflow", function() {
     var ClientRenderingWorkflow = require("lib/client/ClientRenderingWorkflow");
     var ClientRenderer = require("lib/client/ClientRenderer");
     var ClientRequest = require("lib/client/ClientRequest");
+    var ClientResponse = require("lib/client/ClientResponse");
     var Layout = require("lib/viewing/Layout");
     var Backbone = require("lib/application/Backbone");
     var ErrorViewMapping = require("lib/errors/ErrorViewMapping");
+    var mockWindow = require("mock/mockWindow");
     var Errors = require("lib/errors/Errors");
     var Promise = require("bluebird");
 
@@ -25,7 +27,9 @@ describe("ClientRenderingWorkflow", function() {
     var firstReturns;
     var secondReturns;
     var bothReturn;
-    var mockBrisketRequest;
+    var windough;
+    var mockClientRequest;
+    var mockClientResponse;
 
     beforeEach(function() {
         ExampleLayout = Layout.extend({
@@ -62,9 +66,17 @@ describe("ClientRenderingWorkflow", function() {
 
         spyOn(ClientRenderer, "render").and.returnValue("page was rendered");
 
-        mockBrisketRequest = {};
+        windough = mockWindow();
 
-        spyOn(ClientRequest, "from").and.returnValue(mockBrisketRequest);
+        mockClientRequest = {
+            id: "mockClientRequest"
+        };
+
+        mockClientResponse = new ClientResponse(windough);
+
+        spyOn(ClientRequest, "from").and.returnValue(mockClientRequest);
+        spyOn(ClientResponse, "from").and.returnValue(mockClientResponse);
+
         spyOn(Layout.prototype, "close");
     });
 
@@ -81,7 +93,13 @@ describe("ClientRenderingWorkflow", function() {
         it("calls original handler with params and brisketRequest", function(done) {
             callAugmentedRouterHandlerWith(originalHandler, "param1", "param2")
                 .then(function() {
-                    expect(originalHandler).toHaveBeenCalledWith("param1", "param2", mockBrisketRequest);
+                    expect(originalHandler).toHaveBeenCalledWith(
+                        "param1",
+                        "param2",
+                        mockClientRequest,
+                        mockClientResponse
+                    );
+
                     done();
                 });
         });
@@ -104,6 +122,38 @@ describe("ClientRenderingWorkflow", function() {
                 });
         });
 
+    });
+
+    describe("when original handler redirects", function() {
+        var restOfCodeInTheHandler;
+
+        beforeEach(function() {
+            restOfCodeInTheHandler = jasmine.createSpy("rest of code in the handler");
+
+            originalHandler = function(request, response) {
+                response.redirect("go/somewhere");
+                restOfCodeInTheHandler();
+                return expectedView;
+            };
+
+            handlerReturns = callAugmentedRouterHandler();
+        });
+
+        it("does NOT execute the rest of code in the handler", function(done) {
+            handlerReturns.lastly(function() {
+                expect(restOfCodeInTheHandler).not.toHaveBeenCalled();
+                done();
+            });
+        });
+
+        it("does NOT render a View", function(done) {
+            handlerReturns.lastly(function() {
+                expect(ClientRenderer.render).not.toHaveBeenCalled();
+                done();
+            });
+        });
+
+        itCleansUpRouter();
     });
 
     describe("when original handler does NOT return a View NOR promise of View", function() {
@@ -762,10 +812,18 @@ describe("ClientRenderingWorkflow", function() {
 
         describe("when route starts", function() {
 
-            it("fires the on route start callback", function() {
+            it("fires the on route start callback", function(done) {
                 handlerReturns = callAugmentedRouterHandler();
 
-                expect(onRouteStart).toHaveBeenCalledWith(jasmine.any(Layout), mockBrisketRequest);
+                handlerReturns.lastly(function() {
+                    expect(onRouteStart).toHaveBeenCalledWith(
+                        jasmine.any(Layout),
+                        mockClientRequest,
+                        mockClientResponse
+                    );
+
+                    done();
+                });
             });
 
         });
@@ -779,7 +837,12 @@ describe("ClientRenderingWorkflow", function() {
 
                 handlerReturns
                     .then(function() {
-                        expect(onRouteComplete).toHaveBeenCalledWith(jasmine.any(Layout), mockBrisketRequest);
+                        expect(onRouteComplete).toHaveBeenCalledWith(
+                            jasmine.any(Layout),
+                            mockClientRequest,
+                            mockClientResponse
+                        );
+
                         done();
                     });
             });
@@ -801,7 +864,11 @@ describe("ClientRenderingWorkflow", function() {
             it("only fires onRouteComplete for second request", function(done) {
                 secondReturns
                     .then(function() {
-                        expect(onRouteComplete).toHaveBeenCalledWith(jasmine.any(Layout), mockBrisketRequest);
+                        expect(onRouteComplete).toHaveBeenCalledWith(
+                            jasmine.any(Layout),
+                            mockClientRequest,
+                            mockClientResponse
+                        );
                         expect(onRouteComplete.calls.count()).toBe(1);
                     });
 

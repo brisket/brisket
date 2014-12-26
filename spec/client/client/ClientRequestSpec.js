@@ -1,8 +1,9 @@
 "use strict";
 
-var ClientRequest = require("lib/client/ClientRequest");
-
 describe("ClientRequest", function() {
+    var ClientRequest = require("lib/client/ClientRequest");
+    var mockWindow = require("mock/mockWindow");
+
     var clientRequest;
     var requestId;
 
@@ -111,23 +112,6 @@ describe("ClientRequest", function() {
         });
 
     });
-
-    function mockWindow() {
-        return {
-            document: {
-                referrer: "theReferrer"
-            },
-            location: {
-                protocol: "http:",
-                host: "example.com:8080",
-                pathname: "/requested/path",
-                search: "?some=param&another[param]=value"
-            },
-            navigator: {
-                userAgent: "A wonderful computer"
-            }
-        };
-    }
 
 });
 

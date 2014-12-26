@@ -9,7 +9,7 @@ describe("ServerApp", function() {
 
     var serverApp;
     var fragment;
-    var host;
+    var mockRequest;
     var environmentConfig;
     var clientAppRequirePath;
 
@@ -25,7 +25,7 @@ describe("ServerApp", function() {
 
         beforeEach(function() {
             fragment = "route";
-            host = "http://www.example.com";
+            mockRequest = {};
             environmentConfig = {
                 some: "option"
             };
@@ -33,7 +33,7 @@ describe("ServerApp", function() {
 
             spyOn(ServerDispatcher, "dispatch");
 
-            serverApp.dispatch(fragment, host, environmentConfig, clientAppRequirePath);
+            serverApp.dispatch(fragment, mockRequest, environmentConfig, clientAppRequirePath);
         });
 
         it("tells the server dispatcher to dispatch", function() {
@@ -43,7 +43,7 @@ describe("ServerApp", function() {
         it("passes the fragment, host and environmentConfig to server dispatcher", function() {
             expect(ServerDispatcher.dispatch).toHaveBeenCalledWith(
                 fragment,
-                host,
+                mockRequest,
                 environmentConfig,
                 clientAppRequirePath
             );
