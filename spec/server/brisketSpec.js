@@ -72,7 +72,7 @@ describe("public interface to Brisket", function() {
         expect(Brisket.$).toBe(requireFromLib("application/jquery"));
     });
 
-    it("exposes Brisket.EventBus", function() {
+    it("exposes Brisket.onError", function() {
         expect(Brisket.onError).toBe(requireFromLib("errors/Errors").onError);
     });
 
