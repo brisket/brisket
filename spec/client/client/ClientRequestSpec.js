@@ -7,6 +7,10 @@ describe("ClientRequest", function() {
     var clientRequest;
     var requestId;
 
+    afterEach(function() {
+        ClientRequest.reset();
+    });
+
     describe("from returns Brisket normalized values", function() {
 
         beforeEach(function() {
@@ -107,6 +111,30 @@ describe("ClientRequest", function() {
 
             it("sets the referrer from the previous request", function() {
                 expect(clientRequest.referrer).toEqual("http://example.com:8080/requested/path");
+            });
+
+        });
+
+        describe("environmentConfig", function() {
+
+            it("exposes environmentConfig when environmentConfig has been set", function() {
+                ClientRequest.setEnvironmentConfig({
+                    "a": "b",
+                    "c": "d"
+                });
+
+                clientRequest = ClientRequest.from(mockWindow());
+
+                expect(clientRequest.environmentConfig).toEqual({
+                    "a": "b",
+                    "c": "d"
+                });
+            });
+
+            it("exposes empty environmentConfig when environmentConfig has NOT been set", function() {
+                clientRequest = ClientRequest.from(mockWindow());
+
+                expect(clientRequest.environmentConfig).toEqual({});
             });
 
         });

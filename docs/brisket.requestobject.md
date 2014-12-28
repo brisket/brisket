@@ -86,3 +86,6 @@ The unique identifier for each request to your application.
 
 ### request.userAgent
 The user agent string from the user's browser.
+
+### request.environmentConfig
+The [environmentConfig](brisket.createserver.md#environmentconfig) that you use to create your Brisket server.
