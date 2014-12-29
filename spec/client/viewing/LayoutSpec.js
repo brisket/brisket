@@ -6,7 +6,6 @@ describe("Layout", function() {
 
     var ExampleLayout;
     var layout;
-    var onRender;
 
     describe("#asHtml", function() {
 
@@ -147,97 +146,6 @@ describe("Layout", function() {
                 expect(layout.isSameTypeAs(Layout2)).toBe(false);
             });
 
-        });
-
-    });
-
-    describe("#setExtraRenderInstructions", function() {
-
-        beforeEach(function() {
-            spyOn(layout, "executeExtraRenderInstructions");
-            onRender = jasmine.createSpy();
-        });
-
-        describe("handling invalid onRender", function() {
-
-            it("sets extraRenderInstructions to be null when onRender is not a function", function() {
-                onRender = null;
-                layout.setExtraRenderInstructions(onRender);
-                expect(layout.extraRenderInstructions).toBeNull();
-            });
-
-        });
-
-        describe("when layout has been rendered", function() {
-
-            beforeEach(function() {
-                layout.hasBeenRendered = true;
-                layout.setExtraRenderInstructions(onRender);
-            });
-
-            it("calls executeExtraRenderInstructions", function() {
-                expect(layout.executeExtraRenderInstructions).toHaveBeenCalled();
-            });
-
-        });
-
-        describe("when layout has NOT been rendered", function() {
-
-            beforeEach(function() {
-                layout.hasBeenRendered = false;
-                layout.setExtraRenderInstructions(onRender);
-            });
-
-            it("does NOT call executeExtraRenderInstructions", function() {
-                expect(layout.executeExtraRenderInstructions).not.toHaveBeenCalled();
-            });
-
-        });
-
-    });
-
-    describe("#executeExtraRenderInstructions", function() {
-
-        describe("when layout has extra render instructions", function() {
-
-            beforeEach(function() {
-                layout.extraRenderInstructions = jasmine.createSpy();
-                layout.executeExtraRenderInstructions();
-            });
-
-            it("calls the extraRenderInstructions with layout", function() {
-                expect(layout.extraRenderInstructions).toHaveBeenCalledWith(layout);
-            });
-
-        });
-
-        describe("when layout does NOT have extra render instructions", function() {
-
-            beforeEach(function() {
-                layout.extraRenderInstructions = null;
-            });
-
-            it("does not throw an error attempting to call extra render instructions", function() {
-                var executingExtraRenderInstructionsWithoutInstructions = function() {
-                    layout.executeExtraRenderInstructions();
-                };
-
-                expect(executingExtraRenderInstructionsWithoutInstructions).not.toThrow();
-            });
-
-        });
-
-    });
-
-    describe("#render", function() {
-
-        it("executes extra render instructions after rendering is complete", function(done) {
-            layout.setExtraRenderInstructions(function(layout) {
-                expect(layout.hasBeenRendered).toBe(true);
-                done();
-            });
-
-            layout.render();
         });
 
     });

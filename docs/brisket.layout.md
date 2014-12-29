@@ -171,13 +171,21 @@ var Layout = Brisket.Layout.extend({
 `fetchData` will be called before the Layout is rendered so the data in `this.model` will be ready for the Layout's template. **Note:** If the promise returned by `fetchData` is rejected, the page will show an error even if the current route executes successfully. Always return a resolved promise to avoid the Layout causing your pages to display errors.
 
 ## Getting Back to Normal
-As you navigate between routes, your Router code may modify the Layout. Implement a `backToNormal` method on your Layout to tell Brisket what the default state of your Layout looks like.
+As you navigate between routes, your route handlers may modify the Layout. Implement a `backToNormal` method on your Layout to tell Brisket what the default state of your Layout looks like.
 
 ```js
+var SomeView = Brisket.View.extend();
+
 var SpecialRouter = Brisket.RouterBrewery.create({
 
-    onRender: function(layout) {
+    routes: {
+        "special": "handleSpecial"
+    },
+
+    handleSpecial: function(layout) {
         layout.beSpecial();
+
+        return SomeView();
     }
 
 });
@@ -213,6 +221,4 @@ var Layout = Brisket.Layout.extend({
 });
 ```
 
-In this example, when you go to any route in SpecialRouter, the layout will become special. When you navigate to a route that is outside of SpecialRouter, you want the layout to be normal. You also don't want to implement an `onRender` for every Router. `backToNormal` will execute before every route so that the layout is normal before doing an Router-specific work.
-
-Using `backToNormal` plus `onRender`, you can do things like highlight the current menu item, update the logo between Routers, etc.
+In this example, when you go to any route in SpecialRouter, the layout will become special. When you navigate to a route that is outside of SpecialRouter, the layout should be normal. `backToNormal` executes before every route so that the layout is normal before doing any route-specific work.

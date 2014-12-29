@@ -16,7 +16,6 @@ describe("ClientRenderingWorkflow", function() {
     var expectedView;
     var expectedView2;
     var fakeRouter;
-    var onRender;
     var handlerReturns;
     var ExampleLayout;
     var PageNotFoundView;
@@ -36,7 +35,6 @@ describe("ClientRenderingWorkflow", function() {
             name: "example"
         });
 
-        onRender = function() {};
         expectedView = new Backbone.View();
 
         PageNotFoundView = Backbone.View.extend({
@@ -55,7 +53,6 @@ describe("ClientRenderingWorkflow", function() {
                 404: PageNotFoundView,
                 500: ErrorView
             }),
-            onRender: onRender,
             otherMethod: jasmine.createSpy(),
             onRouteStart: onRouteStart,
             onRouteComplete: onRouteComplete,
@@ -84,18 +81,36 @@ describe("ClientRenderingWorkflow", function() {
         ClientRenderingWorkflow.reset();
     });
 
+    it("initializes layout BEFORE it is passed to route handlers", function(done) {
+        spyOn(Layout.prototype, "reattach").and.callThrough();
+        spyOn(Layout.prototype, "render").and.callThrough();
+        spyOn(Layout.prototype, "enterDOM").and.callThrough();
+
+        originalHandler = function(layout) {
+            expect(layout.reattach).toHaveBeenCalled();
+            expect(layout.render).toHaveBeenCalled();
+            expect(layout.enterDOM).toHaveBeenCalled();
+            done();
+
+            return expectedView;
+        };
+
+        handlerReturns = callAugmentedRouterHandler();
+    });
+
     describe("whenever handler is called", function() {
 
         beforeEach(function() {
             originalHandler = jasmine.createSpy();
         });
 
-        it("calls original handler with params and brisketRequest", function(done) {
+        it("calls original handler with params, layout, brisketRequest, and brisketResponse", function(done) {
             callAugmentedRouterHandlerWith(originalHandler, "param1", "param2")
                 .then(function() {
                     expect(originalHandler).toHaveBeenCalledWith(
                         "param1",
                         "param2",
+                        jasmine.any(Layout),
                         mockClientRequest,
                         mockClientResponse
                     );
@@ -130,7 +145,7 @@ describe("ClientRenderingWorkflow", function() {
         beforeEach(function() {
             restOfCodeInTheHandler = jasmine.createSpy("rest of code in the handler");
 
-            originalHandler = function(request, response) {
+            originalHandler = function(layout, request, response) {
                 response.redirect("go/somewhere");
                 restOfCodeInTheHandler();
                 return expectedView;
@@ -609,7 +624,6 @@ describe("ClientRenderingWorkflow", function() {
                         expect(ClientRenderer.render).not.toHaveBeenCalledWith(
                             jasmine.any(Layout),
                             expectedView,
-                            onRender,
                             jasmine.any(Number)
                         );
 
@@ -623,7 +637,6 @@ describe("ClientRenderingWorkflow", function() {
                         expect(ClientRenderer.render).toHaveBeenCalledWith(
                             jasmine.any(Layout),
                             expectedView2,
-                            onRender,
                             2
                         );
 
@@ -662,7 +675,6 @@ describe("ClientRenderingWorkflow", function() {
                         expect(ClientRenderer.render).not.toHaveBeenCalledWith(
                             jasmine.any(Layout),
                             jasmine.any(PageNotFoundView),
-                            onRender,
                             jasmine.any(Number)
                         );
 
@@ -676,7 +688,6 @@ describe("ClientRenderingWorkflow", function() {
                         expect(ClientRenderer.render).toHaveBeenCalledWith(
                             jasmine.any(Layout),
                             expectedView2,
-                            onRender,
                             2
                         );
 
@@ -715,7 +726,6 @@ describe("ClientRenderingWorkflow", function() {
                         expect(ClientRenderer.render).not.toHaveBeenCalledWith(
                             jasmine.any(Layout),
                             expectedView,
-                            onRender,
                             jasmine.any(Number)
                         );
 
@@ -729,7 +739,6 @@ describe("ClientRenderingWorkflow", function() {
                         expect(ClientRenderer.render).toHaveBeenCalledWith(
                             jasmine.any(Layout),
                             jasmine.any(PageNotFoundView),
-                            onRender,
                             2
                         );
 
@@ -770,7 +779,6 @@ describe("ClientRenderingWorkflow", function() {
                         expect(ClientRenderer.render).not.toHaveBeenCalledWith(
                             jasmine.any(Layout),
                             jasmine.any(ErrorView),
-                            onRender,
                             jasmine.any(Number)
                         );
 
@@ -784,7 +792,6 @@ describe("ClientRenderingWorkflow", function() {
                         expect(ClientRenderer.render).toHaveBeenCalledWith(
                             jasmine.any(Layout),
                             jasmine.any(PageNotFoundView),
-                            onRender,
                             2
                         );
 
@@ -936,7 +943,6 @@ describe("ClientRenderingWorkflow", function() {
         expect(ClientRenderer.render).toHaveBeenCalledWith(
             jasmine.any(Layout),
             view,
-            onRender,
             1
         );
     }
@@ -945,7 +951,6 @@ describe("ClientRenderingWorkflow", function() {
         expect(ClientRenderer.render).not.toHaveBeenCalledWith(
             jasmine.any(Layout),
             view,
-            onRender,
             1
         );
     }
