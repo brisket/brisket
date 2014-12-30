@@ -54,6 +54,28 @@ describe("ServerRequest", function() {
 
     });
 
+    describe("environmentConfig", function() {
+
+        it("exposes environmentConfig when created WITH one", function() {
+            serverRequest = ServerRequest.from(mockExpressRequest(), {
+                "a": "b",
+                "c": "d"
+            });
+
+            expect(serverRequest.environmentConfig).toEqual({
+                "a": "b",
+                "c": "d"
+            });
+        });
+
+        it("exposes empty environmentConfig when created WITHOUT one", function() {
+            serverRequest = ServerRequest.from(mockExpressRequest());
+
+            expect(serverRequest.environmentConfig).toEqual({});
+        });
+
+    });
+
     function mockExpressRequest() {
         return {
             protocol: "http",

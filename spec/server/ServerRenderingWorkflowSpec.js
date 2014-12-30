@@ -467,7 +467,7 @@ describe("ServerRenderingWorkflow", function() {
             view,
             environmentConfig,
             "app/ClientApp",
-            ServerRequest.from(mockExpressRequest())
+            ServerRequest.from(mockExpressRequest(), environmentConfig)
         );
     }
 
@@ -477,7 +477,7 @@ describe("ServerRenderingWorkflow", function() {
             view,
             environmentConfig,
             "app/ClientApp",
-            ServerRequest.from(mockExpressRequest())
+            ServerRequest.from(mockExpressRequest(), environmentConfig)
         );
     }
 
