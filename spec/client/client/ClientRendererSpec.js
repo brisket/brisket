@@ -8,7 +8,6 @@ describe("ClientRenderer", function() {
 
     var layout;
     var view;
-    var onRender;
 
     beforeEach(function() {
         layout = new Layout();
@@ -24,14 +23,12 @@ describe("ClientRenderer", function() {
         spyOn(view, "reattach");
         spyOn(view, "enterDOM");
         spyOn(view, "setUid");
-
-        onRender = jasmine.createSpy("onRender");
     });
 
     describe("on all renders", function() {
 
         beforeEach(function() {
-            ClientRenderer.render(layout, view, onRender, 1);
+            ClientRenderer.render(layout, view, 1);
         });
 
         it("attempts to reattach view", function() {
@@ -44,53 +41,11 @@ describe("ClientRenderer", function() {
 
     });
 
-    describe("when layout has NOT been rendered", function() {
-
-        beforeEach(function() {
-            layout.hasBeenRendered = false;
-            ClientRenderer.render(layout, view, onRender, 1);
-        });
-
-        it("should reattach layout", function() {
-            expect(layout.reattach).toHaveBeenCalled();
-        });
-
-        it("should render layout", function() {
-            expect(layout.render).toHaveBeenCalled();
-        });
-
-        it("should enterDOM layout", function() {
-            expect(layout.enterDOM).toHaveBeenCalled();
-        });
-
-    });
-
-    describe("when it layout has been rendered", function() {
-
-        beforeEach(function() {
-            layout.hasBeenRendered = true;
-            ClientRenderer.render(layout, view, onRender, 1);
-        });
-
-        it("should reattach layout", function() {
-            expect(layout.reattach).not.toHaveBeenCalled();
-        });
-
-        it("should render layout", function() {
-            expect(layout.render).not.toHaveBeenCalled();
-        });
-
-        it("should enterDOM layout", function() {
-            expect(layout.enterDOM).not.toHaveBeenCalled();
-        });
-
-    });
-
     describe("when view is attached", function() {
 
         beforeEach(function() {
             view.isAttached = true;
-            ClientRenderer.render(layout, view, onRender, 1);
+            ClientRenderer.render(layout, view, 1);
         });
 
         it("renders the view", function() {
@@ -111,7 +66,7 @@ describe("ClientRenderer", function() {
 
         beforeEach(function() {
             view.isAttached = false;
-            ClientRenderer.render(layout, view, onRender, 1);
+            ClientRenderer.render(layout, view, 1);
         });
 
         it("does NOT render the view directly", function() {
@@ -131,53 +86,11 @@ describe("ClientRenderer", function() {
     describe("when view is Brisket.View", function() {
 
         beforeEach(function() {
-            ClientRenderer.render(layout, view, onRender, 1);
+            ClientRenderer.render(layout, view, 1);
         });
 
         it("sets uid to reflect current request and it's creation order", function() {
             expect(view.setUid).toHaveBeenCalledWith("1|0_0");
-        });
-
-    });
-
-    describe("resetting layout to normal AND executing custom code per Router", function() {
-
-        beforeEach(function() {
-            layout.render.and.callThrough();
-        });
-
-        describe("when layout has NOT been rendered yet", function() {
-
-            beforeEach(function() {
-                layout.hasBeenRendered = false;
-                ClientRenderer.render(layout, view, onRender, 1);
-            });
-
-            it("resets layout to normal", function() {
-                expect(layout.backToNormal).toHaveBeenCalled();
-            });
-
-            it("calls onRender with the layout", function() {
-                expect(onRender).toHaveBeenCalledWith(layout);
-            });
-
-        });
-
-        describe("when layout has been rendered", function() {
-
-            beforeEach(function() {
-                layout.hasBeenRendered = true;
-                ClientRenderer.render(layout, view, onRender, 1);
-            });
-
-            it("resets layout to normal", function() {
-                expect(layout.backToNormal).toHaveBeenCalled();
-            });
-
-            it("calls onRender with the layout", function() {
-                expect(onRender).toHaveBeenCalledWith(layout);
-            });
-
         });
 
     });

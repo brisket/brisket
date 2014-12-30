@@ -16,7 +16,6 @@ describe("ServerRenderingWorkflow", function() {
     var expectedView;
     var environmentConfig;
     var fakeRouter;
-    var onRender;
     var handlerReturns;
     var PageNotFoundView;
     var ErrorView;
@@ -26,7 +25,6 @@ describe("ServerRenderingWorkflow", function() {
     beforeEach(function() {
         Backbone.$ = $;
 
-        onRender = function() {};
         expectedView = new Backbone.View();
         environmentConfig = {};
 
@@ -41,7 +39,6 @@ describe("ServerRenderingWorkflow", function() {
         fakeRouter = {
             layout: Layout,
             errorViewMapping: errorViewMapping(),
-            onRender: onRender,
             otherMethod: jasmine.createSpy(),
             close: jasmine.createSpy()
         };
@@ -59,6 +56,17 @@ describe("ServerRenderingWorkflow", function() {
         spyOn(ServerResponse, "create").and.returnValue(mockServerResponse);
     });
 
+    it("ensures layout has been rendered before it is passed to route handlers", function(done) {
+        originalHandler = function(layout) {
+            expect(layout.hasBeenRendered).toBe(true);
+            done();
+
+            return expectedView;
+        };
+
+        handlerReturns = callAugmentedRouterHandler();
+    });
+
     describe("whenever handler is called", function() {
 
         beforeEach(function() {
@@ -67,12 +75,12 @@ describe("ServerRenderingWorkflow", function() {
             });
         });
 
-        it("calls original handler with params", function(done) {
+        it("calls original handler with params, layout, brisketRequest, and brisketResponse", function(done) {
             handlerReturns = callAugmentedRouterHandlerWith("param1", "param2");
 
             handlerReturns.lastly(function() {
                 expect(originalHandler)
-                    .toHaveBeenCalledWith("param1", "param2", mockServerRequest, mockServerResponse);
+                    .toHaveBeenCalledWith("param1", "param2", jasmine.any(Layout), mockServerRequest, mockServerResponse);
                 done();
             });
         });
@@ -104,7 +112,7 @@ describe("ServerRenderingWorkflow", function() {
         beforeEach(function() {
             restOfCodeInTheHandler = jasmine.createSpy("rest of code in the handler");
 
-            originalHandler = function(request, response) {
+            originalHandler = function(layout, request, response) {
                 response.redirect("go/somewhere");
                 restOfCodeInTheHandler();
                 return expectedView;
@@ -342,7 +350,6 @@ describe("ServerRenderingWorkflow", function() {
             fakeRouter = {
                 layout: LayoutWithSuccessfulFetch,
                 errorViewMapping: errorViewMapping(),
-                onRender: onRender,
                 close: jasmine.createSpy()
             };
 
@@ -379,7 +386,6 @@ describe("ServerRenderingWorkflow", function() {
             fakeRouter = {
                 layout: LayoutWithFailingFetch,
                 errorViewMapping: errorViewMapping(),
-                onRender: onRender,
                 close: jasmine.createSpy()
             };
 
@@ -459,7 +465,6 @@ describe("ServerRenderingWorkflow", function() {
         expect(ServerRenderer.render).toHaveBeenCalledWith(
             layout,
             view,
-            onRender,
             environmentConfig,
             "app/ClientApp",
             ServerRequest.from(mockExpressRequest())
@@ -470,7 +475,6 @@ describe("ServerRenderingWorkflow", function() {
         expect(ServerRenderer.render).not.toHaveBeenCalledWith(
             layout,
             view,
-            onRender,
             environmentConfig,
             "app/ClientApp",
             ServerRequest.from(mockExpressRequest())

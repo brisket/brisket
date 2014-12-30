@@ -1,10 +1,8 @@
 "use strict";
 
-var Backbone = require("lib/application/Backbone");
-var View = require("lib/viewing/View");
-var ViewRelationship = require("lib/viewing/ViewRelationship");
-
 describe("ViewRelationshipSpec", function() {
+    var View = require("lib/viewing/View");
+    var ViewRelationship = require("lib/viewing/ViewRelationship");
 
     var ChildView;
     var childView;
@@ -19,7 +17,7 @@ describe("ViewRelationshipSpec", function() {
                 "<div class='last'></div>"
         });
         parentView = new ParentView();
-        ChildView = Backbone.View.extend();
+        ChildView = View.extend();
         viewRelationship = new ViewRelationship(ChildView, parentView);
     });
 
@@ -129,31 +127,46 @@ describe("ViewRelationshipSpec", function() {
 
             });
 
-            describe("when parent view is in the DOM", function() {
+        });
 
-                beforeEach(function() {
-                    parentView.render();
-                    parentView.enterDOM();
-                    viewRelationship.andPlace(".destination", "append");
-                });
+    });
 
-                it("enters the child view into the DOM", function() {
-                    expect(viewRelationship.enterDOM).toHaveBeenCalled();
-                });
+    describe("#enterDOM", function() {
 
+        describe("when child view CANNOT enter DOM", function() {
+
+            beforeEach(function() {
+                ChildView.prototype.enterDOM = null;
             });
 
-            describe("when parent view is NOT in the DOM", function() {
+            it("does NOT error attempting to enter the child view into the DOM", function() {
+                function enteringDOMWhenViewCant() {
+                    viewRelationship.andAppendIt();
+                }
 
-                beforeEach(function() {
-                    viewRelationship.andPlace(".destination", "append");
-                });
-
-                it("does NOT enter the child view into the DOM", function() {
-                    expect(viewRelationship.enterDOM).not.toHaveBeenCalled();
-                });
-
+                expect(enteringDOMWhenViewCant).not.toThrow();
             });
+
+        });
+
+        describe("when child view CAN enter DOM", function() {
+
+            beforeEach(function() {
+                spyOn(ChildView.prototype, "enterDOM");
+            });
+
+            it("enters the child view into the DOM when parentView is NOT in DOM", function() {
+                parentView.render();
+                parentView.enterDOM();
+                viewRelationship.andAppendIt();
+                expect(ChildView.prototype.enterDOM).toHaveBeenCalled();
+            });
+
+            it("enters the child view into the DOM when parentView is NOT in DOM", function() {
+                viewRelationship.andAppendIt();
+                expect(ChildView.prototype.enterDOM).not.toHaveBeenCalled();
+            });
+
         });
 
     });

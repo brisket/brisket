@@ -31,16 +31,6 @@ describe("RouterBrewery on client", function() {
             expect(router instanceof Backbone.Router).toBe(true);
         });
 
-        it("throws an error when onRender is not a function", function() {
-            var creatingRouterWithoutValidOnRender = function() {
-                RouterBrewery.create({
-                    onRender: null
-                });
-            };
-
-            expect(creatingRouterWithoutValidOnRender).toThrow();
-        });
-
     });
 
     describe("#makeBreweryWithDefaults", function() {

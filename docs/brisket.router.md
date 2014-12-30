@@ -10,7 +10,7 @@ Brisket Routers are a little different from a standard Backbone.Router. The diff
 * [Returning a View](#returning-a-view)
 * [Handling Errors](#handling-errors)
 * [Specifying a Layout](#specifying-a-layout)
-* [Communicating With the Layout onRender](#communicating-with-the-layout-onrender)
+* [Communicating With the Layout](#communicating-with-the-layout)
 * [Executing Code When Routes Begin/End](#executing-code-when-routes-beginend)
 * [Closing a Router](#closing-a-router)
 
@@ -168,8 +168,8 @@ var BookRouter = Brisket.RouterBrewery.create({
 
 BookView will be rendered in the BookLayout.
 
-### Communicating With the Layout onRender
-There are some situations where you what to tell the page's Layout to do something when a route handler executes. An example use case is wanting to highlight the current section in your layout's main navigation when you go to a route. Use the Router's `onRender` callback to specify behavior that should occur when any route completes. The `onRender` callback will be passed the `layout`:
+### Communicating With the Layout
+There are some situations where you what to tell the page's Layout to do something when a route handler executes. An example use case is wanting to highlight the current section in your layout's main navigation when you go to a route. Brisket exposes the route's `layout` to it's route handler. The layout is the first parameter after the params generated from the url:
 
 ```js
 var BookLayout = Brisket.Layout.extend();
@@ -178,15 +178,13 @@ var BookRouter = Brisket.RouterBrewery.create({
 
   layout: BookLayout,
 
-  onRender: function(layout) {
-    layout.doSomething();
-  },
-
   routes: {
     "books/:id": "book"
   },
 
-  book: function(id) {
+  book: function(id, layout) {
+    layout.doSomething();
+
     return new BookView();
   }
 
@@ -195,7 +193,7 @@ var BookRouter = Brisket.RouterBrewery.create({
 
 When the "book" route renders BookView, it will tell the BookLayout to `doSomething`.
 
-**Note:** If you use an `onRender` and you have multiple Routers, be sure to implement your Layout's [`backToNormal`](brisket.layout.md#getting-back-to-normal) that will return your layout to the default state between routes.
+**Note:** If you modify the layout in a route handler, be sure to implement your Layout's [`backToNormal`](brisket.layout.md#getting-back-to-normal) that will return your layout to the default state between routes.
 
 ### Executing Code When Routes Begin/End
 You may want to run some code when route handlers fire e.g. make a loading spinny appear and disappear. To set that up, set the `onRouteStart` and `onRouteComplete` properties of your Router. These callbacks will be passed the `layout`:
