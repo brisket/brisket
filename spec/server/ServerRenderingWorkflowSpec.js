@@ -9,6 +9,7 @@ describe("ServerRenderingWorkflow", function() {
     var ServerRequest = require("../../lib/server/ServerRequest");
     var ServerResponse = require("../../lib/server/ServerResponse");
     var Layout = require("../../lib/viewing/Layout");
+    var LayoutDelegate = require("../../lib/controlling/LayoutDelegate");
     var ErrorViewMapping = require("../../lib/errors/ErrorViewMapping");
     var Errors = require("../../lib/errors/Errors");
 
@@ -43,6 +44,7 @@ describe("ServerRenderingWorkflow", function() {
             close: jasmine.createSpy()
         };
 
+        spyOn(Layout.prototype, "render").and.callThrough();
         spyOn(ServerRenderer, "render").and.returnValue("page was rendered");
 
         mockServerRequest = {
@@ -57,14 +59,39 @@ describe("ServerRenderingWorkflow", function() {
     });
 
     it("ensures layout has been rendered before it is passed to route handlers", function(done) {
-        originalHandler = function(layout) {
-            expect(layout.hasBeenRendered).toBe(true);
+        originalHandler = function() {
+            expect(Layout.prototype.render).toHaveBeenCalled();
             done();
 
             return expectedView;
         };
 
         handlerReturns = callAugmentedRouterHandler();
+    });
+
+    it("executes layout commands AFTER route handlers", function(done) {
+        var codeWasExecuted = false;
+
+        fakeRouter.layout = Layout.extend({
+
+            testCodeWasExecuted: function() {
+                codeWasExecuted = true;
+            }
+
+        });
+
+        originalHandler = function(layout) {
+            layout.testCodeWasExecuted();
+
+            expect(codeWasExecuted).toBe(false);
+
+            return expectedView;
+        };
+
+        callAugmentedRouterHandler().lastly(function() {
+            expect(codeWasExecuted).toBe(true);
+            done();
+        });
     });
 
     describe("whenever handler is called", function() {
@@ -75,12 +102,12 @@ describe("ServerRenderingWorkflow", function() {
             });
         });
 
-        it("calls original handler with params, layout, brisketRequest, and brisketResponse", function(done) {
+        it("calls original handler with params, layoutDelegate, brisketRequest, and brisketResponse", function(done) {
             handlerReturns = callAugmentedRouterHandlerWith("param1", "param2");
 
             handlerReturns.lastly(function() {
                 expect(originalHandler)
-                    .toHaveBeenCalledWith("param1", "param2", jasmine.any(Layout), mockServerRequest, mockServerResponse);
+                    .toHaveBeenCalledWith("param1", "param2", jasmine.any(LayoutDelegate), mockServerRequest, mockServerResponse);
                 done();
             });
         });

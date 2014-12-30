@@ -6,6 +6,7 @@ describe("ClientRenderingWorkflow", function() {
     var ClientRequest = require("lib/client/ClientRequest");
     var ClientResponse = require("lib/client/ClientResponse");
     var Layout = require("lib/viewing/Layout");
+    var LayoutDelegate = require("lib/controlling/LayoutDelegate");
     var Backbone = require("lib/application/Backbone");
     var ErrorViewMapping = require("lib/errors/ErrorViewMapping");
     var mockWindow = require("mock/mockWindow");
@@ -86,16 +87,41 @@ describe("ClientRenderingWorkflow", function() {
         spyOn(Layout.prototype, "render").and.callThrough();
         spyOn(Layout.prototype, "enterDOM").and.callThrough();
 
-        originalHandler = function(layout) {
-            expect(layout.reattach).toHaveBeenCalled();
-            expect(layout.render).toHaveBeenCalled();
-            expect(layout.enterDOM).toHaveBeenCalled();
+        originalHandler = function() {
+            expect(Layout.prototype.reattach).toHaveBeenCalled();
+            expect(Layout.prototype.render).toHaveBeenCalled();
+            expect(Layout.prototype.enterDOM).toHaveBeenCalled();
             done();
 
             return expectedView;
         };
 
         handlerReturns = callAugmentedRouterHandler();
+    });
+
+    it("executes layout commands AFTER route handlers", function(done) {
+        var codeWasExecuted = false;
+
+        fakeRouter.layout = Layout.extend({
+
+            testCodeWasExecuted: function() {
+                codeWasExecuted = true;
+            }
+
+        });
+
+        originalHandler = function(layout) {
+            layout.testCodeWasExecuted();
+
+            expect(codeWasExecuted).toBe(false);
+
+            return expectedView;
+        };
+
+        callAugmentedRouterHandler().lastly(function() {
+            expect(codeWasExecuted).toBe(true);
+            done();
+        });
     });
 
     describe("whenever handler is called", function() {
@@ -110,7 +136,7 @@ describe("ClientRenderingWorkflow", function() {
                     expect(originalHandler).toHaveBeenCalledWith(
                         "param1",
                         "param2",
-                        jasmine.any(Layout),
+                        jasmine.any(LayoutDelegate),
                         mockClientRequest,
                         mockClientResponse
                     );
