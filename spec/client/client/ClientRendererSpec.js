@@ -35,10 +35,6 @@ describe("ClientRenderer", function() {
             expect(view.reattach).toHaveBeenCalled();
         });
 
-        it("alerts view that it is in the DOM", function() {
-            expect(view.enterDOM).toHaveBeenCalled();
-        });
-
     });
 
     describe("when view is attached", function() {

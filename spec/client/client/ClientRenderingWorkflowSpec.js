@@ -7,7 +7,7 @@ describe("ClientRenderingWorkflow", function() {
     var ClientResponse = require("lib/client/ClientResponse");
     var Layout = require("lib/viewing/Layout");
     var LayoutDelegate = require("lib/controlling/LayoutDelegate");
-    var Backbone = require("lib/application/Backbone");
+    var View = require("lib/viewing/View");
     var ErrorViewMapping = require("lib/errors/ErrorViewMapping");
     var mockWindow = require("mock/mockWindow");
     var Errors = require("lib/errors/Errors");
@@ -36,12 +36,12 @@ describe("ClientRenderingWorkflow", function() {
             name: "example"
         });
 
-        expectedView = new Backbone.View();
+        expectedView = new View();
 
-        PageNotFoundView = Backbone.View.extend({
+        PageNotFoundView = View.extend({
             name: "page_not_found"
         });
-        ErrorView = Backbone.View.extend({
+        ErrorView = View.extend({
             name: "unhandled_error"
         });
 
@@ -80,23 +80,6 @@ describe("ClientRenderingWorkflow", function() {
 
     afterEach(function() {
         ClientRenderingWorkflow.reset();
-    });
-
-    it("initializes layout BEFORE it is passed to route handlers", function(done) {
-        spyOn(Layout.prototype, "reattach").and.callThrough();
-        spyOn(Layout.prototype, "render").and.callThrough();
-        spyOn(Layout.prototype, "enterDOM").and.callThrough();
-
-        originalHandler = function() {
-            expect(Layout.prototype.reattach).toHaveBeenCalled();
-            expect(Layout.prototype.render).toHaveBeenCalled();
-            expect(Layout.prototype.enterDOM).toHaveBeenCalled();
-            done();
-
-            return expectedView;
-        };
-
-        handlerReturns = callAugmentedRouterHandler();
     });
 
     it("executes layout commands AFTER route handlers", function(done) {
@@ -483,7 +466,7 @@ describe("ClientRenderingWorkflow", function() {
                 spyOn(NewLayout.prototype, "fetchData");
 
                 fakeRouter.layout = NewLayout;
-                expectedView2 = new Backbone.View();
+                expectedView2 = new View();
                 handlerReturns = callAugmentedRouterHandler(function() {
                     return expectedView2;
                 });
@@ -507,7 +490,7 @@ describe("ClientRenderingWorkflow", function() {
         describe("when second request wants to render with current layout that was used in first request", function() {
 
             beforeEach(function() {
-                expectedView2 = new Backbone.View();
+                expectedView2 = new View();
                 handlerReturns = callAugmentedRouterHandler(function() {
                     return expectedView2;
                 });
@@ -622,7 +605,7 @@ describe("ClientRenderingWorkflow", function() {
     describe("when the first render request takes longer to return than the second", function() {
 
         beforeEach(function() {
-            expectedView2 = new Backbone.View();
+            expectedView2 = new View();
             expectedView2.id = "view2";
         });
 
@@ -630,15 +613,11 @@ describe("ClientRenderingWorkflow", function() {
 
             beforeEach(function() {
                 originalHandler = function() {
-                    return Promise.delay(10).then(function() {
-                        return expectedView;
-                    });
+                    return Promise.resolve(expectedView).timeout(10);
                 };
 
                 secondHandler = function() {
-                    return Promise.delay(5).then(function() {
-                        return expectedView2;
-                    });
+                    return Promise.resolve(expectedView2).timeout(5);
                 };
 
                 runBothHandlers();
@@ -679,17 +658,13 @@ describe("ClientRenderingWorkflow", function() {
 
             beforeEach(function() {
                 originalHandler = function() {
-                    return Promise.delay(10).then(function() {
-                        throw {
-                            status: 404
-                        };
-                    });
+                    return Promise.reject({
+                        status: 404
+                    }).timeout(10);
                 };
 
                 secondHandler = function() {
-                    return Promise.delay(5).then(function() {
-                        return expectedView2;
-                    });
+                    return Promise.resolve(expectedView2).timeout(5);
                 };
 
                 runBothHandlers();
@@ -730,17 +705,13 @@ describe("ClientRenderingWorkflow", function() {
 
             beforeEach(function() {
                 originalHandler = function() {
-                    return Promise.delay(10).then(function() {
-                        return expectedView;
-                    });
+                    return Promise.resolve(expectedView).timeout(10);
                 };
 
                 secondHandler = function() {
-                    return Promise.delay(5).then(function() {
-                        throw {
-                            status: 404
-                        };
-                    });
+                    return Promise.reject({
+                        status: 404
+                    }).timeout(5);
                 };
 
                 runBothHandlers();
@@ -781,19 +752,15 @@ describe("ClientRenderingWorkflow", function() {
 
             beforeEach(function() {
                 originalHandler = function() {
-                    return Promise.delay(10).then(function() {
-                        throw {
-                            status: 500
-                        };
-                    });
+                    return Promise.reject({
+                        status: 500
+                    }).timeout(10);
                 };
 
                 secondHandler = function() {
-                    return Promise.delay(5).then(function() {
-                        throw {
-                            status: 404
-                        };
-                    });
+                    return Promise.reject({
+                        status: 404
+                    }).timeout(5);
                 };
 
                 runBothHandlers();
@@ -837,9 +804,7 @@ describe("ClientRenderingWorkflow", function() {
 
         beforeEach(function() {
             originalHandler = function() {
-                return Promise.delay(5).then(function() {
-                    return expectedView;
-                });
+                return Promise.resolve(expectedView).timeout(5);
             };
         });
 
@@ -886,9 +851,7 @@ describe("ClientRenderingWorkflow", function() {
 
             beforeEach(function() {
                 secondHandler = function() {
-                    return Promise.delay(2).then(function() {
-                        return expectedView;
-                    });
+                    return Promise.resolve(expectedView).timeout(2);
                 };
 
                 runBothHandlers();
