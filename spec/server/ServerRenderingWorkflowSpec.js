@@ -94,6 +94,45 @@ describe("ServerRenderingWorkflow", function() {
         });
     });
 
+    describe("when route has finished", function() {
+        var layoutCommandWasExecuted;
+        var whenRouteFinished;
+
+        beforeEach(function() {
+            layoutCommandWasExecuted = false;
+
+            fakeRouter.layout = Layout.extend({
+
+                testLayoutCommandWasExecuted: function() {
+                    layoutCommandWasExecuted = true;
+                }
+
+            });
+
+            originalHandler = function(layout) {
+                expectedView.on("event", function() {
+                    layout.testLayoutCommandWasExecuted();
+                });
+
+                return expectedView;
+            };
+
+            whenRouteFinished = callAugmentedRouterHandler();
+        });
+
+        it("executes layout commands from route handler immediately", function(done) {
+            whenRouteFinished.lastly(function() {
+                expect(layoutCommandWasExecuted).toBe(false);
+
+                expectedView.trigger("event");
+
+                expect(layoutCommandWasExecuted).toBe(true);
+                done();
+            });
+        });
+
+    });
+
     describe("whenever handler is called", function() {
 
         beforeEach(function() {
