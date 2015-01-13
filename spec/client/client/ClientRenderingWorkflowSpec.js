@@ -83,28 +83,67 @@ describe("ClientRenderingWorkflow", function() {
     });
 
     it("executes layout commands AFTER route handlers", function(done) {
-        var codeWasExecuted = false;
+        var layoutCommandWasExecuted = false;
 
         fakeRouter.layout = Layout.extend({
 
-            testCodeWasExecuted: function() {
-                codeWasExecuted = true;
+            testLayoutCommandWasExecuted: function() {
+                layoutCommandWasExecuted = true;
             }
 
         });
 
         originalHandler = function(layout) {
-            layout.testCodeWasExecuted();
+            layout.testLayoutCommandWasExecuted();
 
-            expect(codeWasExecuted).toBe(false);
+            expect(layoutCommandWasExecuted).toBe(false);
 
             return expectedView;
         };
 
         callAugmentedRouterHandler().lastly(function() {
-            expect(codeWasExecuted).toBe(true);
+            expect(layoutCommandWasExecuted).toBe(true);
             done();
         });
+    });
+
+    describe("when route has finished", function() {
+        var layoutCommandWasExecuted;
+        var whenRouteFinished;
+
+        beforeEach(function() {
+            layoutCommandWasExecuted = false;
+
+            fakeRouter.layout = Layout.extend({
+
+                testLayoutCommandWasExecuted: function() {
+                    layoutCommandWasExecuted = true;
+                }
+
+            });
+
+            originalHandler = function(layout) {
+                expectedView.on("event", function() {
+                    layout.testLayoutCommandWasExecuted();
+                });
+
+                return expectedView;
+            };
+
+            whenRouteFinished = callAugmentedRouterHandler();
+        });
+
+        it("executes layout commands from route handler immediately", function(done) {
+            whenRouteFinished.lastly(function() {
+                expect(layoutCommandWasExecuted).toBe(false);
+
+                expectedView.trigger("event");
+
+                expect(layoutCommandWasExecuted).toBe(true);
+                done();
+            });
+        });
+
     });
 
     describe("whenever handler is called", function() {
