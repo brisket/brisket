@@ -1,6 +1,9 @@
 "use strict";
 
 var Metatags = require("lib/metatags/Metatags");
+var OpenGraphTag = require("lib/metatags/OpenGraphTag");
+var LinkTag = require("lib/metatags/LinkTag");
+var StandardTag = require("lib/metatags/StandardTag");
 
 describe("Metatags", function() {
 
@@ -20,86 +23,191 @@ describe("Metatags", function() {
 
         });
 
-    });
+        describe("when pairs are passed", function() {
 
-    describe("when normal pairs are present", function() {
-
-        beforeEach(function() {
-            metatags = new Metatags({
-                "description": "some description"
+            beforeEach(function() {
+                metatags = new Metatags({
+                    "description": "meta desc"
+                });
             });
-        });
 
-        it("creates tags with name attribute", function() {
-            expect(metatags.toTags()).toBe(
-                '<meta name="description" content="some description">'
-            );
-        });
-
-    });
-
-    describe("when openGraph pairs are present", function() {
-
-        beforeEach(function() {
-            metatags = new Metatags({
-                openGraph: {
-                    "og:image": "image.jpg"
-                }
+            it("initializes the pairs attribute", function() {
+                expect(metatags.pairs).toEqual({
+                    "description": "meta desc"
+                });
             });
-        });
 
-        it("creates tags with property attribute", function() {
-            expect(metatags.toTags()).toBe(
-                '<meta property="og:image" content="image.jpg">'
-            );
+            it("initializes the tagViews attributes", function() {
+                expect(metatags.tagViews).toEqual([]);
+            });
+
         });
 
     });
 
-    describe("when values have characters that could break html", function() {
+    describe("#createTagView", function() {
+
+        var tagName;
+        var tagValue;
 
         beforeEach(function() {
             metatags = new Metatags({
-                "key": "/value><"
+                "description": "meta desc"
             });
+
+            spyOn(OpenGraphTag, "createView");
+            spyOn(LinkTag, "createView");
+            spyOn(StandardTag, "createView");
         });
 
-        it("escapes html breaking characters", function() {
-            expect(metatags.toTags()).toBe(
-                '<meta name="key" content="/value&gt;&lt;">'
-            );
+        describe("when it is an open-graph tag", function() {
+
+            beforeEach(function() {
+                tagName = "og:url";
+                tagValue = "sample-og-url";
+
+                metatags.createTagView(tagName, tagValue);
+            });
+
+            it("creates a view for OpenGraphTag", function() {
+                expect(OpenGraphTag.createView)
+                    .toHaveBeenCalledWith(tagName, tagValue);
+            });
+
+        });
+
+        describe("when it is a canonical link tag", function() {
+
+            beforeEach(function() {
+                tagName = "canonical";
+                tagValue = "canonical-link";
+
+                metatags.createTagView(tagName, tagValue);
+            });
+
+            it("creates a view for LinkTag", function() {
+                expect(LinkTag.createView)
+                    .toHaveBeenCalledWith(tagName, tagValue);
+            });
+
+        });
+
+        describe("when it is a standard meta tag", function() {
+
+            beforeEach(function() {
+                tagName = "keywords";
+                tagValue = "sample keywords";
+
+                metatags.createTagView(tagName, tagValue);
+            });
+
+            it("creates a view for StandardTag", function() {
+                expect(StandardTag.createView)
+                    .toHaveBeenCalledWith(tagName, tagValue);
+            });
+
         });
 
     });
 
-    describe("when values have single quotes", function() {
+    describe("#createTagViews", function() {
+
+        var tagViews;
 
         beforeEach(function() {
             metatags = new Metatags({
-                "key": "'quote'"
+                "description": "sample desc",
+                "og:url": "sample url"
             });
+
+            tagViews = metatags.createTagViews();
         });
 
-        it("escapes single quotes", function() {
-            expect(metatags.toTags()).toBe(
-                '<meta name="key" content="&#x27;quote&#x27;">'
-            );
+
+        it("creates a tag view for each key-value pair", function() {
+            expect(tagViews.length).toBe(2);
         });
+
     });
 
-    describe("when values have double quotes", function() {
+    describe("#closeTagViews", function() {
+
+        var tagView1;
+        var tagView2;
+
+        beforeEach(function() {
+            tagView1 = OpenGraphTag.createView("og:url", "sample url");
+            tagView2 = StandardTag.createView("description", "sample desc");
+
+            spyOn(tagView1, "close");
+            spyOn(tagView2, "close");
+
+            metatags.tagViews = [tagView1, tagView2];
+
+            metatags.closeTagViews();
+        });
+
+        it("closes all tag views", function() {
+            expect(tagView1.close).toHaveBeenCalled();
+            expect(tagView2.close).toHaveBeenCalled();
+        });
+
+        it("resets attribute tagViews", function() {
+            expect(metatags.tagViews).toEqual([]);
+        });
+
+    });
+
+    describe("#sameAs", function() {
+
+        var metatagsToCompare;
 
         beforeEach(function() {
             metatags = new Metatags({
-                "key": '"quote"'
+                "keywords": "some keywords"
             });
         });
 
-        it("escapes double quotes", function() {
-            expect(metatags.toTags()).toBe(
-                '<meta name="key" content="&quot;quote&quot;">'
-            );
+        describe("when the metatagsToCompare is undefined", function() {
+
+            beforeEach(function() {
+                metatagsToCompare = null;
+            });
+
+            it("returns false", function() {
+                expect(metatags.sameAs(metatagsToCompare)).toBe(false);
+            });
+
         });
+
+        describe("when the metatagsToCompare is different", function() {
+
+            beforeEach(function() {
+                metatagsToCompare = new Metatags({
+                    "keywords": "other keywords"
+                });
+            });
+
+            it("returns false", function() {
+                expect(metatags.sameAs(metatagsToCompare)).toBe(false);
+            });
+
+        });
+
+        describe("when the metatagsToCompare has the same pairs", function() {
+
+            beforeEach(function() {
+                metatagsToCompare = new Metatags({
+                    "keywords": "some keywords"
+                });
+            });
+
+            it("returns false", function() {
+                expect(metatags.sameAs(metatagsToCompare)).toBe(true);
+            });
+
+        });
+
     });
 
 });

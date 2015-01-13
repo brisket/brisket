@@ -1,6 +1,7 @@
 "use strict";
 
 var ClientRenderer = require("lib/client/ClientRenderer");
+var HasPageLevelData = require("lib/traits/HasPageLevelData");
 var Layout = require("lib/viewing/Layout");
 var View = require("lib/viewing/View");
 
@@ -8,6 +9,8 @@ describe("ClientRenderer", function() {
 
     var layout;
     var view;
+    var metatags;
+    var ViewWithPageLevelData;
 
     beforeEach(function() {
         layout = new Layout();
@@ -17,12 +20,17 @@ describe("ClientRenderer", function() {
         spyOn(layout, "backToNormal");
         spyOn(layout, "setContentToAttachedView");
         spyOn(layout, "setContent");
+        spyOn(layout, "setTitle");
+        spyOn(layout, "setMetaTags");
+        spyOn(layout, "renderPageLevelData");
 
         view = new View();
         spyOn(view, "render");
         spyOn(view, "reattach");
         spyOn(view, "enterDOM");
         spyOn(view, "setUid");
+
+        ViewWithPageLevelData = View.extend(HasPageLevelData);
     });
 
     describe("on all renders", function() {
@@ -87,6 +95,85 @@ describe("ClientRenderer", function() {
 
         it("sets uid to reflect current request and it's creation order", function() {
             expect(view.setUid).toHaveBeenCalledWith("1|0_0");
+        });
+
+    });
+
+    describe("when view has page level data", function() {
+
+        beforeEach(function() {
+            metatags = {
+                description: "description"
+            };
+
+            view.withTitle("Title")
+                .withMetatags(metatags);
+
+            ClientRenderer.render(layout, view);
+        });
+
+        it("sets the layout title", function() {
+            expect(layout.setTitle).toHaveBeenCalledWith("Title");
+        });
+
+        it("attempts to render the page level data", function() {
+            expect(layout.renderPageLevelData).toHaveBeenCalled();
+        });
+
+    });
+
+    describe("when view does NOT have page level data", function() {
+
+        beforeEach(function() {
+            ClientRenderer.render(layout, view);
+        });
+
+        it("sets the layout title with null", function() {
+            expect(layout.setTitle).toHaveBeenCalledWith(null);
+        });
+
+        it("attempts to render the page level data", function() {
+            expect(layout.renderPageLevelData).toHaveBeenCalled();
+        });
+
+    });
+
+    describe("when layout.updateMetatagsOnClientRender is true", function() {
+
+        beforeEach(function() {
+            layout.updateMetatagsOnClientRender = true;
+
+            metatags = {
+                description: "description"
+            };
+
+            view.withMetatags(metatags);
+
+            ClientRenderer.render(layout, view);
+        });
+
+        it("sets the layout metatags", function() {
+            expect(layout.setMetaTags).toHaveBeenCalledWith(metatags);
+        });
+
+    });
+
+    describe("when layout.updateMetatagsOnClientRender is false", function() {
+
+        beforeEach(function() {
+            layout.updateMetatagsOnClientRender = false;
+
+            metatags = {
+                description: "description"
+            };
+
+            view.withMetatags(metatags);
+
+            ClientRenderer.render(layout, view);
+        });
+
+        it("does NOT set the layout metatags", function() {
+            expect(layout.setMetaTags).not.toHaveBeenCalled();
         });
 
     });

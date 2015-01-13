@@ -60,10 +60,6 @@ describe("public interface to Brisket", function() {
         expect(Brisket.createServer).toBe(requireFromLib("server/Server").create);
     });
 
-    it("exposes Brisket.Layout.Metatags", function() {
-        expect(Brisket.Layout.Metatags).toBe(requireFromLib("metatags/Metatags"));
-    });
-
     it("exposes Backbone as Brisket.Backbone", function() {
         expect(Brisket.Backbone).toBe(requireFromLib("application/Backbone"));
     });
