@@ -29,6 +29,7 @@ describe("ServerRenderer", function() {
         spyOn(layout, "setContent");
         spyOn(layout, "setTitle");
         spyOn(layout, "setMetaTags");
+        spyOn(layout, "renderPageLevelData");
         spyOn(layout, "setEnvironmentConfig");
         spyOn(layout, "close");
 
@@ -233,9 +234,9 @@ describe("ServerRenderer", function() {
     describe("when view has a page level data", function() {
 
         beforeEach(function() {
-            metatags = new Layout.Metatags({
+            metatags = {
                 description: "description"
-            });
+            };
 
             view = new ViewWithPageLevelData()
                 .withTitle("Title")
@@ -250,6 +251,10 @@ describe("ServerRenderer", function() {
 
         it("sets the layout metatags", function() {
             expect(layout.setMetaTags).toHaveBeenCalledWith(metatags);
+        });
+
+        it("renders the page level data", function() {
+            expect(layout.renderPageLevelData).toHaveBeenCalled();
         });
 
         it("sets the layout content", function() {
@@ -270,6 +275,10 @@ describe("ServerRenderer", function() {
 
         it("sets the layout metatags with null", function() {
             expect(layout.setMetaTags).toHaveBeenCalledWith(null);
+        });
+
+        it("attempts to render the page level data", function() {
+            expect(layout.renderPageLevelData).toHaveBeenCalled();
         });
 
         it("sets the layout content", function() {
