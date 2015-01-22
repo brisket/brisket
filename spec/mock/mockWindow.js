@@ -9,7 +9,7 @@ function mockWindow() {
             protocol: "http:",
             host: "example.com:8080",
             pathname: "/requested/path",
-            search: "?some=param&another[param]=value",
+            search: "?some=param&another%5Bparam%5D=value",
             replace: jasmine.createSpy("mockWindow.location.replace")
         },
         navigator: {

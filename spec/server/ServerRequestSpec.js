@@ -36,6 +36,10 @@ describe("ServerRequest", function() {
             });
         });
 
+        it("exposes request raw query", function() {
+            expect(serverRequest.rawQuery).toEqual("some=param&another%5Bparam%5D=value");
+        });
+
         it("exposes the referrer", function() {
             expect(serverRequest.referrer).toEqual("theReferrer.com");
         });
@@ -91,7 +95,8 @@ describe("ServerRequest", function() {
                 another: {
                     param: "value"
                 }
-            }
+            },
+            originalUrl: "/requested/path?some=param&another%5Bparam%5D=value"
         };
     }
 
