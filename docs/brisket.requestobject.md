@@ -75,8 +75,11 @@ The path of the URL with a preceding '/' e.g. '/path/to/route'.
 ### request.protocol
 The protocol scheme of the URL, **NOT** including the ':' e.g. 'http', 'https'.
 
+### request.rawQuery
+The raw query string. It is the same as extracting query string express request.originalUrl.
+
 ### request.query
-An object with the parsed values from the query string. It is the same as express' request.query.
+An object with the parsed values from the query string. It is the same as express request.query.
 
 ### request.referrer
 The full URI of the previous request e.g. previous page, previous click within your application.
