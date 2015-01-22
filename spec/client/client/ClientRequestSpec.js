@@ -42,6 +42,10 @@ describe("ClientRequest", function() {
             });
         });
 
+        it("exposes request raw query", function() {
+            expect(clientRequest.rawQuery).toEqual("some=param&another%5Bparam%5D=value");
+        });
+
         it("exposes the referrer", function() {
             expect(clientRequest.referrer).toEqual("theReferrer");
         });
