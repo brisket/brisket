@@ -36,6 +36,16 @@ describe("ServerRequest", function() {
             });
         });
 
+        it("exposes request raw query", function() {
+            expect(serverRequest.rawQuery).toEqual("some=param&another%5Bparam%5D=value");
+        });
+
+        it("exposes request with no query params", function() {
+            var serverRequestNoQueryParam = ServerRequest.from(mockExpressRequestNoQueryParam());
+            expect(serverRequestNoQueryParam.rawQuery).toEqual(null);
+            expect(serverRequestNoQueryParam.query).toEqual(undefined);
+        });
+
         it("exposes the referrer", function() {
             expect(serverRequest.referrer).toEqual("theReferrer.com");
         });
@@ -91,7 +101,22 @@ describe("ServerRequest", function() {
                 another: {
                     param: "value"
                 }
-            }
+            },
+            originalUrl: "/requested/path?some=param&another%5Bparam%5D=value"
+        };
+    }
+
+    function mockExpressRequestNoQueryParam() {
+        return {
+            protocol: "http",
+            path: "/requested/path",
+            host: "example.com",
+            headers: {
+                "host": "example.com:8080",
+                "referer": "theReferrer.com",
+                "user-agent": "A wonderful computer"
+            },
+            originalUrl: "/requested/path"
         };
     }
 
