@@ -168,12 +168,28 @@ describe("ClientRenderer", function() {
             };
 
             view.withMetatags(metatags);
-
-            ClientRenderer.render(layout, view);
         });
 
-        it("does NOT set the layout metatags", function() {
-            expect(layout.setMetaTags).not.toHaveBeenCalled();
+        describe("and it is the first request", function() {
+
+            beforeEach(function() {
+                ClientRenderer.render(layout, view, 1);
+            });
+
+            it("sets the layout metatags", function() {
+                expect(layout.setMetaTags).toHaveBeenCalledWith(metatags);
+            });
+        });
+
+        describe("and it is NOT the first request", function() {
+
+            beforeEach(function() {
+                ClientRenderer.render(layout, view, 2);
+            });
+
+            it("does NOT set the layout metatags", function() {
+                expect(layout.setMetaTags).not.toHaveBeenCalled();
+            });
         });
 
     });
