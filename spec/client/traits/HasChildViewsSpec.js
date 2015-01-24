@@ -1,7 +1,7 @@
 "use strict";
 
 var HasChildViews = require("lib/traits/HasChildViews");
-var _ = require("underscore");
+var _ = require("lodash");
 var Backbone = require("lib/application/Backbone");
 
 describe("HasChildViews", function() {

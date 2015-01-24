@@ -1,7 +1,7 @@
 {
     "name": "brisket",
-    "version": "0.27.4",
-    "description": "Framework for building single page web apps using isomorphic javascript",
+    "version": "0.27.5",
+    "description": "Framework for building single page web apps using isomorphic Javascript",
     "author": [
         "Wayne Warner",
         "Eric Herdzik",
@@ -27,7 +27,7 @@
         "jquery-mockjax": "~1.5.3",
         "jsdom": "~0.11.1",
         "bluebird": "~2.3.1",
-        "underscore": "~1.6.0",
+        "lodash": "~2.4",
         "qs": "2.2.4"
     },
     "devDependencies": {

@@ -3,7 +3,7 @@
 var CloseableRouter = require("lib/traits/CloseableRouter");
 var Backbone = require("lib/application/Backbone");
 var Errors = require("lib/errors/Errors");
-var _ = require("underscore");
+var _ = require("lodash");
 
 describe("CloseableRouter", function() {
 

@@ -4,7 +4,7 @@ var Server = require("../../lib/server/Server");
 var App = require("../../lib/application/App");
 var ServerApp = require("../../lib/server/ServerApp");
 var ServerResponseWorkflow = require("../../lib/server/ServerResponseWorkflow");
-var _ = require("underscore");
+var _ = require("lodash");
 
 describe("Server", function() {
 
