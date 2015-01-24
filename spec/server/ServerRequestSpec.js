@@ -15,10 +15,6 @@ describe("ServerRequest", function() {
             expect(serverRequest.protocol).toBe("http");
         });
 
-        it("exposes path", function() {
-            expect(serverRequest.path).toBe("/requested/path");
-        });
-
         it("exposes full host with port", function() {
             expect(serverRequest.host).toBe("example.com:8080");
         });
@@ -82,6 +78,36 @@ describe("ServerRequest", function() {
             serverRequest = ServerRequest.from(mockExpressRequest());
 
             expect(serverRequest.environmentConfig).toEqual({});
+        });
+
+    });
+
+    describe("path", function() {
+
+        describe("when environmentConfig has appRoot", function() {
+
+            beforeEach(function() {
+                serverRequest = ServerRequest.from(mockExpressRequest(), {
+                    appRoot: "/appRoot"
+                });
+            });
+
+            it("exposes path", function() {
+                expect(serverRequest.path).toBe("/appRoot/requested/path");
+            });
+
+        });
+
+        describe("when environmentConfig does NOT have appRoot", function() {
+
+            beforeEach(function() {
+                serverRequest = ServerRequest.from(mockExpressRequest(), {});
+            });
+
+            it("exposes path", function() {
+                expect(serverRequest.path).toBe("/requested/path");
+            });
+
         });
 
     });
