@@ -123,9 +123,26 @@ describe("Metatags", function() {
             tagViews = metatags.createTagViews();
         });
 
+        describe("when called the first time", function() {
 
-        it("creates a tag view for each key-value pair", function() {
-            expect(tagViews.length).toBe(2);
+            it("creates a tag view for each key-value pair", function() {
+                expect(tagViews.length).toBe(2);
+            });
+
+        });
+
+        describe("when called after the tagViews have been created", function() {
+
+            var recreatedTagViews;
+
+            beforeEach(function() {
+                recreatedTagViews = metatags.createTagViews();
+            });
+
+            it("returns the existing tagViews", function() {
+                expect(recreatedTagViews).toEqual(tagViews);
+            });
+
         });
 
     });
