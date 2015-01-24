@@ -22,7 +22,7 @@ function configureGrunt(grunt) {
                 options: {
                     alias: [
                         "node_modules/backbone/backbone.js:backbone",
-                        "node_modules/underscore/underscore.js:underscore",
+                        "node_modules/lodash/lodash.js:lodash",
                         "node_modules/bluebird/js/main/bluebird.js:bluebird",
                         "node_modules/jquery/dist/jquery.js:jquery"
                     ],

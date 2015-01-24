@@ -9,7 +9,7 @@ describe("ServerRenderer", function() {
     var HasPageLevelData = require("../../lib/traits/HasPageLevelData");
     var AjaxCallsForCurrentRequest = require("../../lib/server/AjaxCallsForCurrentRequest");
     var $ = require("../../lib/application/jquery");
-    var _ = require("underscore");
+    var _ = require("lodash");
 
     var view;
     var html;
