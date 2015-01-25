@@ -642,20 +642,32 @@ describe("ClientRenderingWorkflow", function() {
     });
 
     describe("when the first render request takes longer to return than the second", function() {
+        var commandFromOriginalHandler;
+        var commandFromSecondHandler;
 
         beforeEach(function() {
             expectedView2 = new View();
             expectedView2.id = "view2";
+
+            commandFromOriginalHandler = jasmine.createSpy("commands from original handler");
+            commandFromSecondHandler = jasmine.createSpy("commands from second handler");
+
+            fakeRouter.layout = Layout.extend({
+                commandFromOriginalHandler: commandFromOriginalHandler,
+                commandFromSecondHandler: commandFromSecondHandler
+            });
         });
 
         describe("when both handlers are resolved", function() {
 
             beforeEach(function() {
-                originalHandler = function() {
+                originalHandler = function(layout) {
+                    layout.commandFromOriginalHandler();
                     return Promise.resolve(expectedView).timeout(10);
                 };
 
-                secondHandler = function() {
+                secondHandler = function(layout) {
+                    layout.commandFromSecondHandler();
                     return Promise.resolve(expectedView2).timeout(5);
                 };
 
@@ -675,6 +687,15 @@ describe("ClientRenderingWorkflow", function() {
                     });
             });
 
+            it("does NOT run layout commands for first request", function(done) {
+                bothReturn
+                    .then(function() {
+                        expect(commandFromOriginalHandler).not.toHaveBeenCalled();
+
+                        done();
+                    });
+            });
+
             it("renders the latest request", function(done) {
                 bothReturn
                     .then(function() {
@@ -683,6 +704,15 @@ describe("ClientRenderingWorkflow", function() {
                             expectedView2,
                             2
                         );
+
+                        done();
+                    });
+            });
+
+            it("runs layout commands for latest request", function(done) {
+                bothReturn
+                    .then(function() {
+                        expect(commandFromSecondHandler).toHaveBeenCalled();
 
                         done();
                     });
