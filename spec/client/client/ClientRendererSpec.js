@@ -20,9 +20,9 @@ describe("ClientRenderer", function() {
         spyOn(layout, "backToNormal");
         spyOn(layout, "setContentToAttachedView");
         spyOn(layout, "setContent");
-        spyOn(layout, "setTitle");
-        spyOn(layout, "setMetaTags");
-        spyOn(layout, "renderPageLevelData");
+        spyOn(layout, "renderTitle");
+        spyOn(layout, "renderMetatags");
+        spyOn(layout, "flushMetatags");
 
         view = new View();
         spyOn(view, "render");
@@ -112,12 +112,8 @@ describe("ClientRenderer", function() {
             ClientRenderer.render(layout, view);
         });
 
-        it("sets the layout title", function() {
-            expect(layout.setTitle).toHaveBeenCalledWith("Title");
-        });
-
-        it("attempts to render the page level data", function() {
-            expect(layout.renderPageLevelData).toHaveBeenCalled();
+        it("renders title", function() {
+            expect(layout.renderTitle).toHaveBeenCalledWith("Title");
         });
 
     });
@@ -128,12 +124,8 @@ describe("ClientRenderer", function() {
             ClientRenderer.render(layout, view);
         });
 
-        it("sets the layout title with null", function() {
-            expect(layout.setTitle).toHaveBeenCalledWith(null);
-        });
-
-        it("attempts to render the page level data", function() {
-            expect(layout.renderPageLevelData).toHaveBeenCalled();
+        it("renders null title", function() {
+            expect(layout.renderTitle).toHaveBeenCalledWith(null);
         });
 
     });
@@ -148,12 +140,38 @@ describe("ClientRenderer", function() {
             };
 
             view.withMetatags(metatags);
-
-            ClientRenderer.render(layout, view);
         });
 
-        it("sets the layout metatags", function() {
-            expect(layout.setMetaTags).toHaveBeenCalledWith(metatags);
+        describe("and it is the first request", function() {
+
+            beforeEach(function() {
+                ClientRenderer.render(layout, view, 1);
+            });
+
+            it("does NOT render the metatags", function() {
+                expect(layout.renderMetatags).not.toHaveBeenCalledWith(metatags);
+            });
+
+            it("does NOT flush the existing metatags", function() {
+                expect(layout.flushMetatags).not.toHaveBeenCalled();
+            });
+
+        });
+
+        describe("and it is NOT the first request", function() {
+
+            beforeEach(function() {
+                ClientRenderer.render(layout, view, 2);
+            });
+
+            it("renders the metatags", function() {
+                expect(layout.renderMetatags).toHaveBeenCalledWith(metatags);
+            });
+
+            it("flushes the existing metatags", function() {
+                expect(layout.flushMetatags).toHaveBeenCalled();
+            });
+
         });
 
     });
@@ -176,9 +194,14 @@ describe("ClientRenderer", function() {
                 ClientRenderer.render(layout, view, 1);
             });
 
-            it("sets the layout metatags", function() {
-                expect(layout.setMetaTags).toHaveBeenCalledWith(metatags);
+            it("does NOT render the metatags", function() {
+                expect(layout.renderMetatags).not.toHaveBeenCalledWith(metatags);
             });
+
+            it("does NOT flush the existing metatags", function() {
+                expect(layout.flushMetatags).not.toHaveBeenCalled();
+            });
+
         });
 
         describe("and it is NOT the first request", function() {
@@ -187,9 +210,14 @@ describe("ClientRenderer", function() {
                 ClientRenderer.render(layout, view, 2);
             });
 
-            it("does NOT set the layout metatags", function() {
-                expect(layout.setMetaTags).not.toHaveBeenCalled();
+            it("does NOT render the metatags", function() {
+                expect(layout.renderMetatags).not.toHaveBeenCalledWith(metatags);
             });
+
+            it("does NOT flush the existing metatags", function() {
+                expect(layout.flushMetatags).not.toHaveBeenCalled();
+            });
+
         });
 
     });

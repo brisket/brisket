@@ -1,22 +1,22 @@
 "use strict";
 
-var Layout = require("lib/viewing/Layout");
-var Metatags = require("lib/metatags/Metatags");
+var Layout = require("../../../lib/viewing/Layout");
+var Metatags = require("../../../lib/metatags/Metatags");
 
 describe("Layout", function() {
 
     var ExampleLayout;
     var layout;
 
-    describe("#asHtml", function() {
-
-        beforeEach(function() {
-            ExampleLayout = Layout.extend({
-                template: "<!doctype html>\n<html></html>"
-            });
-
-            layout = new ExampleLayout();
+    beforeEach(function() {
+        ExampleLayout = Layout.extend({
+            template: "<!doctype html>\n<html><head><title>original</title></head></html>"
         });
+
+        layout = new ExampleLayout();
+    });
+
+    describe("#asHtml", function() {
 
         describe("when template has NOT been rendered", function() {
 
@@ -151,169 +151,163 @@ describe("Layout", function() {
 
     });
 
-    describe("#renderPageLevelData", function() {
+    describe("#renderTitle", function() {
 
-        var layout;
-        var shouldRenderMetaTags;
+        var title;
 
         beforeEach(function() {
-            layout = new Layout();
-            spyOn(layout, "renderPageTitle");
-            spyOn(layout, "renderMetaTags");
+            layout.renderTemplate();
         });
 
-        describe("when shouldRenderMetaTags is true", function() {
+        describe("when no title is provided", function() {
 
             beforeEach(function() {
-                shouldRenderMetaTags = true;
-                layout.renderPageLevelData(shouldRenderMetaTags);
+                title = undefined;
             });
 
-            it("renders page title", function() {
-                expect(layout.renderPageTitle).toHaveBeenCalled();
+            describe("when default is NOT set", function() {
+
+                it("sets an empty title", function() {
+                    layout.renderTitle(title);
+
+                    expect(layout.$title().text()).toEqual("");
+                });
+
             });
 
-            it("renders metatags", function() {
-                expect(layout.renderMetaTags).toHaveBeenCalled();
+            describe("when default is set", function() {
+
+                beforeEach(function() {
+                    layout.defaultTitle = "default";
+                });
+
+                it("sets title with default title", function() {
+                    layout.renderTitle(title);
+
+                    expect(layout.$title().text()).toEqual("default");
+                });
+
             });
 
         });
 
-        describe("when shouldRenderMetaTags is false", function() {
+        describe("when title is provided", function() {
 
             beforeEach(function() {
-                shouldRenderMetaTags = false;
-                layout.renderPageLevelData(shouldRenderMetaTags);
+                title = "title";
             });
 
-            it("renders page title", function() {
-                expect(layout.renderPageTitle).toHaveBeenCalled();
+            describe("when default is NOT set", function() {
+
+                it("sets title", function() {
+                    layout.renderTitle(title);
+
+                    expect(layout.$title().text()).toEqual("title");
+                });
+
             });
 
-            it("does not render metatags", function() {
-                expect(layout.renderMetaTags).not.toHaveBeenCalled();
+            describe("when default is set", function() {
+
+                beforeEach(function() {
+                    layout.defaultTitle = "default";
+                });
+
+                it("sets title", function() {
+                    layout.renderTitle(title);
+
+                    expect(layout.$title().text()).toEqual("title");
+                });
+
             });
 
         });
 
     });
 
-    describe("#renderMetaTags", function() {
-
-        var metatags;
-        var renderedMetatags;
+    describe("#flushMetatags", function() {
 
         beforeEach(function() {
-            ExampleLayout = Layout.extend({
-                template: "<!doctype html>\n<html><head></head></html>"
-            });
-
-            layout = new ExampleLayout();
-
-            spyOn(layout, "createChildView").and.callThrough();
+            layout.renderTemplate();
         });
 
-        describe("when there is no metatags", function() {
+        describe("when there are NO ephemeral metatags", function() {
 
             beforeEach(function() {
-                layout.metatags = null;
-                layout.renderMetaTags();
+                layout.flushMetatags();
             });
 
             it("does nothing", function() {
-                expect(layout.createChildView).not.toHaveBeenCalled();
+                expect(layout.$head().html()).toEqual(
+                    "<title>original</title>"
+                );
             });
 
         });
 
-        describe("when there are metatags but no renderedMetatags", function() {
+        describe("when there are ephemeral metatags", function() {
+
+            beforeEach(function() {
+                layout.$head().append(
+                    "<meta name='description' content='ephemeral summary' data-ephemeral='true'>" +
+                    "<meta name='description' content='summary'>"
+                );
+
+                layout.flushMetatags();
+            });
+
+            it("removes ephemeral metatags", function() {
+                expect(layout.$head().html()).toEqual(
+                    '<title>original</title>' +
+                    '<meta name="description" content="summary">'
+                );
+            });
+
+        });
+
+    });
+
+    describe("#renderMetatags", function() {
+
+        var metatags;
+
+        beforeEach(function() {
+            layout.renderTemplate();
+        });
+
+        describe("when there are no metatags", function() {
+
+            beforeEach(function() {
+                layout.renderMetatags(null);
+            });
+
+            it("does nothing", function() {
+                expect(layout.$head().html()).toEqual(
+                    "<title>original</title>"
+                );
+            });
+
+        });
+
+        describe("when there are metatags", function() {
 
             beforeEach(function() {
                 metatags = new Metatags({
-                    "description": "meta description",
-                    "og:image": "example-url/image.jpg",
-                    "canonical": "canonical-link.com/example-path"
+                    "description": "a",
+                    "og:image": "b",
+                    "canonical": "c"
                 });
 
-                layout.renderedMetatags = null;
-
-                layout.metatags = metatags;
-
-                layout.renderMetaTags();
+                layout.renderMetatags(metatags);
             });
 
-            it("creates all the tag views", function() {
-                expect(metatags.tagViews.length).toBe(3);
-            });
-
-            it("sets the renderedMetatags", function() {
-                expect(layout.renderedMetatags).toEqual(metatags);
-            });
-
-        });
-
-        describe("when both metatags and renderedMetatags exist", function() {
-
-            var pairs;
-
-            beforeEach(function() {
-                pairs = {
-                    "description": "meta description",
-                    "og:image": "example-url/image.jpg",
-                    "canonical": "canonical-link.com/example-path"
-                };
-
-                metatags = new Metatags(pairs);
-
-                layout.metatags = metatags;
-
-                spyOn(metatags, "createTagViews").and.callThrough();
-            });
-
-            describe("they are the same", function() {
-
-                beforeEach(function() {
-                    renderedMetatags = new Metatags(pairs);
-
-                    spyOn(renderedMetatags, "closeTagViews").and.callThrough();
-
-                    layout.renderedMetatags = renderedMetatags;
-                    layout.renderMetaTags();
-                });
-
-                it("avoids rendering again", function() {
-                    expect(renderedMetatags.closeTagViews).not.toHaveBeenCalled();
-                    expect(metatags.createTagViews).not.toHaveBeenCalled();
-                });
-
-            });
-
-            describe("they are the different", function() {
-
-                beforeEach(function() {
-                    renderedMetatags = new Metatags({
-                        "description": "another meta description"
-                    });
-
-                    spyOn(renderedMetatags, "closeTagViews").and.callThrough();
-
-                    layout.renderedMetatags = renderedMetatags;
-                    layout.renderMetaTags();
-                });
-
-                it("closes tagViews for renderedMetatags", function() {
-                    expect(renderedMetatags.closeTagViews).toHaveBeenCalled();
-                });
-
-                it("creates new tagViews", function() {
-                    expect(metatags.createTagViews).toHaveBeenCalled();
-                    expect(metatags.tagViews.length).toBe(3);
-                });
-
-                it("sets the renderedMetatags", function() {
-                    expect(layout.renderedMetatags).toBe(metatags);
-                });
-
+            it("appends metatags to the head", function() {
+                expect(layout.$head().html()).toEqual(
+                    '<title>original</title>' +
+                    '<meta name="description" content="a" data-ephemeral="true">' +
+                    '<meta property="og:image" content="b" data-ephemeral="true">' +
+                    '<link rel="canonical" href="c" data-ephemeral="true">'
+                );
             });
 
         });
