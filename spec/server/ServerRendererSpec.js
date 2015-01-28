@@ -27,9 +27,8 @@ describe("ServerRenderer", function() {
         layout = new Layout();
         layout.el.innerHTML = "<html><head><title></title></head><body></body></html>";
         spyOn(layout, "setContent");
-        spyOn(layout, "setTitle");
-        spyOn(layout, "setMetaTags");
-        spyOn(layout, "renderPageLevelData");
+        spyOn(layout, "renderTitle");
+        spyOn(layout, "renderMetatags");
         spyOn(layout, "setEnvironmentConfig");
         spyOn(layout, "close");
 
@@ -245,16 +244,12 @@ describe("ServerRenderer", function() {
             ServerRenderer.render(layout, view, null, null, mockServerRequest);
         });
 
-        it("sets the layout title", function() {
-            expect(layout.setTitle).toHaveBeenCalledWith("Title");
+        it("renders layout title", function() {
+            expect(layout.renderTitle).toHaveBeenCalledWith("Title");
         });
 
-        it("sets the layout metatags", function() {
-            expect(layout.setMetaTags).toHaveBeenCalledWith(metatags);
-        });
-
-        it("renders the page level data", function() {
-            expect(layout.renderPageLevelData).toHaveBeenCalled();
+        it("renders layout metatags", function() {
+            expect(layout.renderMetatags).toHaveBeenCalledWith(metatags);
         });
 
         it("sets the layout content", function() {
@@ -269,16 +264,12 @@ describe("ServerRenderer", function() {
             ServerRenderer.render(layout, view, null, null, mockServerRequest);
         });
 
-        it("sets the layout title with null", function() {
-            expect(layout.setTitle).toHaveBeenCalledWith(null);
+        it("renders the layout title with null", function() {
+            expect(layout.renderTitle).toHaveBeenCalledWith(null);
         });
 
-        it("sets the layout metatags with null", function() {
-            expect(layout.setMetaTags).toHaveBeenCalledWith(null);
-        });
-
-        it("attempts to render the page level data", function() {
-            expect(layout.renderPageLevelData).toHaveBeenCalled();
+        it("renders the layout metatags with null", function() {
+            expect(layout.renderMetatags).toHaveBeenCalledWith(null);
         });
 
         it("sets the layout content", function() {
