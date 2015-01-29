@@ -92,7 +92,7 @@
         stripped = stripped.replace(/>[\s]+([\S]+)/g, ">$1");
         stripped = stripped.replace(/([\S]+)[\s]+</g, "$1<");
 
-        return stripped;
+        return stripped.trim();
     }
 
     function fail() {

@@ -1,16 +1,21 @@
-"use strict";
-
-var Layout = require("../../../lib/viewing/Layout");
-var Metatags = require("../../../lib/metatags/Metatags");
-
 describe("Layout", function() {
+    "use strict";
 
+    var Layout = require("../../../lib/viewing/Layout");
+    var Metatags = require("../../../lib/metatags/Metatags");
     var ExampleLayout;
     var layout;
 
     beforeEach(function() {
         ExampleLayout = Layout.extend({
-            template: "<!doctype html>\n<html><head><title>original</title></head></html>"
+            template: "<!doctype html>\n" +
+                "<html data-type='html'>\n" +
+                "\t<head data-type='head'>\n" +
+                "\t\t<title>original</title>\n" +
+                "\t</head>\n" +
+                "\t<body class='layout'>\n" +
+                "\t</body>\n" +
+                "</html>"
         });
 
         layout = new ExampleLayout();
@@ -20,8 +25,8 @@ describe("Layout", function() {
 
         describe("when template has NOT been rendered", function() {
 
-            it("returns empty string", function() {
-                expect(layout.asHtml()).toBe("");
+            it("returns empty html element", function() {
+                expect(layout.asHtml()).toBe("<html></html>");
             });
 
         });
@@ -29,9 +34,36 @@ describe("Layout", function() {
         describe("when template has been rendered", function() {
 
             var hasDoctype = /<!doctype[^>]*>/i;
+            var preservesAttributesInHtmlTag = /<html data-type='html'>/i;
+            var preservesAttributesInBodyTag = /<body class="layout">/i;
+            var preservesAttributesInHeadTag = /<head data-type="head">/i;
 
             beforeEach(function() {
                 layout.renderTemplate();
+            });
+
+            it("preserves attributes on html tag", function() {
+                expect(layout.asHtml()).toMatch(preservesAttributesInHtmlTag);
+            });
+
+            it("preserves attributes on body tag", function() {
+                expect(layout.asHtml()).toMatch(preservesAttributesInBodyTag);
+            });
+
+            it("preserves attributes on head tag", function() {
+                expect(layout.asHtml()).toMatch(preservesAttributesInHeadTag);
+            });
+
+            it("renders one html tag", function() {
+                expect(layout.asHtml().match(/<html[^>]*>/ig).length).toEqual(1);
+            });
+
+            it("renders one head tag", function() {
+                expect(layout.asHtml().match(/<head[^>]*>/ig).length).toEqual(1);
+            });
+
+            it("renders one body tag", function() {
+                expect(layout.asHtml().match(/<body[^>]*>/ig).length).toEqual(1);
             });
 
             describe("when template has a doctype", function() {
@@ -238,7 +270,7 @@ describe("Layout", function() {
             });
 
             it("does nothing", function() {
-                expect(layout.$head().html()).toEqual(
+                expect(layout.$head().html()).toBeHTMLEqual(
                     "<title>original</title>"
                 );
             });
@@ -257,7 +289,7 @@ describe("Layout", function() {
             });
 
             it("removes ephemeral metatags", function() {
-                expect(layout.$head().html()).toEqual(
+                expect(layout.$head().html()).toBeHTMLEqual(
                     '<title>original</title>' +
                     '<meta name="description" content="summary">'
                 );
@@ -282,7 +314,7 @@ describe("Layout", function() {
             });
 
             it("does nothing", function() {
-                expect(layout.$head().html()).toEqual(
+                expect(layout.$head().html()).toBeHTMLEqual(
                     "<title>original</title>"
                 );
             });
@@ -302,7 +334,7 @@ describe("Layout", function() {
             });
 
             it("appends metatags to the head", function() {
-                expect(layout.$head().html()).toEqual(
+                expect(layout.$head().html()).toBeHTMLEqual(
                     '<title>original</title>' +
                     '<meta name="description" content="a" data-ephemeral="true">' +
                     '<meta property="og:image" content="b" data-ephemeral="true">' +
