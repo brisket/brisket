@@ -178,20 +178,6 @@ describe("ServerRenderer", function() {
 
     });
 
-    describe("when layout does NOT have a body", function() {
-
-        beforeEach(function() {
-            layout.el.innerHTML = "<html><head></head></html>";
-        });
-
-        it("does NOT inject the client app start script", function() {
-            html = ServerRenderer.render(layout, view, environmentConfig, "app/ClientApp", mockServerRequest);
-
-            expect(html).not.toMatch(clientStartScript(environmentConfig, "app/ClientApp", null));
-        });
-
-    });
-
     describe("exposing environment config to the layout", function() {
 
         beforeEach(function() {
