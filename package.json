@@ -23,7 +23,7 @@
     "dependencies": {
         "backbone": "~1.1.2",
         "express": "~4.11.0",
-        "jquery": "~1.11.1",
+        "jquery": ">=1.11.1",
         "jquery-mockjax": "~1.5.3",
         "jsdom": "~3.1.0",
         "bluebird": "~2.9.1",
