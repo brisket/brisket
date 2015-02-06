@@ -20,13 +20,13 @@ var BookRouter = Brisket.RouterBrewery.create({
     'books/:id': 'book'
   },
 
-  books: function(request, response) {
+  books: function(layout, request, response) {
     console.log(request.host); // 'example.com:8080'
 
     return new BookView();
   },
 
-  book: function(id, request, response) {
+  book: function(id, layout, request, response) {
     var book = new Book({ id: id });
 
     console.log(request.isNotClick); // true/false

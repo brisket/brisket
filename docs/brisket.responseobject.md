@@ -20,13 +20,13 @@ var BookRouter = Brisket.RouterBrewery.create({
     'books/:id': 'book'
   },
 
-  books: function(request, response) {
+  books: function(layout, request, response) {
     response.status(201); // server will respond with 201
 
     return new BookView();
   },
 
-  book: function(id, request, response) {
+  book: function(id, layout, request, response) {
     var book = new Book({ id: id });
 
     response.status(204); // server will respond with 204
