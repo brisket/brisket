@@ -11,6 +11,7 @@ describe("App", function() {
     var testConfig;
 
     beforeEach(function() {
+        spyOn(App.prototype, "start").and.callThrough();
         valueToInspectStart = false;
     });
 
@@ -26,6 +27,44 @@ describe("App", function() {
                 };
 
                 expect(creatingAppWithNonFunctionStartProperty).toThrow();
+            });
+
+        });
+
+        describe("calling start methods in inheritance hierarchy", function() {
+            var callStartOrder;
+            var AppChild;
+            var AppGrandChild;
+
+            beforeEach(function() {
+                callStartOrder = [];
+                App.prototype.start.and.callFake(function() {
+                    callStartOrder.push("called App start");
+                });
+
+                AppChild = App.extend({
+                    start: function() {
+                        callStartOrder.push("called App child start");
+                    }
+                });
+
+                AppGrandChild = AppChild.extend({
+                    start: function() {
+                        callStartOrder.push("called App grandchild start");
+                    }
+                });
+
+                app = new AppGrandChild();
+            });
+
+            it("calls all start methods in the inheritance hierarchy from App to current implementation", function() {
+                app.start();
+
+                expect(callStartOrder).toEqual([
+                    "called App start",
+                    "called App child start",
+                    "called App grandchild start"
+                ]);
             });
 
         });
@@ -53,8 +92,6 @@ describe("App", function() {
             });
 
             it("executes available start method bodies", function() {
-                spyOn(App.prototype, "start").and.callThrough();
-
                 app.start();
 
                 expect(App.prototype.start).toHaveBeenCalled();
@@ -81,8 +118,6 @@ describe("App", function() {
             });
 
             it("executes available start method bodies", function() {
-                spyOn(App.prototype, "start").and.callThrough();
-
                 app.start();
 
                 expect(App.prototype.start).toHaveBeenCalled();
@@ -126,7 +161,6 @@ describe("App", function() {
                 });
 
                 it("seamlessly chains overridden start with base start", function() {
-                    spyOn(App.prototype, "start").and.callThrough();
 
                     app.start();
 
