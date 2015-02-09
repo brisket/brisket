@@ -143,6 +143,36 @@ describe("ClientRequest", function() {
 
         });
 
+        describe("when environmentConfig has appRoot", function() {
+
+            beforeEach(function() {
+                var windough = mockWindow();
+                windough.location.pathname = "/appRoot" + windough.location.pathname;
+
+                ClientRequest.setEnvironmentConfig({
+                    appRoot: "/appRoot"
+                });
+
+                clientRequest = ClientRequest.from(windough);
+            });
+
+            it("exposes applicationPath", function() {
+                expect(clientRequest.applicationPath).toBe("requested/path");
+            });
+
+        });
+
+        describe("when environmentConfig does NOT have appRoot", function() {
+
+            beforeEach(function() {
+                clientRequest = ClientRequest.from(mockWindow());
+            });
+
+            it("exposes applicationPath", function() {
+                expect(clientRequest.applicationPath).toBe("requested/path");
+            });
+
+        });
     });
 
 });

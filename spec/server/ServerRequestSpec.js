@@ -82,32 +82,36 @@ describe("ServerRequest", function() {
 
     });
 
-    describe("path", function() {
+    describe("when environmentConfig has appRoot", function() {
 
-        describe("when environmentConfig has appRoot", function() {
-
-            beforeEach(function() {
-                serverRequest = ServerRequest.from(mockExpressRequest(), {
-                    appRoot: "/appRoot"
-                });
+        beforeEach(function() {
+            serverRequest = ServerRequest.from(mockExpressRequest(), {
+                appRoot: "/appRoot"
             });
-
-            it("exposes path", function() {
-                expect(serverRequest.path).toBe("/appRoot/requested/path");
-            });
-
         });
 
-        describe("when environmentConfig does NOT have appRoot", function() {
+        it("exposes path", function() {
+            expect(serverRequest.path).toBe("/appRoot/requested/path");
+        });
 
-            beforeEach(function() {
-                serverRequest = ServerRequest.from(mockExpressRequest(), {});
-            });
+        it("exposes applicationPath", function() {
+            expect(serverRequest.applicationPath).toBe("requested/path");
+        });
 
-            it("exposes path", function() {
-                expect(serverRequest.path).toBe("/requested/path");
-            });
+    });
 
+    describe("when environmentConfig does NOT have appRoot", function() {
+
+        beforeEach(function() {
+            serverRequest = ServerRequest.from(mockExpressRequest(), {});
+        });
+
+        it("exposes path", function() {
+            expect(serverRequest.path).toBe("/requested/path");
+        });
+
+        it("exposes applicationPath", function() {
+            expect(serverRequest.applicationPath).toBe("requested/path");
         });
 
     });

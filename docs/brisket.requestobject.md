@@ -72,6 +72,9 @@ A boolean that let's you know if the current request was **NOT** triggered by a 
 ### request.path
 The path of the URL with a preceding '/' e.g. '/path/to/route'.
 
+### request.applicationPath
+The applicationPath of the request. This value is always the same regardless of where the application is deployed. It does NOT have a preceding slash '/' e.g. 'path/to/route'.
+
 ### request.protocol
 The protocol scheme of the URL, **NOT** including the ':' e.g. 'http', 'https'.
 
