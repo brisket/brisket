@@ -39,6 +39,9 @@
         "grunt-contrib-jshint": "~0.7.2",
         "jasmine-node": "^2.0.0-beta4"
     },
+    "browser": {
+        "jquery-mockjax": "./node_modules/jquery-mockjax/jquery.mockjax.js"
+    },
     "scripts": {
         "test": "grunt test"
     },
