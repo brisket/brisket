@@ -2,6 +2,7 @@
 
 var ReattachableView = require("lib/traits/ReattachableView");
 var Backbone = require("lib/application/Backbone");
+var ViewsFromServer = require("lib/viewing/ViewsFromServer");
 var $ = require("lib/application/jquery");
 
 describe("ReattachableView", function() {
@@ -13,18 +14,14 @@ describe("ReattachableView", function() {
     describe("#reattach", function() {
 
         beforeEach(function() {
-            $fixture = $(
-                '<div class="dont-attach-to-me"></div>' +
-                '<div class="view-that-was-in-dom" data-view-uid="expected_uid"></div>' +
-                '<div class="dont-attach-to-me-either"></div>'
-            ).appendTo("body");
+            givenThereAreViewsFromTheServer();
 
             ViewThatReattaches = Backbone.View.extend(ReattachableView);
             view = new ViewThatReattaches();
         });
 
         afterEach(function() {
-            $fixture.remove();
+            removeViewsFromServer();
         });
 
         describe("when element with view uid exists already", function() {
@@ -127,6 +124,21 @@ describe("ReattachableView", function() {
         });
 
     });
+
+    function givenThereAreViewsFromTheServer() {
+        $fixture = $(
+            '<div class="dont-attach-to-me"></div>' +
+            '<div class="view-that-was-in-dom" data-view-uid="expected_uid"></div>' +
+            '<div class="dont-attach-to-me-either"></div>'
+        ).appendTo("body");
+
+        ViewsFromServer.initialize();
+    }
+
+    function removeViewsFromServer() {
+        $fixture.remove();
+        ViewsFromServer.reset();
+    }
 
 });
 
