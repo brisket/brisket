@@ -178,18 +178,6 @@ describe("ServerRenderer", function() {
 
     });
 
-    describe("exposing environment config to the layout", function() {
-
-        beforeEach(function() {
-            html = ServerRenderer.render(layout, view, environmentConfig, "app/ClientApp", mockServerRequest);
-        });
-
-        it("sets the layout environmentConfig", function() {
-            expect(layout.setEnvironmentConfig).toHaveBeenCalledWith(environmentConfig);
-        });
-
-    });
-
     describe("when view is Brisket.View", function() {
 
         beforeEach(function() {

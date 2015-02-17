@@ -27,7 +27,9 @@ describe("ServerRenderingWorkflow", function() {
         Backbone.$ = $;
 
         expectedView = new Backbone.View();
-        environmentConfig = {};
+        environmentConfig = {
+            "made": "in server rendering spec"
+        };
 
         PageNotFoundView = Backbone.View.extend({
             name: "page_not_found"
@@ -61,6 +63,27 @@ describe("ServerRenderingWorkflow", function() {
     it("ensures layout has been rendered before it is passed to route handlers", function(done) {
         originalHandler = function() {
             expect(Layout.prototype.render).toHaveBeenCalled();
+            done();
+
+            return expectedView;
+        };
+
+        handlerReturns = callAugmentedRouterHandler();
+    });
+
+    it("ensures layout has environmentConfig before it is passed to route handlers", function(done) {
+        fakeRouter.layout = Layout.extend({
+
+            testEnvironmentConfig: function() {
+                expect(this.environmentConfig).toEqual({
+                    "made": "in server rendering spec"
+                });
+            }
+
+        });
+
+        originalHandler = function(layout) {
+            layout.testEnvironmentConfig();
             done();
 
             return expectedView;

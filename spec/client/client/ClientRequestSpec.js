@@ -122,12 +122,10 @@ describe("ClientRequest", function() {
         describe("environmentConfig", function() {
 
             it("exposes environmentConfig when environmentConfig has been set", function() {
-                ClientRequest.setEnvironmentConfig({
+                clientRequest = ClientRequest.from(mockWindow(), 1, {
                     "a": "b",
                     "c": "d"
                 });
-
-                clientRequest = ClientRequest.from(mockWindow());
 
                 expect(clientRequest.environmentConfig).toEqual({
                     "a": "b",
@@ -149,11 +147,9 @@ describe("ClientRequest", function() {
                 var windough = mockWindow();
                 windough.location.pathname = "/appRoot" + windough.location.pathname;
 
-                ClientRequest.setEnvironmentConfig({
+                clientRequest = ClientRequest.from(windough, 1, {
                     appRoot: "/appRoot"
                 });
-
-                clientRequest = ClientRequest.from(windough);
             });
 
             it("exposes applicationPath", function() {
@@ -165,7 +161,7 @@ describe("ClientRequest", function() {
         describe("when environmentConfig does NOT have appRoot", function() {
 
             beforeEach(function() {
-                clientRequest = ClientRequest.from(mockWindow());
+                clientRequest = ClientRequest.from(mockWindow(), 1);
             });
 
             it("exposes applicationPath", function() {
