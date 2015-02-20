@@ -107,6 +107,37 @@ describe("ClientRenderingWorkflow", function() {
         });
     });
 
+    describe("exposing environmentConfig to layout for rendering", function() {
+
+        beforeEach(function() {
+            ClientRenderingWorkflow.setEnvironmentConfig({
+                "made": "in client rendering spec"
+            });
+        });
+
+        it("ensures layout has environmentConfig before it is passed to route handlers", function(done) {
+            fakeRouter.layout = Layout.extend({
+
+                testEnvironmentConfig: function() {
+                    expect(this.environmentConfig).toEqual({
+                        "made": "in client rendering spec"
+                    });
+                }
+
+            });
+
+            originalHandler = function(layout) {
+                layout.testEnvironmentConfig();
+                done();
+
+                return expectedView;
+            };
+
+            handlerReturns = callAugmentedRouterHandler();
+        });
+
+    });
+
     describe("when route has finished", function() {
         var layoutCommandWasExecuted;
         var whenRouteFinished;

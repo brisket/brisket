@@ -4,6 +4,7 @@ var App = require("lib/application/App");
 var ClientApp = require("lib/client/ClientApp");
 var Backbone = require("lib/application/Backbone");
 var SetupLinksAndPushState = require("lib/client/SetupLinksAndPushState");
+var ClientRenderingWorkflow = require("lib/client/ClientRenderingWorkflow");
 
 describe("ClientApp", function() {
     var clientApp;
@@ -12,6 +13,7 @@ describe("ClientApp", function() {
         clientApp = new ClientApp();
 
         spyOn(SetupLinksAndPushState, "start");
+        spyOn(ClientRenderingWorkflow, "setEnvironmentConfig");
     });
 
     it("is a type of App", function() {
@@ -38,6 +40,25 @@ describe("ClientApp", function() {
 
         it("sets up links and push state", function() {
             expect(SetupLinksAndPushState.start).toHaveBeenCalled();
+        });
+
+    });
+
+    describe("when environmentConfig is passed to start", function() {
+
+        beforeEach(function() {
+            clientApp.start({
+                environmentConfig: {
+                    "made": "in client app spec"
+                }
+            });
+        });
+
+        it("sets environment config for client rendering to be passed environmentConfig", function() {
+            expect(ClientRenderingWorkflow.setEnvironmentConfig)
+                .toHaveBeenCalledWith({
+                    "made": "in client app spec"
+                });
         });
 
     });
