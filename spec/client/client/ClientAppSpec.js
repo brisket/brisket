@@ -1,12 +1,13 @@
 "use strict";
 
-var App = require("lib/application/App");
-var ClientApp = require("lib/client/ClientApp");
-var Backbone = require("lib/application/Backbone");
-var SetupLinksAndPushState = require("lib/client/SetupLinksAndPushState");
-var ClientRenderingWorkflow = require("lib/client/ClientRenderingWorkflow");
-
 describe("ClientApp", function() {
+    var App = require("lib/application/App");
+    var ClientApp = require("lib/client/ClientApp");
+    var Backbone = require("lib/application/Backbone");
+    var SetupLinksAndPushState = require("lib/client/SetupLinksAndPushState");
+    var ClientRenderingWorkflow = require("lib/client/ClientRenderingWorkflow");
+    var ViewsFromServer = require("lib/viewing/ViewsFromServer");
+
     var clientApp;
 
     beforeEach(function() {
@@ -14,6 +15,7 @@ describe("ClientApp", function() {
 
         spyOn(SetupLinksAndPushState, "start");
         spyOn(ClientRenderingWorkflow, "setEnvironmentConfig");
+        spyOn(ViewsFromServer, "initialize");
     });
 
     it("is a type of App", function() {
@@ -40,6 +42,10 @@ describe("ClientApp", function() {
 
         it("sets up links and push state", function() {
             expect(SetupLinksAndPushState.start).toHaveBeenCalled();
+        });
+
+        it("initializes views from server", function() {
+            expect(ViewsFromServer.initialize).toHaveBeenCalled();
         });
 
     });
