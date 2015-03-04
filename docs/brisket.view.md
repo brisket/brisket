@@ -6,6 +6,7 @@ An extension of Backbone.View that provides a Rendering Workflow, Child View Man
 ## Documentation Index
 
 * [Rendering A View](#rendering-a-view)
+* [Events](#events)
 * [Setting A Templating Engine](#setting-a-templating-engine)
 * [Exposing Data to A Template](#exposing-data-to-a-template)
 * [Creating Child Views](#creating-child-views)
@@ -50,6 +51,30 @@ Use the `onDOM` callback to make changes to your view when it has entered the DO
 
 
 During a View's [Rendering Workflow](rendering.workflow.md), on both the server AND client, you can expect that `beforeRender` will be called before `afterRender`. On the client, `onDOM` will be called only when the View enters the DOM - that will always occur `afterRender`.
+
+## Events
+
+### 'on-dom'
+Triggers when the View enters the DOM.
+
+```js
+var view = new Brisket.View();
+
+view.on('on-dom', function() {
+  // do something now that view has entered dom;
+});
+```
+
+### 'close'
+Triggers when the View is closed.
+
+```js
+var view = new Brisket.View();
+
+view.on('close', function() {
+  // do something when view is closed
+});
+```
 
 ## Setting A Templating Engine
 By default, all Brisket.Views use [Brisket.Templating.StringTemplateAdapter](brisket.templating.stringtemplateadapter.md) to render templates. To specify a TemplateAdapter other than the default, set the templateAdapter field on a View:
