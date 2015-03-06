@@ -40,7 +40,20 @@
         "jasmine-node": "^2.0.0-beta4"
     },
     "browser": {
-        "jquery-mockjax": "./node_modules/jquery-mockjax/jquery.mockjax.js"
+        "jquery-mockjax": "./node_modules/jquery-mockjax/jquery.mockjax.js",
+        "./lib/server/AjaxCallsForCurrentRequest.js": "./lib/util/noop.js",
+        "./lib/server/DomainLocalStorage.js": "./lib/util/noop.js",
+        "./lib/server/Server.js": "./lib/util/noop.js",
+        "./lib/server/ServerApp.js": "./lib/util/noop.js",
+        "./lib/server/ServerConfigure.js": "./lib/util/noop.js",
+        "./lib/server/ServerDispatcher.js": "./lib/util/noop.js",
+        "./lib/server/serverJquery.js": "./lib/util/noop.js",
+        "./lib/server/ServerRenderer.js": "./lib/util/noop.js",
+        "./lib/server/ServerRenderingWorkflow.js": "./lib/util/noop.js",
+        "./lib/server/ServerRequest.js": "./lib/util/noop.js",
+        "./lib/server/ServerResponse.js": "./lib/util/noop.js",
+        "./lib/server/ServerResponseWorkflow.js": "./lib/util/noop.js",
+        "./lib/server/ServerRouter.js": "./lib/util/noop.js"
     },
     "scripts": {
         "test": "grunt test"
