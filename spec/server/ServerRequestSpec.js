@@ -116,6 +116,31 @@ describe("ServerRequest", function() {
 
     });
 
+    describe("cookies", function() {
+
+        it("exposes cookies when express request provides them", function() {
+            var expressRequestWithCookies = mockExpressRequest();
+            expressRequestWithCookies.cookies = {
+                "foo": "a",
+                "bar": "b"
+            };
+
+            serverRequest = ServerRequest.from(expressRequestWithCookies);
+
+            expect(serverRequest.cookies).toEqual({
+                "foo": "a",
+                "bar": "b"
+            });
+        });
+
+        it("exposes cookies as null when express request does NOT provide them", function() {
+            serverRequest = ServerRequest.from(mockExpressRequest());
+
+            expect(serverRequest.cookies).toBeNull();
+        });
+
+    });
+
     function mockExpressRequest() {
         return {
             protocol: "http",

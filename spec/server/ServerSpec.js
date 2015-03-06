@@ -190,6 +190,17 @@ describe("Server", function() {
             spyOn(ServerResponseWorkflow, "sendResponseFor");
         });
 
+        it("lets client app know when server does NOT have cookies", function() {
+            middleware(mockRequest, mockResponse, mockNext);
+            expect(environmentConfig["brisket:wantsCookies"]).toBe(false);
+        });
+
+        it("lets client app know when server has cookies", function() {
+            mockRequest.cookies = {};
+            middleware(mockRequest, mockResponse, mockNext);
+            expect(environmentConfig["brisket:wantsCookies"]).toBe(true);
+        });
+
         it("dispatches to server app with leading slash of request path stripped", function() {
             middleware(mockRequest, mockResponse, mockNext);
             expect(serverApp.dispatch.calls.mostRecent().args[0]).toBe("aRoute");

@@ -29,6 +29,7 @@
         "bluebird": "~2.9.7",
         "lodash": "~2.4",
         "qs": "2.3.3",
+        "cookie": "0.1.2",
         "xmlhttprequest": "1.7.0"
     },
     "devDependencies": {

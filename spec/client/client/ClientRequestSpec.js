@@ -169,6 +169,70 @@ describe("ClientRequest", function() {
             });
 
         });
+
+        describe("when server has cookies", function() {
+            var mockWindowWithCookies;
+            var mockWindowWithSameCookies;
+            var mockWindowWithNewCookies;
+            var nextClientRequest;
+
+            beforeEach(function() {
+                mockWindowWithCookies = mockWindow();
+                mockWindowWithCookies.document.cookie = "foo=a; bar=b";
+
+                clientRequest = ClientRequest.from(mockWindowWithCookies, 1, {
+                    "brisket:wantsCookies": true
+                });
+            });
+
+            it("exposes parsed cookies when server", function() {
+                expect(clientRequest.cookies).toEqual({
+                    "foo": "a",
+                    "bar": "b"
+                });
+            });
+
+            it("updates cookies on next request when cookies do not change", function() {
+                mockWindowWithSameCookies = mockWindow();
+                mockWindowWithSameCookies.document.cookie = "foo=a; bar=b";
+
+                nextClientRequest = ClientRequest.from(mockWindowWithSameCookies, 2, {
+                    "brisket:wantsCookies": true
+                });
+
+                expect(nextClientRequest.cookies).toEqual({
+                    "foo": "a",
+                    "bar": "b"
+                });
+            });
+
+            it("updates cookies on next request when cookies change", function() {
+                mockWindowWithNewCookies = mockWindow();
+                mockWindowWithNewCookies.document.cookie = "notfoo=bar;";
+
+                nextClientRequest = ClientRequest.from(mockWindowWithNewCookies, 2, {
+                    "brisket:wantsCookies": true
+                });
+
+                expect(nextClientRequest.cookies).toEqual({
+                    "notfoo": "bar"
+                });
+            });
+
+        });
+
+        describe("when server does NOT have cookies", function() {
+
+            it("exposes cookies as null", function() {
+                clientRequest = ClientRequest.from(mockWindow(), 1, {
+                    "brisket:wantsCookies": false
+                });
+
+                expect(clientRequest.cookies).toBeNull();
+            });
+
+        });
+
     });
 
 });

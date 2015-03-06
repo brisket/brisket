@@ -24,7 +24,8 @@ function configureGrunt(grunt) {
                         "node_modules/backbone/backbone.js:backbone",
                         "node_modules/lodash/lodash.js:lodash",
                         "node_modules/bluebird/js/main/bluebird.js:bluebird",
-                        "node_modules/jquery/dist/jquery.js:jquery"
+                        "node_modules/jquery/dist/jquery.js:jquery",
+                        "node_modules/cookie/index.js:cookie"
                     ],
                     ignore: [
                         "lib/server/**/*.js",
