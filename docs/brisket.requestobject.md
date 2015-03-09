@@ -95,3 +95,10 @@ The user agent string from the user's browser.
 
 ### request.environmentConfig
 The [environmentConfig](brisket.createserver.md#environmentconfig) that you use to create your Brisket server.
+
+### request.cookies
+The user's cookies for the current domain. The api looks the same as express' [request.cookies](http://expressjs.com/4x/api.html#req.cookies).
+
+**Note: To enable cookies, you have to use the cookie parser middleware as specified by the express documentation.**
+
+**Another note: Please be advised that if you use a downstream cache (e.g. CDN), you should add any cookie values that are used to make rendering choices into the url's cache key.**
