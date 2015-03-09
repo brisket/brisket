@@ -302,6 +302,14 @@ describe("RenderableView", function() {
             expect(view.onDOM).toHaveBeenCalled();
         });
 
+        it("triggers 'on-dom' event", function() {
+            spyOn(view, "trigger");
+
+            view.enterDOM();
+
+            expect(view.trigger).toHaveBeenCalledWith("on-dom");
+        });
+
         describe("when view has child views", function() {
             var childViewWithIdentifier;
 
