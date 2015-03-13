@@ -17,6 +17,7 @@ describe("ServerResponseWorkflow", function() {
 
         mockExpressResponse = {
             send: jasmine.createSpy("response.send"),
+            set: jasmine.createSpy("response.set"),
             status: jasmine.createSpy("response.status").and.callFake(function() {
                 return mockExpressResponse;
             }),
@@ -32,6 +33,18 @@ describe("ServerResponseWorkflow", function() {
             whenAppResponseReturnsSuccessfully(function() {
                 expect(mockExpressResponse.status).toHaveBeenCalledWith(200);
                 expect(mockExpressResponse.send).toHaveBeenCalledWith("successful content");
+                done();
+            });
+        });
+
+        it("sets response headers from route", function(done) {
+            serverResponse.set("Cache-control", "public, max-age=4200");
+
+            whenAppResponseReturnsSuccessfully(function() {
+                expect(mockExpressResponse.set).toHaveBeenCalledWith({
+                    "Cache-control": "public, max-age=4200"
+                });
+
                 done();
             });
         });
@@ -143,6 +156,15 @@ describe("ServerResponseWorkflow", function() {
 
             beforeEach(function() {
                 serverResponse.status(403);
+            });
+
+            it("does NOT set response headers from route", function(done) {
+                serverResponse.set("Cache-control", "private, max-age=5600");
+
+                whenAppHandlesError(function() {
+                    expect(mockExpressResponse.set).not.toHaveBeenCalled();
+                    done();
+                });
             });
 
             it("sends back the UNsuccessful content", function(done) {

@@ -59,6 +59,19 @@ Here is a listing of all the tools provided by the Brisket response object.
 ### response.status(statusCode)
 Use this method to set the statusCode for the current response.
 
+### response.set(field [, value])
+Use this method to set the response's HTTP header `field` to `value`. You can set multiple values by passing an object.
+
+```js
+response.set('Content-Type', 'text/plain');
+
+response.set({
+  'Content-Type': 'text/plain',
+  'Vary': 'Accept-Encoding',
+  'ETag': '12345'
+});
+```
+
 ### response.redirect([statusCode, ] destination)
 Use this method to redirect the current response to another uri. Example usage:
 

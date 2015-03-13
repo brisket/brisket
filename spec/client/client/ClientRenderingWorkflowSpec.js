@@ -250,6 +250,24 @@ describe("ClientRenderingWorkflow", function() {
         itCleansUpRouter();
     });
 
+    describe("setting response headers", function() {
+
+        it("does NOT throw an error when 'response.set' is called", function(done) {
+            originalHandler = function(layout, request, response) {
+                function callingResponseSet() {
+                    response.set("Cache-control", "public, max-age=3600");
+                }
+
+                expect(callingResponseSet).not.toThrow();
+
+                return expectedView;
+            };
+
+            callAugmentedRouterHandler().then(done);
+        });
+
+    });
+
     describe("when original handler does NOT return a View NOR promise of View", function() {
 
         beforeEach(function() {
