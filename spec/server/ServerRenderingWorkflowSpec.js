@@ -227,6 +227,30 @@ describe("ServerRenderingWorkflow", function() {
         itCleansUpLayoutAndRouter();
     });
 
+    describe("setting response headers", function() {
+
+        it("sets serverResponse headers 'response.set' is called", function(done) {
+            originalHandler = function(layout, request, response) {
+                response.set("Cache-control", "public, max-age=3600");
+
+                return expectedView;
+            };
+
+            handlerReturns = callAugmentedRouterHandler();
+
+            handlerReturns.then(function(responseForRoute) {
+                var headers = responseForRoute.serverResponse.headers;
+
+                expect(headers).toEqual(jasmine.objectContaining({
+                    "Cache-control": "public, max-age=3600"
+                }));
+
+                done();
+            });
+        });
+
+    });
+
     describe("when original handler does NOT return a View NOR promise of View", function() {
 
         beforeEach(function() {
