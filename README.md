@@ -35,6 +35,9 @@ yo brisket && grunt
 
 Your first brisket app will be available at http://localhost:8080
 
+## Getting More Started
+Now that you have a working app, check out our [Recipes](docs/recipes/README.md) for common use cases.
+
 ## Documentation
 
 ### Brisket's Parts
