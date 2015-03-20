@@ -16,28 +16,54 @@ describe("AjaxCallsForCurrentRequest", function() {
         });
     });
 
-    it("records url and data", function() {
-        AjaxCallsForCurrentRequest.record("/url", {
-            some: "data"
-        });
+    describe("when query params are NOT given", function() {
 
-        expect(AjaxCallsForCurrentRequest.all()).toEqual(jasmine.objectContaining({
-            "/url": {
+        beforeEach(function() {
+            AjaxCallsForCurrentRequest.record("/url", undefined, {
                 some: "data"
-            }
-        }));
-    });
-
-    it("clears all recorded ajax calls for current request", function() {
-        AjaxCallsForCurrentRequest.record("/url", {
-            some: "data"
+            });
         });
 
-        AjaxCallsForCurrentRequest.clear();
+        it("records url and data", function() {
+            expect(AjaxCallsForCurrentRequest.all()).toEqual(jasmine.objectContaining({
+                "/url": {
+                    some: "data"
+                }
+            }));
+        });
 
-        expect(AjaxCallsForCurrentRequest.all()).toBeNull();
+        itCanClearAllRecordedAjaxCallsForCurrentRequest();
+
     });
 
+    describe("when query params are given", function() {
+
+        beforeEach(function() {
+            AjaxCallsForCurrentRequest.record("/url", {
+                query: "param"
+            }, {
+                some: "data"
+            });
+        });
+
+        it("records url+params and data", function() {
+            expect(AjaxCallsForCurrentRequest.all()).toEqual(jasmine.objectContaining({
+                '/url{"query":"param"}': {
+                    some: "data"
+                }
+            }));
+        });
+
+        itCanClearAllRecordedAjaxCallsForCurrentRequest();
+
+    });
+
+    function itCanClearAllRecordedAjaxCallsForCurrentRequest() {
+        it("clears all recorded ajax calls for current request", function() {
+            AjaxCallsForCurrentRequest.clear();
+            expect(AjaxCallsForCurrentRequest.all()).toBeNull();
+        });
+    }
 });
 
 // ----------------------------------------------------------------------------
