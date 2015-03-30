@@ -80,14 +80,16 @@ Check the [Bundling With Browserify](/docs/recipes/bundling-with-browserify.md) 
 
 Brisket also depends on the following libraries:
 
-* jQuery ~1.11.1
-* jsdom ~0.11.1
-* Underscore ~1.6.0
-* Backbone ~1.1.2
-* bluebird ~2.2.1
+* backbone ~1.1.2
+* express ~4.11.0
+* jquery >=1.11.1
 * jquery-mockjax ~1.5.3
-* express ~4.0.0
-* qs 1.2.2
+* jsdom ~3.1.0
+* bluebird ~2.9.7
+* lodash ~2.4
+* qs 2.3.3
+* cookie 0.1.2
+* xmlhttprequest 1.7.0
 
 ### Browser Support
 Chrome, Firefox, Safari, iOS 6+, Android 4+, Internet Explorer 9+
