@@ -281,7 +281,7 @@ var BookRouter = Brisket.RouterBrewery.create({
   },
 
   onClose: function() {
-    GlobalEventBus.off("some-event", doSomething);
+    MyAppsEventBus.off("some-event", doSomething);
   }
 
 });
