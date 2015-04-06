@@ -105,21 +105,14 @@ To support IE7, include the snippet above AND the following:
 
 ## Development
 
-Make sure you have `grunt-cli` installed globally. To install:
-
-```shell
-$ npm install -g grunt-cli
-```
-
 Install dependencies:
 ```shell
 $ npm install
 ```
 
 To run the test suite:
-
 ```shell
-$ grunt
+$ npm test
 ```
 
 ## License
