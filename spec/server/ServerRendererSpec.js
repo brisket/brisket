@@ -148,6 +148,28 @@ describe("ServerRenderer", function() {
                     expect(html).toMatch(clientStartScript(environmentConfig, "app/ClientApp", bootstrappedData));
                 });
 
+                describe("when there are illegal characters environmentConfig and bootstrappedData", function() {
+
+                    beforeEach(function() {
+                        environmentConfig = {
+                            some: "environment\u2028 con\u2029fig"
+                        };
+
+                        bootstrappedData = {
+                            "/url": {
+                                some: "da\u2028\u2029ta"
+                            }
+                        };
+                    });
+
+                    it("removes illegal characters in the client start script", function() {
+                        html = ServerRenderer.render(layout, view, environmentConfig, "app/ClientApp", mockServerRequest);
+
+                        expect(html).toMatch(clientStartScript(environmentConfig, "app/ClientApp", bootstrappedData));
+                    });
+
+                });
+
             });
 
             describe("when bootstrappedData has script tag", function() {
@@ -253,23 +275,24 @@ describe("ServerRenderer", function() {
     });
 
     function clientStartScript(environmentConfig, clientAppPath, bootstrappedData) {
-
-        return new RegExp(
-            "<script type=\"text/javascript\">\n" +
+        var pattern = "<script type=\"text/javascript\">\n" +
             "var ClientApp = require\\('" + clientAppPath + "'\\);\n" +
             "var clientApp = new ClientApp\\(\\);\n" +
             "clientApp.start\\({\n" +
             "environmentConfig: " + stringifyData(environmentConfig) + ",\n" +
             "bootstrappedData: " + stringifyData(bootstrappedData) + "\n" +
             "}\\);\n" +
-            "</script>",
+            "</script>";
 
-            "m"
-        );
+        return new RegExp(stripIllegalCharacters(pattern), "m");
     }
 
     function stringifyData(data) {
         return JSON.stringify(data || {});
+    }
+
+    function stripIllegalCharacters(input) {
+        return input.replace(/\u2028|\u2029/g, '');
     }
 
     function validMockServerRequest(props) {
