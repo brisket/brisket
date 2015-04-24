@@ -83,7 +83,12 @@ function configureGrunt(grunt) {
     grunt.registerTask("jasmine-node:test-on-server", function() {
         var done = this.async();
 
-        function afterJasmineNodeCompletes() {
+        function afterJasmineNodeCompletes(exitCode) {
+            if (exitCode !== 0) {
+                grunt.fail();
+                return;
+            }
+
             done();
         }
 

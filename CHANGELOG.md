@@ -1,6 +1,10 @@
 Changelog
 ==========
 
+### 0.31.2
+
+- Fix "test-on-server" grunt task. It should fail the task if any test failed.
+
 ### 0.31.1
 
 - Strips illegal javascript string characters in bootstrap data. (\u2028 | \u2029)
