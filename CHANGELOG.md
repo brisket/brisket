@@ -1,6 +1,11 @@
 Changelog
 ==========
 
+### 0.32.0
+- expose functionality to trigger route
+- run brisket tests against io.js
+- recipe: jump to top of page on new route
+
 ### 0.31.2
 
 - Fix "test-on-server" grunt task. It should fail the task if any test failed.
