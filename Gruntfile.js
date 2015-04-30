@@ -28,8 +28,7 @@ function configureGrunt(grunt) {
                         "node_modules/cookie/index.js:cookie"
                     ],
                     ignore: [
-                        "lib/server/**/*.js",
-                        "lib/brisket.js"
+                        "lib/server/**/*.js"
                     ],
                     aliasMappings: [{
                         cwd: "lib/",

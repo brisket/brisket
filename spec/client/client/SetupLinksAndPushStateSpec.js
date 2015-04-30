@@ -47,7 +47,7 @@ describe("SetupLinksAndPushState", function() {
         beforeEach(function() {
             SetupLinksAndPushState.start({
                 root: "",
-                pushState: true
+                browserSupportsPushState: true
             });
         });
 
@@ -176,6 +176,46 @@ describe("SetupLinksAndPushState", function() {
 
         });
 
+        describe("#replacePath", function() {
+
+            it("replaces route with requested route", function() {
+                SetupLinksAndPushState.replacePath("newRoute");
+
+                expect(Backbone.history.navigate).toHaveBeenCalledWith("newRoute", {
+                    replace: true
+                });
+            });
+
+            it("does NOT replace route if invalid route is requested", function() {
+                SetupLinksAndPushState.replacePath(1);
+                SetupLinksAndPushState.replacePath();
+                SetupLinksAndPushState.replacePath({});
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+        });
+
+        describe("#changePath", function() {
+
+            it("calls Backbone navigate with requested route", function() {
+                SetupLinksAndPushState.changePath("newRoute");
+
+                expect(Backbone.history.navigate).toHaveBeenCalledWith("newRoute");
+            });
+
+            it("does NOT update location when invalid route is requested", function() {
+                SetupLinksAndPushState.changePath(1);
+                SetupLinksAndPushState.changePath();
+                SetupLinksAndPushState.changePath({});
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+        });
+
+        itNavigatesToRoutes();
+        itReloadsRoute();
     });
 
     describe("when starting WITHOUT pushState", function() {
@@ -183,7 +223,7 @@ describe("SetupLinksAndPushState", function() {
         beforeEach(function() {
             SetupLinksAndPushState.start({
                 root: "",
-                pushState: false
+                browserSupportsPushState: false
             });
         });
 
@@ -260,6 +300,28 @@ describe("SetupLinksAndPushState", function() {
 
         });
 
+        describe("#replacePath", function() {
+
+            it("does NOT trigger requested route", function() {
+                SetupLinksAndPushState.replacePath("newRoute");
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+        });
+
+        describe("#changePath", function() {
+
+            it("does NOT update location with requested route", function() {
+                SetupLinksAndPushState.changePath("newRoute");
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+        });
+
+        itNavigatesToRoutes();
+        itReloadsRoute();
     });
 
     describe("when setting the root", function() {
@@ -267,7 +329,7 @@ describe("SetupLinksAndPushState", function() {
         beforeEach(function() {
             SetupLinksAndPushState.start({
                 root: "some/root",
-                pushState: true
+                browserSupportsPushState: true
             });
         });
 
@@ -280,6 +342,40 @@ describe("SetupLinksAndPushState", function() {
                 .toHaveKeyValue("root", "some/root");
         });
     });
+
+    function itNavigatesToRoutes() {
+        describe("#navigateTo", function() {
+
+            it("triggers route for requested route", function() {
+                SetupLinksAndPushState.navigateTo("newRoute");
+
+                expect(Backbone.history.navigate).toHaveBeenCalledWith("newRoute", {
+                    trigger: true
+                });
+            });
+
+            it("does NOT navigate to route if invalid route is requested", function() {
+                SetupLinksAndPushState.navigateTo(1);
+                SetupLinksAndPushState.navigateTo();
+                SetupLinksAndPushState.navigateTo({});
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+        });
+    }
+
+    function itReloadsRoute() {
+        describe("#reloadRoute", function() {
+
+            it("reruns the current route", function() {
+                SetupLinksAndPushState.reloadRoute();
+
+                expect(Backbone.history.loadUrl).toHaveBeenCalledWith();
+            });
+
+        });
+    }
 
 });
 
