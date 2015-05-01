@@ -1,8 +1,7 @@
 "use strict";
 
-var Brisket = require("../../lib/brisket");
-
 describe("public interface to Brisket", function() {
+    var Brisket = require("../../lib/brisket");
 
     it("exposes Brisket.RouterBrewery", function() {
         expect(Brisket.RouterBrewery).toBe(requireFromLib("controlling/RouterBrewery"));

@@ -108,7 +108,7 @@ describe("ClientApp", function() {
 
         it("sets up links and push state with appRoot from configuration", function() {
             expect(SetupLinksAndPushState.start.calls.mostRecent().args[0])
-                .toHaveKeyValue("pushState", true);
+                .toHaveKeyValue("browserSupportsPushState", true);
         });
 
     });
@@ -122,7 +122,7 @@ describe("ClientApp", function() {
 
         it("sets up links and push state with appRoot from configuration", function() {
             expect(SetupLinksAndPushState.start.calls.mostRecent().args[0])
-                .toHaveKeyValue("pushState", false);
+                .toHaveKeyValue("browserSupportsPushState", false);
         });
 
     });
