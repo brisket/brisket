@@ -1,31 +1,22 @@
 Bundling With Browserify
 ========================
 
-While Brisket does not force you to use any particular bundling library, you will be responsible for bundling your application for browser consumption. [Browserify](http://browserify.org/) is one popular solution for bundling your javascript code into one file.
+While Brisket does not force you to use any particular bundling library, you will be responsible for bundling your application for browser consumption. [Browserify](http://browserify.org/) is one popular solution for bundling your javascript code. It is important to make sure you do not bundle your application's server code into the bundle for the browser.
 
-For now, you will have to shim jQuery Mockjax since it is not CommonJS compliant.
+Suppose you had all of your server code in a single directory, e.g.
 
-The following was tested using: [grunt-browserify@3.5.1](https://github.com/jmreidy/grunt-browserify/tree/v3.5.1) and [browserify-shim@3.8.2](https://github.com/thlorenz/browserify-shim/tree/v3.8.2):
-
-## Gruntfile.js
-
-```js
-browserify: {
-    options: {
-        transform: ["browserify-shim"]
-    }
-}
+```
+├── app
+|   ├── server
+|   |   ├── ServerApp.js
+|   ├── client
+|       ├── ClientApp.js
+|
+├── server.js
 ```
 
-## package.json
+Based on [Browserify's documentation](https://github.com/substack/node-browserify#usage), you would ignore all of your server-side code as follows:
 
-```json
-"browserify-shim": {
-  "./node_modules/brisket/node_modules/jquery-mockjax/jquery.mockjax.js": {
-    "exports": "jquery-mockjax",
-    "depends": [
-      "jquery:jQuery"
-    ]
-  }
-}
+```bash
+browserify app/**/*.js --ignore app/server/**/*.js
 ```

@@ -1,6 +1,6 @@
 {
     "name": "brisket",
-    "version": "0.32.0",
+    "version": "0.33.0",
     "description": "Framework for building single page web apps using isomorphic Javascript",
     "author": [
         "Wayne Warner",
@@ -24,13 +24,13 @@
         "backbone": "~1.1.2",
         "express": "~4.11.0",
         "jquery": ">=1.11.1",
-        "jquery-mockjax": "~1.5.3",
         "jsdom": "~3.1.0",
         "bluebird": "~2.9.7",
         "lodash": "~2.4",
         "qs": "2.3.3",
         "cookie": "0.1.2",
-        "xmlhttprequest": "1.7.0"
+        "xmlhttprequest": "1.7.0",
+        "jquery.mockjax": "~2.0.0-beta"
     },
     "devDependencies": {
         "grunt": "~0.4.5",
@@ -41,7 +41,6 @@
         "jasmine-node": "^2.0.0-beta4"
     },
     "browser": {
-        "jquery-mockjax": "./node_modules/jquery-mockjax/jquery.mockjax.js",
         "./lib/server/AjaxCallsForCurrentRequest.js": "./lib/util/noop.js",
         "./lib/server/DomainLocalStorage.js": "./lib/util/noop.js",
         "./lib/server/Server.js": "./lib/util/noop.js",
