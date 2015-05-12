@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.33.0
+- #14 Upgrade jquery.mockjax to 2.0.0-beta. Browserify shim no longer necessary.
+
 ### 0.32.0
 - expose functionality to trigger route
 - run brisket tests against io.js

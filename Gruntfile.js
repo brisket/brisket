@@ -38,16 +38,7 @@ function configureGrunt(grunt) {
                         cwd: "spec/mock/",
                         src: ["**/*.js"],
                         dest: "mock/"
-                    }],
-                    shim: {
-                        "jquery-mockjax": {
-                            path: "node_modules/jquery-mockjax/jquery.mockjax.js",
-                            exports: null,
-                            depends: {
-                                jquery: "jQuery"
-                            }
-                        }
-                    }
+                    }]
                 }
             }
         },
