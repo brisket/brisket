@@ -73,10 +73,9 @@ function configureGrunt(grunt) {
     grunt.registerTask("jasmine-node:test-on-server", function() {
         var done = this.async();
 
-        function afterJasmineNodeCompletes(exitCode) {
-            if (exitCode !== 0) {
-                grunt.fail();
-                return;
+        function abortOnError(exitCode) {
+            if (exitCode) {
+                grunt.fail.fatal("jasmine-node:test-on-server exited with exit code: " + exitCode);
             }
 
             done();
@@ -96,7 +95,7 @@ function configureGrunt(grunt) {
         };
 
         spawn(command, args, options)
-            .on("exit", afterJasmineNodeCompletes);
+            .on("exit", abortOnError);
     });
 
     grunt.registerTask("test-on-client", [
