@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.33.1
+- Encode bootstrapped data url to prevent XSS attack
+
 ### 0.33.0
 - #14 Upgrade jquery.mockjax to 2.0.0-beta. Browserify shim no longer necessary.
 

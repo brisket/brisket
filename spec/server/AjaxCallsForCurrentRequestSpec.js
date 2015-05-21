@@ -48,7 +48,7 @@ describe("AjaxCallsForCurrentRequest", function() {
 
         it("records url+params and data", function() {
             expect(AjaxCallsForCurrentRequest.all()).toEqual(jasmine.objectContaining({
-                '/url{"query":"param"}': {
+                '/url%7B%22query%22%3A%22param%22%7D': {
                     some: "data"
                 }
             }));

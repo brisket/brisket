@@ -29,13 +29,13 @@ describe("BootstrappedDataService", function() {
                 "/url": {
                     "data-type": "none"
                 },
-                '/url{"query":"param"}': {
+                '/url%7B%22query%22%3A%22param%22%7D': {
                     "data-type": "object"
                 },
-                '/url"query=param"': {
+                '/url%22query%3Dparam%22': {
                     "data-type": "string"
                 },
-                '/url["query1=param1","query2=param2"]': {
+                '/url%5B%22query1%3Dparam1%22%2C%22query2%3Dparam2%22%5D': {
                     "data-type": "array"
                 }
             };
@@ -65,7 +65,7 @@ describe("BootstrappedDataService", function() {
                 makeAjaxRequest = ajaxRequestModelDataWithQueryParams;
             });
 
-            itMocksAjaxCallsFor('/url{"query":"param"}');
+            itMocksAjaxCallsFor('/url' + encodeURIComponent('{"query":"param"}'));
         });
 
         describe("when there is bootstrapped data and request has string query params ", function() {
@@ -79,7 +79,7 @@ describe("BootstrappedDataService", function() {
                 makeAjaxRequest = ajaxRequestModelDataWithQueryParams;
             });
 
-            itMocksAjaxCallsFor('/url"query=param"');
+            itMocksAjaxCallsFor('/url' + encodeURIComponent('"query=param"'));
         });
 
         describe("when there is bootstrapped data and request has array query params ", function() {
@@ -93,7 +93,7 @@ describe("BootstrappedDataService", function() {
                 makeAjaxRequest = ajaxRequestModelDataWithQueryParams;
             });
 
-            itMocksAjaxCallsFor('/url["query1=param1","query2=param2"]');
+            itMocksAjaxCallsFor('/url' + encodeURIComponent('["query1=param1","query2=param2"]'));
         });
 
         describe("when there is no bootstrapped data and request does NOT have query params", function() {
@@ -120,7 +120,7 @@ describe("BootstrappedDataService", function() {
                 makeAjaxRequest = ajaxRequestModelDataWithQueryParams;
             });
 
-            itDoesNotMockAjaxCallsFor('/url{"query":"param"}');
+            itDoesNotMockAjaxCallsFor('/url' + encodeURIComponent('{"query":"param"}'));
         });
 
         function itMocksAjaxCallsFor(url) {
