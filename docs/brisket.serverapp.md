@@ -9,7 +9,7 @@ Brisket.ServerApp is the place to configure and start your app on the server.
 * [Setting Up Routers](#setting-up-routers)
 
 ## Configuring Your App
-To configure your app on the server, implement a `start` method on your ServerApp. You can also use the `start` method as a place to initialize your Routers. The Brisket express engine will call your ServerApp's `start` method with `options`, an object containing your `environmentConfig` and `serverConfig`. Refer to [Brisket.createServer](brisket.createserver.md) for more information about `start` options. **Note:** implementing a `start` method is optional. Your ClientApp will still work without a custom `start` method.
+To configure your app on the server, implement a `start` method on your ServerApp. You can also use the `start` method as a place to initialize your Routers. The Brisket express engine will call your ServerApp's `start` method with `options`, an object containing your `environmentConfig` and `serverConfig`. Refer to [Brisket.createServer](brisket.createserver.md) for more information about `start` options. **Note:** implementing a `start` method is optional. Your ServerApp will still work without a custom `start` method.
 
 ```js
 var ServerApp = Brisket.ServerApp.extend({
