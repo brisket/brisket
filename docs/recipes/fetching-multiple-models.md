@@ -21,7 +21,7 @@ var BookRouter = RouterBrewery.create({
 ```
 
 But now you need to render a list of `Comments` about the `Book`. Since your `Comment` data is serve
-from another endpoint, you have to fetch the `Book` and it's `Comments` separately. Using
+from another endpoint, you have to fetch the `Book` and its `Comments` separately. Using
 [Bluebird](https://github.com/petkaantonov/bluebird), here's what you can do:
 
 
