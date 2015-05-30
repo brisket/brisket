@@ -1,17 +1,17 @@
 "use strict";
 
-var proxyClientRequestToApiSpec = require("../../lib/server/proxyClientRequestToApi");
+var forwardClientRequestToApiSpec = require("../../lib/server/forwardClientRequestToApi");
 
-describe("proxyClientRequestToApi", function() {
+describe("forwardClientRequestToApi", function() {
 
     it("returns a middleware handler", function(){
-        var result = proxyClientRequestToApiSpec('localhost');
+        var result = forwardClientRequestToApiSpec('localhost');
         expect(typeof(result)).toBe("function");
     });
 
     describe("middleware handler", function() {
         var apiHost = 'localhost';
-        var middlewareHandler = proxyClientRequestToApiSpec(apiHost);
+        var middlewareHandler = forwardClientRequestToApiSpec(apiHost);
 
         it("should call next if header is not set", function(){
             var next = jasmine.createSpy('next');
