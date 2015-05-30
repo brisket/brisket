@@ -12,13 +12,13 @@ describe("setClientHeader", function() {
             }
         };
         setClientHeader(null, null, options);
-        expect(options.headers['Brisket-Client']).toBe(true);
+        expect(options.headers['brisket-client']).toBe(true);
     });
 
     it ("can handle empty options headers", function() {
         var options = {};
         setClientHeader(null, null, options);
-        expect(options.headers['Brisket-Client']).toBe(true);
+        expect(options.headers['brisket-client']).toBe(true);
     });
 
 });
