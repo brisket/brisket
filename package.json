@@ -30,7 +30,8 @@
         "qs": "2.3.3",
         "cookie": "0.1.2",
         "xmlhttprequest": "1.7.0",
-        "jquery.mockjax": "~2.0.0-beta"
+        "jquery.mockjax": "~2.0.0-beta",
+        "request-promise": "^0.4.2"
     },
     "devDependencies": {
         "grunt": "~0.4.5",
