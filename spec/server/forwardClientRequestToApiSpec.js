@@ -1,22 +1,52 @@
 "use strict";
 
-var forwardClientRequestToApiSpec = require("../../lib/server/forwardClientRequestToApi");
+var forwardClientRequestToApi = require("../../lib/server/forwardClientRequestToApi");
 
 describe("forwardClientRequestToApi", function() {
 
     it("returns a middleware handler", function(){
-        var result = forwardClientRequestToApiSpec('localhost');
+        var result = forwardClientRequestToApi('localhost');
         expect(typeof(result)).toBe("function");
     });
 
     describe("middleware handler", function() {
-        var apiHost = 'localhost';
-        var middlewareHandler = forwardClientRequestToApiSpec(apiHost);
+        var apiHost;
+        var middleware;
+        var mockRequest;
+        var mockResponse;
+        var mockNext;
+
+        beforeEach(function() {
+            apiHost = 'http://api.example.com:8080';
+            middleware = forwardClientRequestToApi(apiHost);
+
+            mockRequest = {
+                url: "/aRoute?aParam=true",
+                headers: {
+                    host: "http://www.example.com",
+                }
+            };
+
+            mockResponse = {};
+
+            mockNext = jasmine.createSpy();
+        });
 
         it("should call next if header is not set", function(){
-            var next = jasmine.createSpy('next');
-            middlewareHandler({headers: {}},{},next);
-            expect(next).toHaveBeenCalled();
+            middleware(mockRequest, mockResponse, mockNext);
+            expect(mockNext).toHaveBeenCalled();
+        });
+
+        describe("header is set", function(){
+            beforeEach(function() {
+                mockRequest.headers['brisket-client'] = true;
+            });
+
+            it("should call request with apiHost and full url", function() {
+                middleware(mockRequest, mockResponse, mockNext);
+                expect(mockNext).not.toHaveBeenCalled();
+            });
+
         });
     });
 });
