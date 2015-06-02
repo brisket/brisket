@@ -76,6 +76,7 @@ describe("ClientRenderingWorkflow", function() {
         spyOn(ClientResponse, "from").and.returnValue(mockClientResponse);
 
         spyOn(Layout.prototype, "close");
+        spyOn(Layout.prototype, "backToNormal");
     });
 
     afterEach(function() {
@@ -372,6 +373,7 @@ describe("ClientRenderingWorkflow", function() {
                 });
         });
 
+        itResetsLayout();
         itCleansUpRouter();
     });
 
@@ -405,6 +407,7 @@ describe("ClientRenderingWorkflow", function() {
                 });
         });
 
+        itResetsLayout();
         itCleansUpRouter();
     });
 
@@ -438,6 +441,7 @@ describe("ClientRenderingWorkflow", function() {
                 });
         });
 
+        itResetsLayout();
         itCleansUpRouter();
     });
 
@@ -471,6 +475,7 @@ describe("ClientRenderingWorkflow", function() {
                 });
         });
 
+        itResetsLayout();
         itCleansUpRouter();
     });
 
@@ -503,6 +508,7 @@ describe("ClientRenderingWorkflow", function() {
                 });
         });
 
+        itResetsLayout();
         itCleansUpRouter();
     });
 
@@ -1037,6 +1043,16 @@ describe("ClientRenderingWorkflow", function() {
                 });
         });
 
+    }
+
+    function itResetsLayout() {
+        it("resets layout", function(done) {
+            handlerReturns
+                .then(function() {
+                    expect(Layout.prototype.backToNormal).toHaveBeenCalled();
+                    done();
+                });
+        });
     }
 
     function runBothHandlers() {
