@@ -83,6 +83,24 @@ var brisketServer = Brisket.createServer({
 });
 ```
 
+#### environmentConfig.clientAppBootstrapFunctionName
+`environmentConfig.clientAppBootstrapFunctionName` is an optional string for defining a function to bootstrap ClientApp. By default, Brisket will bootstrap ClientApp synchronously at the bottom of the body. By defining a `clientAppBootstrapFunctionName`, Brisket will create a function at `window[clientAppBootstrapFunctionName]` so that the application can decide when the bootstrapping starts.
+
+```js
+var brisketServer = Brisket.createServer({
+    apiHost: 'http://localhost:4000',
+    clientAppRequirePath: 'app/ClientApp',
+
+    ServerApp: ServerApp,
+    environmentConfig: { appRoot: '/path/to/app/', clientAppBootstrapFunctionName: 'startBrisket' }
+});
+
+// In the browser
+<script type="text/javascript">
+    window.startBrisket();
+</script>
+```
+
 #### serverConfig
 `serverConfig` is a hash of key/values that will **ONLY** be available to your ServerApp via the start method. In the ServerApp, `serverConfig` will be available as `options.serverConfig`:
 
