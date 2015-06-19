@@ -16,6 +16,7 @@ describe("ServerRenderer", function() {
     var metatags;
     var layout;
     var environmentConfig;
+    var environmentConfigWithBootstrapFunction;
     var ViewWithPageLevelData;
     var mockServerRequest;
 
@@ -34,6 +35,10 @@ describe("ServerRenderer", function() {
 
         environmentConfig = {
             some: "environment config"
+        };
+
+        environmentConfigWithBootstrapFunction = {
+            clientAppBootstrapFunctionName: "startBrisket"
         };
 
         ViewWithPageLevelData = Backbone.View.extend(HasPageLevelData);
@@ -126,6 +131,20 @@ describe("ServerRenderer", function() {
             html = ServerRenderer.render(layout, view, environmentConfig, "app/ClientApp", mockServerRequest);
 
             expect(html).toMatch(clientStartScript(environmentConfig, "app/ClientApp", null));
+        });
+
+        describe("when environmentConfig defines a clientAppBootstrapFunctionName", function() {
+
+            it("exposes the client app start up script as a function on the window", function() {
+                html = ServerRenderer.render(layout, view, environmentConfigWithBootstrapFunction, "app/ClientApp", mockServerRequest);
+
+                expect(html).toMatch(userDefinedClientStartScript(
+                        environmentConfigWithBootstrapFunction,
+                        "app/ClientApp",
+                        null,
+                        "startBrisket"));
+            });
+
         });
 
         describe("when there is bootstrappedData from Backbone ajax requests during the request", function() {
@@ -273,6 +292,21 @@ describe("ServerRenderer", function() {
         });
 
     });
+
+    function userDefinedClientStartScript(environmentConfig, clientAppPath, bootstrappedData, functionName) {
+        var pattern = "<script type=\"text/javascript\">\n" +
+            "window." + functionName + " = function\\(\\) {\n" +
+            "var ClientApp = require\\('" + clientAppPath + "'\\);\n" +
+            "var clientApp = new ClientApp\\(\\);\n" +
+            "clientApp.start\\({\n" +
+            "environmentConfig: " + stringifyData(environmentConfig) + ",\n" +
+            "bootstrappedData: " + stringifyData(bootstrappedData) + "\n" +
+            "}\\);\n" +
+            "};\n" +
+            "</script>";
+
+        return new RegExp(stripIllegalCharacters(pattern), "m");
+    }
 
     function clientStartScript(environmentConfig, clientAppPath, bootstrappedData) {
         var pattern = "<script type=\"text/javascript\">\n" +
