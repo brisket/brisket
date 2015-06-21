@@ -33,7 +33,8 @@ describe("ServerRenderer", function() {
         spyOn(layout, "close");
 
         environmentConfig = {
-            some: "environment config"
+            some: "environment config",
+            clientAppUrl: "application.js"
         };
 
         ViewWithPageLevelData = Backbone.View.extend(HasPageLevelData);
@@ -125,7 +126,7 @@ describe("ServerRenderer", function() {
         it("injects the client app start up script", function() {
             html = ServerRenderer.render(layout, view, environmentConfig, "app/ClientApp", mockServerRequest);
 
-            expect(html).toMatch(clientStartScript(environmentConfig, "app/ClientApp", null));
+            expect(html).toMatch(clientStartScript(environmentConfig, "app/ClientApp", null, "application.js"));
         });
 
         describe("when there is bootstrappedData from Backbone ajax requests during the request", function() {
@@ -145,14 +146,15 @@ describe("ServerRenderer", function() {
                 it("injects the bootstrappedData into the client app start up script", function() {
                     html = ServerRenderer.render(layout, view, environmentConfig, "app/ClientApp", mockServerRequest);
 
-                    expect(html).toMatch(clientStartScript(environmentConfig, "app/ClientApp", bootstrappedData));
+                    expect(html).toMatch(clientStartScript(environmentConfig, "app/ClientApp", bootstrappedData, "application.js"));
                 });
 
                 describe("when there are illegal characters environmentConfig and bootstrappedData", function() {
 
                     beforeEach(function() {
                         environmentConfig = {
-                            some: "environment\u2028 con\u2029fig"
+                            some: "environment\u2028 con\u2029fig",
+                            clientAppUrl: "application.js"
                         };
 
                         bootstrappedData = {
@@ -165,7 +167,7 @@ describe("ServerRenderer", function() {
                     it("removes illegal characters in the client start script", function() {
                         html = ServerRenderer.render(layout, view, environmentConfig, "app/ClientApp", mockServerRequest);
 
-                        expect(html).toMatch(clientStartScript(environmentConfig, "app/ClientApp", bootstrappedData));
+                        expect(html).toMatch(clientStartScript(environmentConfig, "app/ClientApp", bootstrappedData, "application.js"));
                     });
 
                 });
@@ -191,7 +193,7 @@ describe("ServerRenderer", function() {
                     escapedBootstrappedData = bootstrappedData;
                     escapedBootstrappedData["/url"].body = "<script type='text/javascript' src='some.js'><\\/script>";
 
-                    expect(html).toMatch(clientStartScript(environmentConfig, "app/ClientApp", escapedBootstrappedData));
+                    expect(html).toMatch(clientStartScript(environmentConfig, "app/ClientApp", escapedBootstrappedData, "application.js"));
                 });
 
             });
@@ -274,14 +276,25 @@ describe("ServerRenderer", function() {
 
     });
 
-    function clientStartScript(environmentConfig, clientAppPath, bootstrappedData) {
-        var pattern = "<script type=\"text/javascript\">\n" +
+    function clientStartScript(environmentConfig, clientAppPath, bootstrappedData, clientAppUrl) {
+        var pattern =  "<script type=\"text/javascript\">\n" +
+            "\"use strict\";" +
+            "\\(function\\(d\\) {\n" +
+            "var s = d.createElement\\(\"script\"\\);\n" +
+            "s.setAttribute\\(\"src\", \"" + clientAppUrl + "\"\\);\n" +
+            "s.async = true;\n" +
+            "function loaded\\(e\\) {\n" +
             "var ClientApp = require\\('" + clientAppPath + "'\\);\n" +
             "var clientApp = new ClientApp\\(\\);\n" +
             "clientApp.start\\({\n" +
             "environmentConfig: " + stringifyData(environmentConfig) + ",\n" +
             "bootstrappedData: " + stringifyData(bootstrappedData) + "\n" +
             "}\\);\n" +
+            "s.removeEventListener\\(\"load\", loaded, false\\);\n" +
+            "}\n" +
+            "s.addEventListener\\(\"load\", loaded\\);\n" +
+            "setTimeout\\(function\\(\\) { \\(d.body || d.head\\).appendChild\\(s\\); }, 0\\);\n" +
+            "}\\)\\(d\\);\n" +
             "</script>";
 
         return new RegExp(stripIllegalCharacters(pattern), "m");

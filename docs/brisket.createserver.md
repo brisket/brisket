@@ -21,7 +21,10 @@ Here is a valid call to `createServer` with the fewest possible options:
 ```js
 var brisketServer = Brisket.createServer({
     apiHost: 'http://localhost:4000',
-    clientAppRequirePath: 'app/ClientApp'
+    clientAppRequirePath: 'app/ClientApp',
+    environmentConfig: {
+        clientAppUrl: '//www.myapp.com/application.js'
+    }
 });
 ```
 
@@ -42,6 +45,9 @@ var ServerApp = Brisket.ServerApp.extend({
 var brisketServer = Brisket.createServer({
     apiHost: 'http://localhost:4000',
     clientAppRequirePath: 'app/ClientApp',
+    environmentConfig: {
+        clientAppUrl: '//www.myapp.com/application.js'
+    }
 
     ServerApp: ServerApp
 });
@@ -66,7 +72,10 @@ var brisketServer = Brisket.createServer({
     clientAppRequirePath: 'app/ClientApp',
 
     ServerApp: ServerApp,
-    environmentConfig: { some: 'data' }
+    environmentConfig: {
+        some: 'data',
+        clientAppUrl: '//www.myapp.com/application.js'
+    }
 });
 ```
 
@@ -82,6 +91,37 @@ var brisketServer = Brisket.createServer({
     environmentConfig: { appRoot: '/path/to/app/' }
 });
 ```
+
+#### environmentConfig.clientAppUrl
+`environmentConfig.clientAppUrl` is the location of your bundled javascript which Brisket will bootstrap in the browser. Note that this is a required field.
+
+```js
+// On the server
+var brisketServer = Brisket.createServer({
+    apiHost: 'http://localhost:4000',
+    clientAppRequirePath: 'app/ClientApp',
+
+    ServerApp: ServerApp,
+    environmentConfig: {
+        appRoot: '/path/to/app/',
+        clientAppUrl: '//www.myapp.com/application.js'
+    }
+});
+
+#### environmentConfig.startClientAppAsync
+`environmentConfig.startClientAppAsync` if set to a true will bootstrap the client application in the browser asynchronously. The default is synchronous
+
+```js
+var brisketServer = Brisket.createServer({
+    apiHost: 'http://localhost:4000',
+    clientAppRequirePath: 'app/ClientApp',
+    environmentConfig: {
+        clientAppUrl: '//www.myapp.com/application.js',
+        startClientAppAsync: true
+    }
+});
+```
+
 
 #### serverConfig
 `serverConfig` is a hash of key/values that will **ONLY** be available to your ServerApp via the start method. In the ServerApp, `serverConfig` will be available as `options.serverConfig`:

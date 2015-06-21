@@ -113,9 +113,19 @@ describe("Server", function() {
             }));
         }
 
+        function environmentConfigWithoutClientAppUrl() {
+            return Server.create(validConfigWith({
+                environmentConfig: {
+                    appRoot: "/bad/",
+                    clientAppUrl: null
+                }
+            }));
+        }
+
         it("is passed to ServerApp start method", function() {
             environmentConfig = {
-                some: "data"
+                some: "data",
+                clientAppUrl: "application.js"
             };
 
             Server.create(validConfigWith({
@@ -131,6 +141,10 @@ describe("Server", function() {
 
         it("throws an error when appRoot is missing leading slash", function() {
             expect(appRootWithoutLeadingSlash).toThrow();
+        });
+
+        it("throws an error when clientAppUrl is missing", function() {
+            expect(environmentConfigWithoutClientAppUrl).toThrow();
         });
 
     });
@@ -313,12 +327,15 @@ describe("Server", function() {
         return {
             clientAppRequirePath: "app/ClientApp",
             apiHost: API_HOST,
-            ServerApp: ServerApp
+            ServerApp: ServerApp,
+            environmentConfig: {
+                clientAppUrl: "application.js"
+            }
         };
     }
 
     function validConfigWith(customSettings) {
-        return _.extend(validConfig(), customSettings);
+        return _.merge(validConfig(), customSettings);
     }
 
     function objectPassedToServerApp() {
