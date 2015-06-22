@@ -107,6 +107,7 @@ var brisketServer = Brisket.createServer({
         clientAppUrl: '//www.myapp.com/application.js'
     }
 });
+```
 
 #### environmentConfig.startClientAppAsync
 `environmentConfig.startClientAppAsync` if set to a true will bootstrap the client application in the browser asynchronously. The default is synchronous
