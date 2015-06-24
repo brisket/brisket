@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.34.1
+- remove backToNormal on first page view
+
 ### 0.34.0
 - Releases a breaking change to brisket that requires the application developer to pass a clientAppUrl in the environment config. Refer to [brisket.createserver](docs/brisket.createserver.md) for usage
 
