@@ -70,7 +70,6 @@ describe("Client side rendering order", function() {
                 "layout reattaches",
                 "layout renders",
                 "route handler runs",
-                "layout back to normal",
                 "layout instructions from route handler run",
                 "layout enters DOM",
                 "view for route renders",
