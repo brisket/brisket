@@ -1,20 +1,35 @@
 "use strict";
 
-var View = require("lib/viewing/View");
-var Backbone = require("lib/application/Backbone");
+describe("Events", function() {
+    var Events = require("../../lib/events/Events");
+    var noop = require("../../lib/util/noop");
 
-describe("View", function() {
-
-    it("is an extension of Backbone.View", function() {
-        expect(View.prototype instanceof Backbone.View).toBe(true);
+    it("noops on", function() {
+        expect(Events.on).toBe(noop);
     });
 
-    it("exposes delegateEvents from Backbone.View", function() {
-        expect(View.prototype.delegateEvents).toBe(Backbone.View.prototype.delegateEvents);
+    it("noops off", function() {
+        expect(Events.off).toBe(noop);
     });
 
-    it("exposes undelegateEvents from Backbone.View", function() {
-        expect(View.prototype.undelegateEvents).toBe(Backbone.View.prototype.undelegateEvents);
+    it("noops trigger", function() {
+        expect(Events.trigger).toBe(noop);
+    });
+
+    it("noops once", function() {
+        expect(Events.once).toBe(noop);
+    });
+
+    it("noops listenTo", function() {
+        expect(Events.listenTo).toBe(noop);
+    });
+
+    it("noops listenToOnce", function() {
+        expect(Events.listenToOnce).toBe(noop);
+    });
+
+    it("noops stopListening", function() {
+        expect(Events.stopListening).toBe(noop);
     });
 
 });

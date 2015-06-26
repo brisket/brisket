@@ -57,6 +57,7 @@ Now that you have a working app, check out our [Recipes](docs/recipes/README.md)
 * [**Brisket.Controller**](docs/brisket.controller.md): A helper object to move functionality off of the router (it doesn't provide any functionality; just semantics).
 * [**Brisket.Model**](docs/brisket.model.md): Our version of a Backbone.Model that knows how to sync on the server and the client.
 * [**Brisket.Collection**](docs/brisket.collection.md): Our version of a Backbone.Collection that knows how to sync on the server and the client.
+* [**Brisket.Events**](docs/brisket.events.md): A proxy to Backbone.Events that exposes a noop on the server to avoid server-side memory leaks.
 * [**Brisket.View**](docs/brisket.view.md): Our version of a Backbone.View that allows support for some of the core features - reattaching views, child view management, memory management, etc.
 * [**Brisket.Layout**](docs/brisket.layout.md): A specialized View that handles meta tags, page title, etc.
 * Brisket.Layout.Metatags: Use this class to make metatags for "pages".
