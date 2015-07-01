@@ -1,7 +1,10 @@
 Changelog
 ==========
+### 0.35.1
+- add way to enable events for testing
+
 ### 0.35.0
-- introduce Brisket.Events 
+- introduce Brisket.Events
 - disable delegateEvents on server
 
 ### 0.34.1
