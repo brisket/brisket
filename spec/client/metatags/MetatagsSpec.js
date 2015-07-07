@@ -40,6 +40,26 @@ describe("Metatags", function() {
 
         });
 
+        describe("deprecation", function() {
+            beforeEach(function() {
+                spyOn(console, "warn");
+            });
+
+            it("logs deprecation method for open graph tags", function() {
+                metatags = new Metatags({
+                    "og:image": "a.jpg"
+                });
+                expect(console.warn).toHaveBeenCalled();
+            });
+
+            it("logs deprecation method for canonical tags", function() {
+                metatags = new Metatags({
+                    "canonical": "a.com/c"
+                });
+                expect(console.warn).toHaveBeenCalled();
+            });
+        });
+
     });
 
 });

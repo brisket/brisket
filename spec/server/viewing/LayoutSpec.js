@@ -3,6 +3,8 @@ describe("Layout", function() {
 
     var Layout = require("../../../lib/viewing/Layout");
     var Metatags = require("../../../lib/metatags/Metatags");
+    var OpenGraphTags = require("../../../lib/metatags/OpenGraphTags");
+    var LinkTags = require("../../../lib/metatags/LinkTags");
     var ExampleLayout;
     var layout;
 
@@ -301,8 +303,6 @@ describe("Layout", function() {
 
     describe("#renderMetatags", function() {
 
-        var metatags;
-
         beforeEach(function() {
             layout.renderTemplate();
         });
@@ -321,13 +321,13 @@ describe("Layout", function() {
 
         });
 
-        describe("when there are metatags", function() {
+        describe("when there is one set of metatags", function() {
+            var metatags;
 
             beforeEach(function() {
                 metatags = new Metatags({
                     "description": "a",
-                    "og:image": "b",
-                    "canonical": "c"
+                    "keywords": "b"
                 });
 
                 layout.renderMetatags(metatags);
@@ -337,6 +337,33 @@ describe("Layout", function() {
                 expect(layout.$head().html()).toBeHTMLEqual(
                     '<title>original</title>' +
                     '<meta name="description" content="a" data-ephemeral="true">' +
+                    '<meta name="keywords" content="b" data-ephemeral="true">'
+                );
+            });
+        });
+
+        describe("when there are multiple metatags", function() {
+
+            beforeEach(function() {
+                layout.renderMetatags([
+                    new Metatags({
+                        "description": "a",
+                        "keywords": "b"
+                    }),
+                    new OpenGraphTags({
+                        "og:image": "b"
+                    }),
+                    new LinkTags({
+                        "canonical": "c"
+                    })
+                ]);
+            });
+
+            it("appends metatags to the head", function() {
+                expect(layout.$head().html()).toBeHTMLEqual(
+                    '<title>original</title>' +
+                    '<meta name="description" content="a" data-ephemeral="true">' +
+                    '<meta name="keywords" content="b" data-ephemeral="true">' +
                     '<meta property="og:image" content="b" data-ephemeral="true">' +
                     '<link rel="canonical" href="c" data-ephemeral="true">'
                 );
