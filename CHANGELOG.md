@@ -1,5 +1,9 @@
 Changelog
 ==========
+### 0.36.0
+- add in LinkTags and OpenGraphTags in addition to Metatags
+- allow renderMetatags to accept Array
+
 ### 0.35.1
 - add way to enable events for testing
 
