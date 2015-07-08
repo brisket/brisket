@@ -1,5 +1,8 @@
 Changelog
 ==========
+### 0.37.0
+- introduce Brisket.Logger
+
 ### 0.36.0
 - add in LinkTags and OpenGraphTags in addition to Metatags
 - allow renderMetatags to accept Array
