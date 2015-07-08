@@ -79,6 +79,26 @@ describe("public interface to Brisket", function() {
         expect(Brisket.onError).toBe(requireFromLib("errors/Errors").onError);
     });
 
+    it("exposes Brisket.Logger", function() {
+        expect(Brisket.Logger).toBe(requireFromLib("logging/Logger"));
+    });
+
+    it("exposes setLogger from Brisket.Logger", function() {
+        expect(Brisket.setLogger).toBe(requireFromLib("logging/Logger").use);
+    });
+
+    it("exposes setLogLevel from Brisket.Logger", function() {
+        expect(Brisket.setLogLevel).toBe(requireFromLib("logging/Logger").setLogLevel);
+    });
+
+    it("exposes Brisket.Logging.ConsoleLogger", function() {
+        expect(Brisket.Logging.ConsoleLogger).toBe(requireFromLib("logging/ConsoleLogger"));
+    });
+
+    it("exposes Brisket.Logging.NoopLogger", function() {
+        expect(Brisket.Logging.NoopLogger).toBe(requireFromLib("logging/NoopLogger"));
+    });
+
     function requireFromLib(path) {
         return require("../../lib/" + path);
     }
