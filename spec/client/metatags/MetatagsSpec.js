@@ -1,6 +1,7 @@
 "use strict";
 
 var Metatags = require("lib/metatags/Metatags");
+var Logger = require("lib/logging/Logger");
 
 describe("Metatags", function() {
 
@@ -42,21 +43,21 @@ describe("Metatags", function() {
 
         describe("deprecation", function() {
             beforeEach(function() {
-                spyOn(console, "warn");
+                spyOn(Logger, "warn");
             });
 
             it("logs deprecation method for open graph tags", function() {
                 metatags = new Metatags({
                     "og:image": "a.jpg"
                 });
-                expect(console.warn).toHaveBeenCalled();
+                expect(Logger.warn).toHaveBeenCalled();
             });
 
             it("logs deprecation method for canonical tags", function() {
                 metatags = new Metatags({
                     "canonical": "a.com/c"
                 });
-                expect(console.warn).toHaveBeenCalled();
+                expect(Logger.warn).toHaveBeenCalled();
             });
         });
 
