@@ -1,20 +1,22 @@
 "use strict";
 
-var OpenGraphTags = require("lib/metatags/OpenGraphTags");
+var gulp = require("gulp");
+var prettify = require("gulp-jsbeautifier");
 
-describe("OpenGraphTags", function() {
-    var tags;
+var BEAUTY_CONFIG = {
+    config: __dirname + "/../config/jsbeautifyrc.json",
+    mode: "VERIFY_AND_WRITE"
+};
 
-    beforeEach(function() {
-        tags = new OpenGraphTags({
-            "og:image": "a.jpg"
-        });
-    });
+function beautifyJs(what) {
+    return gulp.src(what, {
+            base: "./"
+        })
+        .pipe(prettify(BEAUTY_CONFIG))
+        .pipe(gulp.dest("."));
+}
 
-    it("renders tags correctly", function() {
-        expect(tags.html).toEqual('<meta property="og:image" content="a.jpg" data-ephemeral="true">');
-    });
-});
+module.exports = beautifyJs;
 
 // ----------------------------------------------------------------------------
 // Copyright (C) 2015 Bloomberg Finance L.P.

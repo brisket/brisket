@@ -1,19 +1,9 @@
 "use strict";
 
-var OpenGraphTags = require("lib/metatags/OpenGraphTags");
+var Testing = require("lib/testing/Testing");
 
-describe("OpenGraphTags", function() {
-    var tags;
-
-    beforeEach(function() {
-        tags = new OpenGraphTags({
-            "og:image": "a.jpg"
-        });
-    });
-
-    it("renders tags correctly", function() {
-        expect(tags.html).toEqual('<meta property="og:image" content="a.jpg" data-ephemeral="true">');
-    });
+beforeEach(function() {
+    Testing.setup();
 });
 
 // ----------------------------------------------------------------------------

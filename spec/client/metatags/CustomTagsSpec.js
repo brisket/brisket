@@ -22,13 +22,18 @@ describe("CustomTags", function() {
 
         it("calls template on initialize", function() {
             ExampleTags.prototype.template = jasmine.createSpy();
-            
-            tags = new ExampleTags({ x: "y" });
+
+            tags = new ExampleTags({
+                x: "y"
+            });
             expect(tags.template).toHaveBeenCalledWith("x", "y");
         });
 
         it("returns html", function() {
-            tags = new ExampleTags({ a: "b", c: "d" });
+            tags = new ExampleTags({
+                a: "b",
+                c: "d"
+            });
             expect(tags.html).toEqual("a-bc-d");
         });
     });
