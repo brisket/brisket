@@ -10,7 +10,7 @@ describe("LinkTags", function() {
             "canonical": "a.com/c"
         });
     });
-    
+
     it("renders tags correctly", function() {
         expect(tags.html).toEqual('<link rel="canonical" href="a.com/c" data-ephemeral="true">');
     });

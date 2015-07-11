@@ -10,7 +10,7 @@ describe("OpenGraphTags", function() {
             "og:image": "a.jpg"
         });
     });
-    
+
     it("renders tags correctly", function() {
         expect(tags.html).toEqual('<meta property="og:image" content="a.jpg" data-ephemeral="true">');
     });

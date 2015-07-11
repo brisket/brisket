@@ -16,7 +16,8 @@ results
 npm-debug.log
 
 node_modules
-spec/build
 
 .grunt
 _SpecRunner.html
+specRunner.html
+built_stuff

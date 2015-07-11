@@ -1,22 +1,25 @@
 "use strict";
 
-var prepareForApiHost = require("../../lib/server/prepareForApiHost");
+var gulp = require("gulp");
+var jasmine = require("gulp-jasmine-phantom");
 
-describe("prepareForApiHost", function() {
-    var prepare;
+function clientSideJasmine(config) {
+    var specs = config.specs;
+    var src = config.src || [];
+    var vendor = config.vendor || [];
+    var vendorFiles = [].concat(src).concat(vendor);
+    var options = {
+        integration: true,
+        keepRunner: "./",
+        vendor: vendorFiles,
+        abortOnFail: true
+    };
 
-    beforeEach(function() {
-        var apiHost = "http://api.example.com/api";
-        prepare = prepareForApiHost(apiHost);
-        spyOn(prepareForApiHost, 'calculateSyncRequestUrl').and.returnValue("/api/model/1");
-    });
+    return gulp.src(specs)
+        .pipe(jasmine(options));
+}
 
-    it("should include apiHost", function() {
-        var options = {};
-        prepare(null, null, options);
-        expect(options.url).toBe("http://api.example.com/api/model/1");
-    });
-});
+module.exports = clientSideJasmine;
 
 // ----------------------------------------------------------------------------
 // Copyright (C) 2015 Bloomberg Finance L.P.

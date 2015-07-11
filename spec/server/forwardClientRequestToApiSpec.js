@@ -2,17 +2,17 @@
 
 var forwardClientRequestToApi = require("../../lib/server/forwardClientRequestToApi");
 
-describe("forwardClientRequestToApi", function(){
+describe("forwardClientRequestToApi", function() {
     var app;
     var req;
     var res;
     var pipe;
 
-    beforeEach(function(){
+    beforeEach(function() {
         var apiHost = "http://api.example.com/api";
         spyOn(forwardClientRequestToApi, "request").and.returnValue(true);
         app = forwardClientRequestToApi(apiHost);
-        pipe = jasmine.createSpy('pipe').and.callFake(function(){
+        pipe = jasmine.createSpy('pipe').and.callFake(function() {
             return this;
         });
         req = {
@@ -21,14 +21,16 @@ describe("forwardClientRequestToApi", function(){
         };
     });
 
-    it("replaces /api with apiHost", function(){
-        var options = {url: "http://api.example.com/api/model/1" };
-        app(req,res);
+    it("replaces /api with apiHost", function() {
+        var options = {
+            url: "http://api.example.com/api/model/1"
+        };
+        app(req, res);
         expect(forwardClientRequestToApi.request).toHaveBeenCalledWith(options);
     });
 
-    it("pipes request and response", function(){
-        app(req,res);
+    it("pipes request and response", function() {
+        app(req, res);
         expect(pipe).toHaveBeenCalledWith(true);
         expect(pipe).toHaveBeenCalledWith(res);
     });

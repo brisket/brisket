@@ -1,22 +1,20 @@
 "use strict";
 
-var prepareForApiHost = require("../../lib/server/prepareForApiHost");
+var gulp = require("gulp");
+var jasmine = require("gulp-jasmine");
+var SpecReporter = require("jasmine-spec-reporter");
 
-describe("prepareForApiHost", function() {
-    var prepare;
+function serverSideJasmine(what) {
+    return gulp.src(what)
+        .pipe(jasmine({
+            reporter: new SpecReporter({
+                displayStackTrace: "all",
+                displayPendingSpec: true
+            })
+        }));
+}
 
-    beforeEach(function() {
-        var apiHost = "http://api.example.com/api";
-        prepare = prepareForApiHost(apiHost);
-        spyOn(prepareForApiHost, 'calculateSyncRequestUrl').and.returnValue("/api/model/1");
-    });
-
-    it("should include apiHost", function() {
-        var options = {};
-        prepare(null, null, options);
-        expect(options.url).toBe("http://api.example.com/api/model/1");
-    });
-});
+module.exports = serverSideJasmine;
 
 // ----------------------------------------------------------------------------
 // Copyright (C) 2015 Bloomberg Finance L.P.
