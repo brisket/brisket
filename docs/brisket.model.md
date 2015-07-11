@@ -7,6 +7,7 @@ An environment agnostic implementation of Backbone.Model.
 
 * [Simple Usage](#simple-usage)
 * [Setting Up A BaseModel](#setting-up-a-basemodel)
+* [Routing to apiHost](#routing-to-apihost)
 
 ## Simple Usage
 
@@ -33,3 +34,7 @@ var appFoo = new AppFoo({ id: "example" });
 
 appFoo.someFeature(); // example
 ```
+
+## Routing to apiHost
+
+Any model request received by Brisket with ```/api``` as a prefix will be rerouted to the [apiHost](brisket.createserver.md#apihost).
