@@ -7,6 +7,7 @@ An environment agnostic implementation of Backbone.Collection.
 
 * [Simple Usage](#simple-usage)
 * [Setting Up A BaseCollection](#setting-up-a-basecollection)
+* [Routing to apiHost](#routing-to-apihost)
 
 ## Simple Usage
 
@@ -33,3 +34,7 @@ var appFooCollection = new AppFooCollection({ id: "example" });
 
 appFooCollection.someFeature(); // example
 ```
+
+## Routing to apiHost
+
+Any collection request received by Brisket with ```/api``` as a prefix will be rerouted to the [apiHost](brisket.createserver.md#apihost).

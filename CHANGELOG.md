@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.37.0
+- Reroutes any requests with a prefix of /api to the apiHost. Without this, client-side model/collection requests would need to be routed via separate middleware.
+
 ### 0.36.2
 - upgrade jquery-mockjax -> 2.0.1
 
