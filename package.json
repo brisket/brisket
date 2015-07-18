@@ -1,70 +1,72 @@
 {
-    "name": "brisket",
-    "version": "0.36.1",
-    "description": "Framework for building single page web apps using isomorphic Javascript",
-    "author": [
-        "Wayne Warner",
-        "Eric Herdzik",
-        "Dave Lucia",
-        "Nianpeng Li",
-        "Leo Chen",
-        "Glenn Gentzke"
-    ],
-    "keywords": [
-        "isomorphic",
-        "javascript",
-        "spa",
-        "backbone"
-    ],
-    "main": "lib/brisket.js",
-    "engines": {
-        "node": "~0.10.0"
-    },
-    "dependencies": {
-        "backbone": "~1.1.2",
-        "express": "~4.11.0",
-        "jquery": ">=1.11.1",
-        "jsdom": "~3.1.0",
-        "bluebird": "~2.9.7",
-        "lodash": "~2.4",
-        "qs": "2.3.3",
-        "cookie": "0.1.2",
-        "xmlhttprequest": "1.7.0",
-        "jquery.mockjax": "~2.0.0-beta"
-    },
-    "devDependencies": {
-        "grunt": "~0.4.5",
-        "grunt-browserify": "~1.3.0",
-        "grunt-cli": "~0.1.13",
-        "grunt-contrib-jasmine": "~0.8.0",
-        "grunt-contrib-jshint": "~0.7.2",
-        "jasmine-node": "^2.0.0-beta4"
-    },
-    "browser": {
-        "./lib/server/AjaxCallsForCurrentRequest.js": "./lib/util/noop.js",
-        "./lib/server/DomainLocalStorage.js": "./lib/util/noop.js",
-        "./lib/server/Server.js": "./lib/util/noop.js",
-        "./lib/server/ServerApp.js": "./lib/util/noop.js",
-        "./lib/server/ServerConfigure.js": "./lib/util/noop.js",
-        "./lib/server/ServerDispatcher.js": "./lib/util/noop.js",
-        "./lib/server/serverJquery.js": "./lib/util/noop.js",
-        "./lib/server/ServerRenderer.js": "./lib/util/noop.js",
-        "./lib/server/ServerRenderingWorkflow.js": "./lib/util/noop.js",
-        "./lib/server/ServerRequest.js": "./lib/util/noop.js",
-        "./lib/server/ServerResponse.js": "./lib/util/noop.js",
-        "./lib/server/ServerResponseWorkflow.js": "./lib/util/noop.js",
-        "./lib/server/ServerRouter.js": "./lib/util/noop.js"
-    },
-    "scripts": {
-        "test": "grunt test"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/bloomberg/brisket.git"
-    },
-    "bugs": "http://github.com/bloomberg/brisket/issues",
-    "license": [{
-        "type": "Apache-2.0",
-        "url": "https://github.com/bloomberg/brisket/blob/master/LICENSE"
-    }]
+  "name": "brisket",
+  "version": "0.36.1",
+  "description": "Framework for building single page web apps using isomorphic Javascript",
+  "author": [
+    "Wayne Warner",
+    "Eric Herdzik",
+    "Dave Lucia",
+    "Nianpeng Li",
+    "Leo Chen",
+    "Glenn Gentzke"
+  ],
+  "keywords": [
+    "isomorphic",
+    "javascript",
+    "spa",
+    "backbone"
+  ],
+  "main": "lib/brisket.js",
+  "engines": {
+    "node": "~0.10.0"
+  },
+  "dependencies": {
+    "backbone": "~1.1.2",
+    "bluebird": "~2.9.7",
+    "cookie": "0.1.2",
+    "express": "~4.11.0",
+    "jquery": ">=1.11.1",
+    "jquery-mockjax": "^2.0.1",
+    "jsdom": "~3.1.0",
+    "lodash": "~2.4",
+    "qs": "2.3.3",
+    "xmlhttprequest": "1.7.0"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-browserify": "~1.3.0",
+    "grunt-cli": "~0.1.13",
+    "grunt-contrib-jasmine": "~0.8.0",
+    "grunt-contrib-jshint": "~0.7.2",
+    "jasmine-node": "^2.0.0-beta4"
+  },
+  "browser": {
+    "./lib/server/AjaxCallsForCurrentRequest.js": "./lib/util/noop.js",
+    "./lib/server/DomainLocalStorage.js": "./lib/util/noop.js",
+    "./lib/server/Server.js": "./lib/util/noop.js",
+    "./lib/server/ServerApp.js": "./lib/util/noop.js",
+    "./lib/server/ServerConfigure.js": "./lib/util/noop.js",
+    "./lib/server/ServerDispatcher.js": "./lib/util/noop.js",
+    "./lib/server/serverJquery.js": "./lib/util/noop.js",
+    "./lib/server/ServerRenderer.js": "./lib/util/noop.js",
+    "./lib/server/ServerRenderingWorkflow.js": "./lib/util/noop.js",
+    "./lib/server/ServerRequest.js": "./lib/util/noop.js",
+    "./lib/server/ServerResponse.js": "./lib/util/noop.js",
+    "./lib/server/ServerResponseWorkflow.js": "./lib/util/noop.js",
+    "./lib/server/ServerRouter.js": "./lib/util/noop.js"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bloomberg/brisket.git"
+  },
+  "bugs": "http://github.com/bloomberg/brisket/issues",
+  "license": [
+    {
+      "type": "Apache-2.0",
+      "url": "https://github.com/bloomberg/brisket/blob/master/LICENSE"
+    }
+  ]
 }
