@@ -1,5 +1,12 @@
 Changelog
 ==========
+
+### 0.36.2
+- upgrade jquery-mockjax -> 2.0.1
+
+### 0.36.1
+- IE9 Console fix
+
 ### 0.36.0
 - add in LinkTags and OpenGraphTags in addition to Metatags
 - allow renderMetatags to accept Array
