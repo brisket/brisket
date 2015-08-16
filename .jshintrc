@@ -30,6 +30,8 @@
     "wait": true,
     "forEach": true
   },
+  "esnext": true,
   "globalstrict": true,
+  "-W079": true,
   "-W069": true /* Disable dot-notation warning */
 }
