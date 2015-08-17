@@ -277,12 +277,10 @@ describe("ServerRenderer", function() {
     });
 
     function clientStartScript(environmentConfig, clientAppPath, bootstrappedData, clientAppUrl) {
-        var pattern =  "<script type=\"text/javascript\">\n" +
-            "\"use strict\";" +
-            "\\(function\\(d\\) {\n" +
-            "var s = d.createElement\\(\"script\"\\);\n" +
+        var pattern = "<script type=\"text/javascript\">\n" +
+            "var s = document.createElement\\(\"script\"\\);\n" +
+            "var h = document.head;\n" +
             "s.setAttribute\\(\"src\", \"" + clientAppUrl + "\"\\);\n" +
-            "s.async = true;\n" +
             "function loaded\\(e\\) {\n" +
             "var ClientApp = require\\('" + clientAppPath + "'\\);\n" +
             "var clientApp = new ClientApp\\(\\);\n" +
@@ -291,10 +289,13 @@ describe("ServerRenderer", function() {
             "bootstrappedData: " + stringifyData(bootstrappedData) + "\n" +
             "}\\);\n" +
             "s.removeEventListener\\(\"load\", loaded, false\\);\n" +
+            "s = null;\n" +
             "}\n" +
             "s.addEventListener\\(\"load\", loaded\\);\n" +
-            "setTimeout\\(function\\(\\) { \\(d.body || d.head\\).appendChild\\(s\\); }, 0\\);\n" +
-            "}\\)\\(d\\);\n" +
+            "setTimeout\\(function\\(\\){\n" +
+            "h.insertBefore\\(s, null\\);\n" +
+            "h = null;\n" +
+            "},0\\);\n" +
             "</script>";
 
         return new RegExp(stripIllegalCharacters(pattern), "m");
