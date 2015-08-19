@@ -277,7 +277,7 @@ describe("ServerRenderer", function() {
     });
 
     function clientStartScript(environmentConfig, clientAppPath, bootstrappedData, clientAppUrl) {
-        var pattern =  "<script type=\"text/javascript\">\n" +
+        var pattern = "<script type=\"text/javascript\">\n" +
             "\"use strict\";" +
             "\\(function\\(d\\) {\n" +
             "var s = d.createElement\\(\"script\"\\);\n" +

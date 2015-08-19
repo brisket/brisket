@@ -1,21 +1,9 @@
 "use strict";
 
-var prepareForApiHost = require("../../lib/server/prepareForApiHost");
+var Testing = require("lib/testing/Testing");
 
-describe("prepareForApiHost", function() {
-    var prepare;
-
-    beforeEach(function() {
-        var apiHost = "http://api.example.com/api";
-        prepare = prepareForApiHost(apiHost);
-        spyOn(prepareForApiHost, 'calculateSyncRequestUrl').and.returnValue("/api/model/1");
-    });
-
-    it("should include apiHost", function() {
-        var options = {};
-        prepare(null, null, options);
-        expect(options.url).toBe("http://api.example.com/api/model/1");
-    });
+beforeEach(function() {
+    Testing.setup();
 });
 
 // ----------------------------------------------------------------------------

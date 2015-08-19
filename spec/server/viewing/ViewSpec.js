@@ -17,7 +17,7 @@ describe("View", function() {
         var ExampleView;
         var view;
 
-        beforeEach(function(){
+        beforeEach(function() {
             ExampleView = View.extend({
                 events: {
                     "click .sample-element": "noop"
@@ -41,7 +41,7 @@ describe("View", function() {
             expect(Backbone.View.prototype.undelegateEvents).not.toHaveBeenCalled();
         });
     });
-    
+
 });
 
 // ----------------------------------------------------------------------------
