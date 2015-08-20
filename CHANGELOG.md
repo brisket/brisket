@@ -1,6 +1,10 @@
 Changelog
 ==========
 
+### 0.37.1
+- Use Function.prototype as noop
+- Fix memory leak in script injection mechanism
+
 ### 0.37.0
 - Reroutes any requests with a prefix of /api to the apiHost. Without this, client-side model/collection requests would need to be routed via separate middleware.
 
