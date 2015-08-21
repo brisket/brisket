@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.38.0
+- Revert /api/* support (2e712aa4bb8da2f5026dc33134a1c89f5a62555b)
+
 ### 0.37.1
 - Use Function.prototype as noop
 - Fix memory leak in script injection mechanism

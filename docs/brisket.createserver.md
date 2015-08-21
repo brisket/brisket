@@ -11,21 +11,7 @@ Use Brisket.createServer to create a Brisket express engine that you can use in 
 `createServer` takes parameters so that you can customize your app. Here are the required options:
 
 #### apiHost
-This is the fully qualified path to the api your Brisket app will hit. This value will be prepended to all model and collection urls during server-side requests and to any client-side request containing the prefix ```/api```.
-
-```js
-var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000/api/v2'
-});
-
-var myModel = Brisket.Model.extend({
-    url: '/api/models'
-});
-```
-
-Any client-side request for a model of type ```myModel``` will be rerouted by Brisket to ```http://localhost:4000/api/v2/models```.
-
-**Note:** Your apiHost will be fully exposed by Brisket. You should ensure only your intended public endpoints are accessible.
+This is the fully qualified path to the api your Brisket app will hit. This value will be prepended to all model and collection urls during server-side requests.
 
 #### clientAppRequirePath
 This option is the path to your ClientApp module. Brisket will use it to find your ClientApp and call start for you on the client.
