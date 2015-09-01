@@ -1,7 +1,7 @@
 Child Views
 ===========
 
-Brisket provides a child view managment system that helps you manage memory, and display child views. You could manually append the contents of a child view to your parent view's `el`, but you could end up with a lot of bookkeeping to manage. Brisket's child view system makes things easier.
+Brisket provides a child view management system that helps you manage memory, and display child views. You could manually append the contents of a child view to your parent view's `el`, but you could end up with a lot of bookkeeping to manage. Brisket's child view system makes things easier.
 
 ## Documentation Index
 
