@@ -20,3 +20,5 @@ spec/build
 
 .grunt
 _SpecRunner.html
+
+benchmarks/results.json

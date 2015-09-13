@@ -125,6 +125,11 @@ To run the test suite:
 $ npm test
 ```
 
+To run benchmarks:
+```shell
+$ npm run benchmarks
+```
+
 ## License
 Apache License (Version 2). See license text in [LICENSE](LICENSE).
 
