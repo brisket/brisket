@@ -1,16 +1,25 @@
 "use strict";
 
-var spawn = require('child_process').spawn;
+var spawn = require("child_process").spawn;
 
 function configureGrunt(grunt) {
 
     grunt.loadNpmTasks("grunt-browserify");
     grunt.loadNpmTasks("grunt-contrib-jasmine");
     grunt.loadNpmTasks("grunt-contrib-jshint");
+    grunt.loadNpmTasks("grunt-benchmark");
 
     grunt.initConfig({
 
         pkg: grunt.file.readJSON("package.json"),
+
+        benchmark: {
+            all: {
+                src: ["benchmarks/*.js"],
+                dest: "benchmarks/results.json",
+                format: "json"
+            }
+        },
 
         browserify: {
             test: {
