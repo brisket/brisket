@@ -17,7 +17,7 @@ function reset() {
 }
 
 module.exports = {
-    name: "Creating child views",
+    name: "Creating a child view",
     maxTime: 2,
     tests: {
 
