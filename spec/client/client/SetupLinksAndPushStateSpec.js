@@ -129,6 +129,15 @@ describe("SetupLinksAndPushState", function() {
         describe("NOT Backbone navigating to NON application links", function() {
             var $link;
 
+            it("link with target = _blank", function() {
+                $link = $fixture.find("a.applink");
+                $link.attr("target", "_blank");
+
+                $link.click();
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
             it("hash links", function() {
                 $link = $fixture.find("a[href^='#']");
                 expect($link).toExist();
