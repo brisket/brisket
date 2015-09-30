@@ -4,6 +4,7 @@ var View = require("lib/viewing/View");
 var Layout = require("lib/viewing/Layout");
 var ErrorViewMapping = require("lib/errors/ErrorViewMapping");
 var noop = require("lib/util/noop");
+var _ = require("lodash");
 
 var PageNotFoundView = View.extend({
     name: "page_not_found"
@@ -22,8 +23,8 @@ var ExampleLayout = Layout.extend({
 
 var MockRouter = {
 
-    create: function() {
-        return {
+    create: function(options) {
+        return _.extend({
             layout: ExampleLayout,
             errorViewMapping: ErrorViewMapping.create({
                 404: PageNotFoundView,
@@ -32,7 +33,7 @@ var MockRouter = {
             onRouteStart: jasmine.createSpy(),
             onRouteComplete: jasmine.createSpy(),
             close: jasmine.createSpy()
-        };
+        }, options);
     }
 
 };
