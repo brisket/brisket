@@ -1,6 +1,6 @@
 {
   "name": "brisket",
-  "version": "0.38.0",
+  "version": "0.39.0",
   "description": "Framework for building single page web apps using isomorphic Javascript",
   "author": [
     "Wayne Warner",
@@ -65,10 +65,8 @@
     "url": "https://github.com/bloomberg/brisket.git"
   },
   "bugs": "http://github.com/bloomberg/brisket/issues",
-  "license": [
-    {
-      "type": "Apache-2.0",
-      "url": "https://github.com/bloomberg/brisket/blob/master/LICENSE"
-    }
-  ]
+  "license": [{
+    "type": "Apache-2.0",
+    "url": "https://github.com/bloomberg/brisket/blob/master/LICENSE"
+  }]
 }

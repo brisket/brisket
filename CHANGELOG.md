@@ -1,6 +1,14 @@
 Changelog
 ==========
 
+### 0.39.0
+- layout enters dom before view
+- Respect target attribute for relative links.
+- add a benchmark for creating many child views
+- improve childViewCount performance
+- add benchmark tests
+- Update brisket.childviews.md
+
 ### 0.38.0
 - Revert /api/* support (2e712aa4bb8da2f5026dc33134a1c89f5a62555b)
 
