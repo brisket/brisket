@@ -16,9 +16,12 @@ results
 npm-debug.log
 
 node_modules
-spec/build
 
 .grunt
 _SpecRunner.html
 
 benchmarks/results.json
+
+specRunner.html
+spec/build
+benchmark-results.json
