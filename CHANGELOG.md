@@ -1,6 +1,10 @@
 Changelog
 ==========
 
+### 0.39.1
+- loosen bluebird dependency requirements
+- switch to gulp build
+
 ### 0.39.0
 - layout enters dom before view
 - Respect target attribute for relative links.
