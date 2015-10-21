@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.39.2
+- fix iframe in View leaks on server side
+
 ### 0.39.1
 - loosen bluebird dependency requirements
 - switch to gulp build
