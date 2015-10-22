@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.39.3
+- disable mutation events
+
 ### 0.39.2
 - fix iframe in View leaks on server side
 
