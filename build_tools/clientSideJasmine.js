@@ -1,22 +1,26 @@
 "use strict";
 
 var gulp = require("gulp");
-var jasmine = require("gulp-jasmine-phantom");
+var jasmineBrowser = require("gulp-jasmine-browser");
+var gulpif = require("gulp-if");
 
 function clientSideJasmine(config) {
     var specs = config.specs;
+    var debug = config.debug === true;
     var src = config.src || [];
     var vendor = config.vendor || [];
-    var vendorFiles = [].concat(src, vendor);
-    var options = {
-        integration: true,
-        keepRunner: "./",
-        vendor: vendorFiles,
-        abortOnFail: true
-    };
+    var files = [].concat(
+        src,
+        vendor,
+        specs
+    );
 
-    return gulp.src(specs)
-        .pipe(jasmine(options));
+    return gulp.src(files)
+        .pipe(jasmineBrowser.specRunner({
+            console: !debug
+        }))
+        .pipe(gulpif(!debug, jasmineBrowser.headless()))
+        .pipe(gulpif(debug, jasmineBrowser.server()));
 }
 
 module.exports = clientSideJasmine;
