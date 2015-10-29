@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.39.4
+- loosen lodash dependency
+
 ### 0.39.3
 - disable mutation events
 
