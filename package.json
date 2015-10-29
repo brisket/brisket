@@ -38,7 +38,6 @@
     "glob": "^5.0.13",
     "gulp": "^3.9.0",
     "gulp-jasmine": "^2.0.1",
-    "gulp-jasmine-phantom": "~1.2.0",
     "gulp-jsbeautifier": "^1.0.0",
     "gulp-jshint": "^1.11.2",
     "jasmine-spec-reporter": "^2.4.0",
@@ -48,7 +47,9 @@
     "gulp-if": "~2.0.0",
     "gulp-uglify": "~1.4.2",
     "vinyl-buffer": "~1.0.0",
-    "gulp-bench": "~1.1.0"
+    "gulp-bench": "~1.1.0",
+    "gulp-util": "~3.0.7",
+    "gulp-jasmine-browser": "~0.2.3"
   },
   "browser": {
     "./lib/server/AjaxCallsForCurrentRequest.js": "./lib/util/noop.js",
