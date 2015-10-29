@@ -1,6 +1,10 @@
 Changelog
 ==========
 
+### 0.39.4
+- replace gulp-jasmine-phantom with gulp-jasmine-browser
+- loosen lodash dependency
+
 ### 0.39.3
 - disable mutation events
 
