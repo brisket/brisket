@@ -66,13 +66,15 @@ describe("ClientRenderingWorkflow", function() {
 
         windough = mockWindow();
 
-        mockClientRequest = {
-            id: "mockClientRequest"
-        };
-
         mockClientResponse = new ClientResponse(windough);
 
-        spyOn(ClientRequest, "from").and.returnValue(mockClientRequest);
+        var originalClientRequestFrom = ClientRequest.from;
+
+        spyOn(ClientRequest, "from").and.callFake(function() {
+            mockClientRequest = originalClientRequestFrom.apply(null, arguments);
+
+            return mockClientRequest;
+        });
         spyOn(ClientResponse, "from").and.returnValue(mockClientResponse);
 
         spyOn(Layout.prototype, "close");
@@ -699,6 +701,8 @@ describe("ClientRenderingWorkflow", function() {
     describe("when the first render request takes longer to return than the second", function() {
         var commandFromOriginalHandler;
         var commandFromSecondHandler;
+        var firstRouteOnComplete;
+        var secondRouteOnComplete;
 
         beforeEach(function() {
             expectedView2 = new View();
@@ -706,6 +710,8 @@ describe("ClientRenderingWorkflow", function() {
 
             commandFromOriginalHandler = jasmine.createSpy("commands from original handler");
             commandFromSecondHandler = jasmine.createSpy("commands from second handler");
+            firstRouteOnComplete = jasmine.createSpy("first route on complete");
+            secondRouteOnComplete = jasmine.createSpy("second route on complete");
 
             fakeRouter.layout = Layout.extend({
                 commandFromOriginalHandler: commandFromOriginalHandler,
@@ -716,13 +722,17 @@ describe("ClientRenderingWorkflow", function() {
         describe("when both handlers are resolved", function() {
 
             beforeEach(function() {
-                originalHandler = function(layout) {
+                originalHandler = function(layout, request) {
                     layout.commandFromOriginalHandler();
+                    request.onComplete(firstRouteOnComplete);
+
                     return Promise.resolve(expectedView).timeout(10);
                 };
 
-                secondHandler = function(layout) {
+                secondHandler = function(layout, request) {
                     layout.commandFromSecondHandler();
+                    request.onComplete(secondRouteOnComplete);
+
                     return Promise.resolve(expectedView2).timeout(5);
                 };
 
@@ -743,12 +753,17 @@ describe("ClientRenderingWorkflow", function() {
             });
 
             it("does NOT run layout commands for first request", function(done) {
-                bothReturn
-                    .then(function() {
-                        expect(commandFromOriginalHandler).not.toHaveBeenCalled();
+                bothReturn.then(function() {
+                    expect(commandFromOriginalHandler).not.toHaveBeenCalled();
+                    done();
+                });
+            });
 
-                        done();
-                    });
+            it("does NOT run request.onComplete handler for first request", function(done) {
+                bothReturn.then(function() {
+                    expect(firstRouteOnComplete).not.toHaveBeenCalled();
+                    done();
+                });
             });
 
             it("renders the latest request", function(done) {
@@ -771,6 +786,13 @@ describe("ClientRenderingWorkflow", function() {
 
                         done();
                     });
+            });
+
+            it("runs request.onComplete handler for second request", function(done) {
+                bothReturn.then(function() {
+                    expect(secondRouteOnComplete).toHaveBeenCalled();
+                    done();
+                });
             });
 
             itDoesNotCleanUpLayout();
