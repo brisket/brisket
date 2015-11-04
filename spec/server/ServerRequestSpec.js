@@ -1,8 +1,9 @@
 "use strict";
 
-var ServerRequest = require("../../lib/server/ServerRequest");
-
 describe("ServerRequest", function() {
+    var ServerRequest = require("../../lib/server/ServerRequest");
+    var noop = require("../../lib/util/noop");
+
     var serverRequest;
 
     describe("from returns Brisket normalized values", function() {
@@ -56,6 +57,14 @@ describe("ServerRequest", function() {
 
         it("exposes isNotClick as false", function() {
             expect(serverRequest.isNotClick).toBe(false);
+        });
+
+        it("exposes noop for onRouteComplete", function() {
+            expect(serverRequest.onComplete).toBe(noop);
+        });
+
+        it("exposes noop for complete", function() {
+            expect(serverRequest.complete).toBe(noop);
         });
 
     });

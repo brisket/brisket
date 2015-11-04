@@ -102,3 +102,6 @@ The user's cookies for the current domain. The api looks the same as express' [r
 **Note: To enable cookies, you have to use the cookie parser middleware as specified by the express documentation.**
 
 **Another note: Please be advised that if you use a downstream cache (e.g. CDN), you should add any cookie values that are used to make rendering choices into the url's cache key.**
+
+### request.onComplete(fn)
+Specify a callback to execute when a request completes (i.e. is visible to the user).
