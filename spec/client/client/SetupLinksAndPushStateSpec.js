@@ -8,6 +8,8 @@ describe("SetupLinksAndPushState", function() {
     var $ = require("lib/application/jquery");
 
     var $fixture;
+    var $link;
+    var clickEvent;
 
     beforeEach(function() {
         spyOn(Url, "location").and.returnValue({
@@ -22,6 +24,10 @@ describe("SetupLinksAndPushState", function() {
 
         spyOn(ClientRequest, "isFromLinkClick");
 
+        clickEvent = document.createEvent("Event");
+        clickEvent.initEvent("click", true, true);
+        clickEvent.view = window;
+
         $fixture = $(
             '<div class="clienthistory_links">' +
             '<a class="applink" href="somewhere/inapp">' +
@@ -35,10 +41,13 @@ describe("SetupLinksAndPushState", function() {
             '<a href="javascript:{}">I am a link with javascript code</a>' +
             '</div>'
         ).appendTo("body");
+
+        $link = null;
     });
 
     afterEach(function() {
         SetupLinksAndPushState.stop();
+        document.removeEventListener("click", preventRealClick);
         $fixture.remove();
     });
 
@@ -49,6 +58,8 @@ describe("SetupLinksAndPushState", function() {
                 root: "",
                 browserSupportsPushState: true
             });
+
+            document.addEventListener("click", preventRealClick);
         });
 
         it("starts Backbone history", function() {
@@ -70,7 +81,8 @@ describe("SetupLinksAndPushState", function() {
         });
 
         it("sets up application links to navigate Backbone history", function() {
-            $fixture.find("a.applink").click();
+            $link = $fixture.find("a.applink");
+            whenLinkClicked();
 
             expect(Backbone.history.navigate)
                 .toHaveBeenCalledWith("somewhere/inapp", {
@@ -79,47 +91,70 @@ describe("SetupLinksAndPushState", function() {
         });
 
         it("sets up application links to set ClientRequest as from link click", function() {
-            $fixture.find("a.applink").click();
+            $link = $fixture.find("a.applink");
+            whenLinkClicked();
 
             expect(ClientRequest.isFromLinkClick).toHaveBeenCalled();
         });
 
         describe("does NOT navigate Backbone history on", function() {
-            var $link;
 
             beforeEach(function() {
                 $link = $fixture.find("a.applink");
                 expect($link).toExist();
             });
 
+            it("click default prevented by jquery", function() {
+                $link.click(function(e) {
+                    e.preventDefault();
+                });
+                whenLinkClicked();
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+            it("click default prevented by addEventListener", function() {
+                $link[0].addEventListener("click", function(e) {
+                    e.preventDefault();
+                });
+                whenLinkClicked();
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+            it("click default prevented by onclick", function() {
+                $link[0].onclick = function(e) {
+                    e.preventDefault();
+                };
+                whenLinkClicked();
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
             it("alt + click", function() {
-                $link.trigger($.Event("click", {
-                    altKey: true
-                }));
+                whenHoldingAltKey();
+                whenLinkClicked();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
 
             it("ctrl + click", function() {
-                $link.trigger($.Event("click", {
-                    ctrlKey: true
-                }));
+                whenHoldingCtrlKey();
+                whenLinkClicked();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
 
             it("meta + click", function() {
-                $link.trigger($.Event("click", {
-                    metaKey: true
-                }));
+                whenHoldingMetaKey();
+                whenLinkClicked();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
 
             it("shift + click", function() {
-                $link.trigger($.Event("click", {
-                    shiftKey: true
-                }));
+                whenHoldingShiftKey();
+                whenLinkClicked();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
@@ -127,13 +162,12 @@ describe("SetupLinksAndPushState", function() {
         });
 
         describe("NOT Backbone navigating to NON application links", function() {
-            var $link;
 
             it("link with target = _blank", function() {
                 $link = $fixture.find("a.applink");
                 $link.attr("target", "_blank");
 
-                $link.click();
+                whenLinkClicked();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
@@ -142,7 +176,7 @@ describe("SetupLinksAndPushState", function() {
                 $link = $fixture.find("a[href^='#']");
                 expect($link).toExist();
 
-                $link.click();
+                whenLinkClicked();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
@@ -151,7 +185,7 @@ describe("SetupLinksAndPushState", function() {
                 $link = $fixture.find("a[href^='http']");
                 expect($link).toExist();
 
-                $link.click();
+                whenLinkClicked();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
@@ -160,7 +194,7 @@ describe("SetupLinksAndPushState", function() {
                 $link = $fixture.find("a[href^='/']");
                 expect($link).toExist();
 
-                $link.click();
+                whenLinkClicked();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
@@ -169,7 +203,7 @@ describe("SetupLinksAndPushState", function() {
                 $link = $fixture.find("a[href^='mailto']");
                 expect($link).toExist();
 
-                $link.click();
+                whenLinkClicked();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
@@ -178,7 +212,7 @@ describe("SetupLinksAndPushState", function() {
                 $link = $fixture.find("a[href^='javascript']");
                 expect($link).toExist();
 
-                $link.click();
+                whenLinkClicked();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
@@ -234,6 +268,8 @@ describe("SetupLinksAndPushState", function() {
                 root: "",
                 browserSupportsPushState: false
             });
+
+            document.addEventListener("click", preventRealClick);
         });
 
         it("starts Backbone history", function() {
@@ -251,13 +287,12 @@ describe("SetupLinksAndPushState", function() {
         });
 
         describe("NOT Backbone navigating to ANY links", function() {
-            var $link;
 
             it("application links", function() {
                 $link = $fixture.find("a.applink");
                 expect($link).toExist();
 
-                $link.click();
+                whenLinkClicked();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
@@ -266,7 +301,7 @@ describe("SetupLinksAndPushState", function() {
                 $link = $fixture.find("a[href^='#']");
                 expect($link).toExist();
 
-                $link.click();
+                whenLinkClicked();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
@@ -275,7 +310,7 @@ describe("SetupLinksAndPushState", function() {
                 $link = $fixture.find("a[href^='http']");
                 expect($link).toExist();
 
-                $link.click();
+                whenLinkClicked();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
@@ -284,7 +319,7 @@ describe("SetupLinksAndPushState", function() {
                 $link = $fixture.find("a[href^='/']");
                 expect($link).toExist();
 
-                $link.click();
+                whenLinkClicked();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
@@ -293,7 +328,7 @@ describe("SetupLinksAndPushState", function() {
                 $link = $fixture.find("a[href^='mailto']");
                 expect($link).toExist();
 
-                $link.click();
+                whenLinkClicked();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
@@ -302,7 +337,7 @@ describe("SetupLinksAndPushState", function() {
                 $link = $fixture.find("a[href^='javascript']");
                 expect($link).toExist();
 
-                $link.click();
+                whenLinkClicked();
 
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
@@ -386,6 +421,30 @@ describe("SetupLinksAndPushState", function() {
         });
     }
 
+    function whenHoldingAltKey() {
+        clickEvent.altKey = true;
+    }
+
+    function whenHoldingCtrlKey() {
+        clickEvent.ctrlKey = true;
+    }
+
+    function whenHoldingMetaKey() {
+        clickEvent.metaKey = true;
+    }
+
+    function whenHoldingShiftKey() {
+        clickEvent.shiftKey = true;
+    }
+
+    function whenLinkClicked() {
+        $link[0].dispatchEvent(clickEvent);
+    }
+
+    function preventRealClick(e) {
+        e.preventDefault();
+        return false;
+    }
 });
 
 // ----------------------------------------------------------------------------
