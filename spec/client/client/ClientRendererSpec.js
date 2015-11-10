@@ -20,7 +20,6 @@ describe("ClientRenderer", function() {
         spyOn(layout, "backToNormal");
         spyOn(layout, "setContentToAttachedView");
         spyOn(layout, "setContent");
-        spyOn(layout, "renderTitle");
         spyOn(layout, "renderMetatags");
         spyOn(layout, "flushMetatags");
 
@@ -95,37 +94,6 @@ describe("ClientRenderer", function() {
 
         it("sets uid to reflect current request and it's creation order", function() {
             expect(view.setUid).toHaveBeenCalledWith("1|0_0");
-        });
-
-    });
-
-    describe("when view has page level data", function() {
-
-        beforeEach(function() {
-            metatags = {
-                description: "description"
-            };
-
-            view.withTitle("Title")
-                .withMetatags(metatags);
-
-            ClientRenderer.render(layout, view);
-        });
-
-        it("renders title", function() {
-            expect(layout.renderTitle).toHaveBeenCalledWith("Title");
-        });
-
-    });
-
-    describe("when view does NOT have page level data", function() {
-
-        beforeEach(function() {
-            ClientRenderer.render(layout, view);
-        });
-
-        it("renders null title", function() {
-            expect(layout.renderTitle).toHaveBeenCalledWith(null);
         });
 
     });
@@ -216,6 +184,111 @@ describe("ClientRenderer", function() {
 
             it("does NOT flush the existing metatags", function() {
                 expect(layout.flushMetatags).not.toHaveBeenCalled();
+            });
+
+        });
+
+    });
+
+    describe("rendering page title", function() {
+        var originalPageTitle;
+
+        beforeEach(function() {
+            originalPageTitle = document.title;
+        });
+
+        afterEach(function() {
+            document.title = originalPageTitle;
+        });
+
+        it("does NOT change page title on initial request", function() {
+            layout.defaultTitle = "Default Title";
+            view = new ViewWithPageLevelData().withTitle("Title");
+            ClientRenderer.render(layout, view, 1);
+
+            expect(document.title).toBe(originalPageTitle);
+        });
+
+        describe("when layout template has title tag without attributes", function() {
+
+            it("renders title from view's page level data", function() {
+                layout.defaultTitle = "Default Title";
+                view = new ViewWithPageLevelData().withTitle("Title");
+                ClientRenderer.render(layout, view, 2);
+
+                expect(document.title).toBe("Title");
+            });
+
+            it("renders layout's defaultTitle when view does NOT have page level data", function() {
+                layout.defaultTitle = "Default Title";
+                ClientRenderer.render(layout, view, 2);
+
+                expect(document.title).toBe("Default Title");
+            });
+
+            it("does NOT render title when view does NOT have page level data NOR layout has defaultTitle", function() {
+                ClientRenderer.render(layout, view, 2);
+
+                expect(document.title).toBe(originalPageTitle);
+            });
+
+            it("escapes title for use in html", function() {
+                layout.defaultTitle = "Title \" ' & < >";
+                ClientRenderer.render(layout, view, 2);
+
+                expect(document.title).toBe("Title \" ' & < >");
+            });
+
+            it("renders title when title tag is on multiple lines", function() {
+                layout.el.innerHTML = "<html><head><title>\n</title></head><body></body></html>";
+                layout.defaultTitle = "Default Title";
+                ClientRenderer.render(layout, view, 2);
+
+                expect(document.title).toBe("Default Title");
+            });
+
+        });
+
+        describe("when layout template has title tag with attributes", function() {
+
+            beforeEach(function() {
+                layout.el.innerHTML = "<html><head><title class='klass'></title></head><body></body></html>";
+            });
+
+            it("renders title from view's page level data", function() {
+                layout.defaultTitle = "Default Title";
+                view = new ViewWithPageLevelData().withTitle("Title");
+                ClientRenderer.render(layout, view, 2);
+
+                expect(document.title).toBe("Title");
+            });
+
+            it("renders layout's defaultTitle when view does NOT have page level data", function() {
+                layout.defaultTitle = "Default Title";
+                ClientRenderer.render(layout, view, 2);
+
+                expect(document.title).toBe("Default Title");
+            });
+
+            it("does NOT render title when view does NOT have page level data NOR layout has defaultTitle", function() {
+                ClientRenderer.render(layout, view, 2);
+
+                expect(document.title).toBe(originalPageTitle);
+            });
+
+            it("escapes title for use in html", function() {
+                layout.defaultTitle = "Title \" ' & < >";
+                ClientRenderer.render(layout, view, 2);
+
+                expect(document.title).toBe("Title \" ' & < >");
+            });
+
+            it("renders title when title tag is on multiple lines", function() {
+                layout.el.innerHTML = "<html><head><title class='klass'>\n</title></head><body></body></html>";
+                layout.defaultTitle = "Default Title";
+                ClientRenderer.render(layout, view, 2);
+
+                expect(document.title).toBe("Default Title");
             });
 
         });
