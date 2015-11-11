@@ -1,18 +1,14 @@
 "use strict";
 
-var Promise = require("bluebird");
+describe("ServerRouter", function() {
+    var ServerRouter = require("../../lib/server/ServerRouter");
+    var BrisketRouter = require("../../lib/controlling/Router");
 
-var RendersErrors = {
+    it("is a Brisket Router", function() {
+        expect(new ServerRouter() instanceof BrisketRouter).toBe(true);
+    });
 
-    renderError: function(statusCode) {
-        return Promise.reject({
-            status: statusCode
-        });
-    }
-
-};
-
-module.exports = RendersErrors;
+});
 
 // ----------------------------------------------------------------------------
 // Copyright (C) 2015 Bloomberg Finance L.P.

@@ -1,12 +1,11 @@
 "use strict";
 
-var CloseableView = require("lib/traits/CloseableView");
-var HasChildViews = require("lib/traits/HasChildViews");
-var Backbone = require("lib/application/Backbone");
-var Errors = require("lib/errors/Errors");
-var _ = require("lodash");
-
 describe("CloseableView", function() {
+    var CloseableView = require("lib/viewing/CloseableView");
+    var HasChildViews = require("lib/viewing/HasChildViews");
+    var Backbone = require("lib/application/Backbone");
+    var Errors = require("lib/errors/Errors");
+    var _ = require("lodash");
 
     var ViewThatCloses;
     var view;

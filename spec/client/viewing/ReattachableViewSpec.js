@@ -1,11 +1,10 @@
 "use strict";
 
-var ReattachableView = require("lib/traits/ReattachableView");
-var Backbone = require("lib/application/Backbone");
-var ViewsFromServer = require("lib/viewing/ViewsFromServer");
-var $ = require("lib/application/jquery");
-
 describe("ReattachableView", function() {
+    var ReattachableView = require("lib/viewing/ReattachableView");
+    var Backbone = require("lib/application/Backbone");
+    var ViewsFromServer = require("lib/viewing/ViewsFromServer");
+    var $ = require("lib/application/jquery");
 
     var $fixture;
     var view;

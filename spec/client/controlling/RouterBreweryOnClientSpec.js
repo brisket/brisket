@@ -1,10 +1,9 @@
 "use strict";
 
-var RouterBrewery = require("lib/controlling/RouterBrewery");
-var Environment = require("lib/environment/Environment");
-var Backbone = require("lib/application/Backbone");
-
 describe("RouterBrewery on client", function() {
+    var RouterBrewery = require("lib/controlling/RouterBrewery");
+    var Environment = require("lib/environment/Environment");
+    var BrisketRouter = require("lib/controlling/Router");
 
     var ExampleRouter;
     var router;
@@ -25,10 +24,10 @@ describe("RouterBrewery on client", function() {
             expect(attemptingToExtendRouterBreweryCreatedRouter).toThrow();
         });
 
-        it("creates standard backbone routers", function() {
+        it("creates Brisket router", function() {
             createRouter();
 
-            expect(router instanceof Backbone.Router).toBe(true);
+            expect(router instanceof BrisketRouter).toBe(true);
         });
 
     });

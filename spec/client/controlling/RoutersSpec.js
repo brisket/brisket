@@ -1,9 +1,8 @@
 "use strict";
 
-var Routers = require("lib/controlling/Routers");
-var Backbone = require("lib/application/Backbone");
-
 describe("Routers", function() {
+    var Routers = require("lib/controlling/Routers");
+    var Backbone = require("lib/application/Backbone");
 
     var routers;
     var CatchAllRouter;
