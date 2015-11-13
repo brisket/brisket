@@ -1,6 +1,6 @@
-describe("Layout", function() {
-    "use strict";
+"use strict";
 
+describe("Layout", function() {
     var Layout = require("../../../lib/viewing/Layout");
     var Metatags = require("../../../lib/metatags/Metatags");
     var OpenGraphTags = require("../../../lib/metatags/OpenGraphTags");
