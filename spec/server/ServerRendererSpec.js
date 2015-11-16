@@ -293,10 +293,10 @@ describe("ServerRenderer", function() {
             });
 
             it("escapes title for use in html", function() {
-                layout.defaultTitle = "Title \" ' & < >";
+                layout.defaultTitle = "Title \" ' & < > $ $$ $' $` $& $3";
                 html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
 
-                expect(html).toMatch(/<title>Title &quot; &#39; &amp; &lt; &gt;<\/title>/mi);
+                expect(html).toMatch(/<title>Title &quot; &#39; &amp; &lt; &gt; \$ \$\$ \$&#39; \$` \$&amp; \$3<\/title>/mi);
             });
 
             it("renders title when title tag is on multiple lines", function() {
@@ -337,10 +337,10 @@ describe("ServerRenderer", function() {
             });
 
             it("escapes title for use in html", function() {
-                layout.defaultTitle = "Title \" ' & < >";
+                layout.defaultTitle = "Title \" ' & < > $ $$ $' $` $& $3";
                 html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
 
-                expect(html).toMatch(/<title class="klass">Title &quot; &#39; &amp; &lt; &gt;<\/title>/mi);
+                expect(html).toMatch(/<title class="klass">Title &quot; &#39; &amp; &lt; &gt; \$ \$\$ \$&#39; \$` \$&amp; \$3<\/title>/mi);
             });
 
             it("renders title when title tag is on multiple lines", function() {
