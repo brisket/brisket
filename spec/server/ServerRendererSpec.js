@@ -276,27 +276,27 @@ describe("ServerRenderer", function() {
                 view = new ViewWithPageLevelData().withTitle("Title");
                 html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
 
-                expect(html).toMatch(/<title>Title<\/title>/mi);
+                expect(html).toMatch(/<html>(.|\r|\n)*<title>Title<\/title>(.|\r|\n)*<\/html>/mi);
             });
 
             it("renders layout's defaultTitle when view does NOT have page level data", function() {
                 layout.defaultTitle = "Default Title";
                 html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
 
-                expect(html).toMatch(/<title>Default Title<\/title>/mi);
+                expect(html).toMatch(/<html>(.|\r|\n)*<title>Default Title<\/title>(.|\r|\n)*<\/html>/mi);
             });
 
             it("does NOT render title when view does NOT have page level data NOR layout has defaultTitle", function() {
                 html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
 
-                expect(html).toMatch(/<title><\/title>/mi);
+                expect(html).toMatch(/<html>(.|\r|\n)*<title><\/title>(.|\r|\n)*<\/html>/mi);
             });
 
             it("escapes title for use in html", function() {
                 layout.defaultTitle = "Title \" ' & < > $ $$ $' $` $& $3";
                 html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
 
-                expect(html).toMatch(/<title>Title &quot; &#39; &amp; &lt; &gt; \$ \$\$ \$&#39; \$` \$&amp; \$3<\/title>/mi);
+                expect(html).toMatch(/<html>(.|\r|\n)*<title>Title &quot; &#39; &amp; &lt; &gt; \$ \$\$ \$&#39; \$` \$&amp; \$3<\/title>(.|\r|\n)*<\/html>/mi);
             });
 
             it("renders title when title tag is on multiple lines", function() {
@@ -304,7 +304,7 @@ describe("ServerRenderer", function() {
                 layout.defaultTitle = "Default Title";
                 html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
 
-                expect(html).toMatch(/<title>Default Title<\/title>/mi);
+                expect(html).toMatch(/<html>(.|\r|\n)*<title>Default Title<\/title>(.|\r|\n)*<\/html>/mi);
             });
 
         });
@@ -320,27 +320,27 @@ describe("ServerRenderer", function() {
                 view = new ViewWithPageLevelData().withTitle("Title");
                 html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
 
-                expect(html).toMatch(/<title class="klass">Title<\/title>/mi);
+                expect(html).toMatch(/<html>(.|\r|\n)*<title class="klass">Title<\/title>(.|\r|\n)*<\/html>/mi);
             });
 
             it("renders layout's defaultTitle when view does NOT have page level data", function() {
                 layout.defaultTitle = "Default Title";
                 html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
 
-                expect(html).toMatch(/<title class="klass">Default Title<\/title>/mi);
+                expect(html).toMatch(/<html>(.|\r|\n)*<title class="klass">Default Title<\/title>(.|\r|\n)*<\/html>/mi);
             });
 
             it("does NOT render title when view does NOT have page level data NOR layout has defaultTitle", function() {
                 html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
 
-                expect(html).toMatch(/<title class="klass"><\/title>/mi);
+                expect(html).toMatch(/<html>(.|\r|\n)*<title class="klass"><\/title>(.|\r|\n)*<\/html>/mi);
             });
 
             it("escapes title for use in html", function() {
                 layout.defaultTitle = "Title \" ' & < > $ $$ $' $` $& $3";
                 html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
 
-                expect(html).toMatch(/<title class="klass">Title &quot; &#39; &amp; &lt; &gt; \$ \$\$ \$&#39; \$` \$&amp; \$3<\/title>/mi);
+                expect(html).toMatch(/<html>(.|\r|\n)*<title class="klass">Title &quot; &#39; &amp; &lt; &gt; \$ \$\$ \$&#39; \$` \$&amp; \$3<\/title>/mi);
             });
 
             it("renders title when title tag is on multiple lines", function() {
@@ -348,7 +348,7 @@ describe("ServerRenderer", function() {
                 layout.defaultTitle = "Default Title";
                 html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
 
-                expect(html).toMatch(/<title class="klass">Default Title<\/title>/mi);
+                expect(html).toMatch(/<html>(.|\r|\n)*<title class="klass">Default Title<\/title>(.|\r|\n)*<\/html>/i);
             });
 
         });
