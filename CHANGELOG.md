@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.40.2
+- fix missing most of the html
+
 ### 0.40.1
 - fix serverrender not escaping $s
 
