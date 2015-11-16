@@ -233,10 +233,10 @@ describe("ClientRenderer", function() {
             });
 
             it("escapes title for use in html", function() {
-                layout.defaultTitle = "Title \" ' & < >";
+                layout.defaultTitle = "Title \" ' & < > $ $$ $' $` $& $3";
                 ClientRenderer.render(layout, view, 2);
 
-                expect(document.title).toBe("Title \" ' & < >");
+                expect(document.title).toBe("Title \" ' & < > $ $$ $' $` $& $3");
             });
 
             it("renders title when title tag is on multiple lines", function() {
@@ -277,10 +277,10 @@ describe("ClientRenderer", function() {
             });
 
             it("escapes title for use in html", function() {
-                layout.defaultTitle = "Title \" ' & < >";
+                layout.defaultTitle = "Title \" ' & < > $ $$ $' $` $& $3";
                 ClientRenderer.render(layout, view, 2);
 
-                expect(document.title).toBe("Title \" ' & < >");
+                expect(document.title).toBe("Title \" ' & < > $ $$ $' $` $& $3");
             });
 
             it("renders title when title tag is on multiple lines", function() {

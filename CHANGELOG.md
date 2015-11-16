@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.40.1
+- fix serverrender not escaping $s
+
 ### 0.40.0
 - renderers render document title instead of layout
 - dont leak arguments object in addExtraParamsTo
