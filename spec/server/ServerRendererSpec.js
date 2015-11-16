@@ -27,7 +27,6 @@ describe("ServerRenderer", function() {
         layout = new Layout();
         layout.el.innerHTML = "<html><head><title></title></head><body></body></html>";
         spyOn(layout, "setContent");
-        spyOn(layout, "renderTitle");
         spyOn(layout, "renderMetatags");
         spyOn(layout, "setEnvironmentConfig");
         spyOn(layout, "close");
@@ -242,10 +241,6 @@ describe("ServerRenderer", function() {
             ServerRenderer.render(layout, view, null, null, mockServerRequest);
         });
 
-        it("renders layout title", function() {
-            expect(layout.renderTitle).toHaveBeenCalledWith("Title");
-        });
-
         it("renders layout metatags", function() {
             expect(layout.renderMetatags).toHaveBeenCalledWith(metatags);
         });
@@ -262,16 +257,100 @@ describe("ServerRenderer", function() {
             ServerRenderer.render(layout, view, null, null, mockServerRequest);
         });
 
-        it("renders the layout title with null", function() {
-            expect(layout.renderTitle).toHaveBeenCalledWith(null);
-        });
-
         it("renders the layout metatags with null", function() {
             expect(layout.renderMetatags).toHaveBeenCalledWith(null);
         });
 
         it("sets the layout content", function() {
             expect(layout.setContent).toHaveBeenCalledWith(view);
+        });
+
+    });
+
+    describe("rendering page title", function() {
+
+        describe("when layout template has title tag without attributes", function() {
+
+            it("renders title from view's page level data", function() {
+                layout.defaultTitle = "Default Title";
+                view = new ViewWithPageLevelData().withTitle("Title");
+                html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
+
+                expect(html).toMatch(/<title>Title<\/title>/mi);
+            });
+
+            it("renders layout's defaultTitle when view does NOT have page level data", function() {
+                layout.defaultTitle = "Default Title";
+                html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
+
+                expect(html).toMatch(/<title>Default Title<\/title>/mi);
+            });
+
+            it("does NOT render title when view does NOT have page level data NOR layout has defaultTitle", function() {
+                html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
+
+                expect(html).toMatch(/<title><\/title>/mi);
+            });
+
+            it("escapes title for use in html", function() {
+                layout.defaultTitle = "Title \" ' & < >";
+                html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
+
+                expect(html).toMatch(/<title>Title &quot; &#39; &amp; &lt; &gt;<\/title>/mi);
+            });
+
+            it("renders title when title tag is on multiple lines", function() {
+                layout.el.innerHTML = "<html><head><title>\n</title></head><body></body></html>";
+                layout.defaultTitle = "Default Title";
+                html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
+
+                expect(html).toMatch(/<title>Default Title<\/title>/mi);
+            });
+
+        });
+
+        describe("when layout template has title tag with attributes", function() {
+
+            beforeEach(function() {
+                layout.el.innerHTML = "<html><head><title class='klass'></title></head><body></body></html>";
+            });
+
+            it("renders title from view's page level data", function() {
+                layout.defaultTitle = "Default Title";
+                view = new ViewWithPageLevelData().withTitle("Title");
+                html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
+
+                expect(html).toMatch(/<title class="klass">Title<\/title>/mi);
+            });
+
+            it("renders layout's defaultTitle when view does NOT have page level data", function() {
+                layout.defaultTitle = "Default Title";
+                html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
+
+                expect(html).toMatch(/<title class="klass">Default Title<\/title>/mi);
+            });
+
+            it("does NOT render title when view does NOT have page level data NOR layout has defaultTitle", function() {
+                html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
+
+                expect(html).toMatch(/<title class="klass"><\/title>/mi);
+            });
+
+            it("escapes title for use in html", function() {
+                layout.defaultTitle = "Title \" ' & < >";
+                html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
+
+                expect(html).toMatch(/<title class="klass">Title &quot; &#39; &amp; &lt; &gt;<\/title>/mi);
+            });
+
+            it("renders title when title tag is on multiple lines", function() {
+                layout.el.innerHTML = "<html><head><title class='klass'>\n</title></head><body></body></html>";
+                layout.defaultTitle = "Default Title";
+                html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
+
+                expect(html).toMatch(/<title class="klass">Default Title<\/title>/mi);
+            });
+
         });
 
     });

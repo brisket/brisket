@@ -31,7 +31,8 @@
     "request": "^2.60.0",
     "xmlhttprequest": "1.7.0",
     "cookie": "0.1.2",
-    "jquery-mockjax": "^2.0.1"
+    "jquery-mockjax": "^2.0.1",
+    "escape-html": "~1.0.3"
   },
   "devDependencies": {
     "browserify": "^10.2.6",
