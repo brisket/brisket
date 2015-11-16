@@ -1,6 +1,18 @@
 Changelog
 ==========
 
+### 0.40.0
+- renderers render document title instead of layout
+- dont leak arguments object in addExtraParamsTo
+- speed up isApplicationLink
+- simplify creation of instantiated view relationship
+- remove unused Layout.prototype.hideContent
+- go native to find ViewsFromServer
+- use native/simpler operations
+- add track page view recipe
+- for loops instead of _.each for unrendered views
+- request.onComplete
+
 ### 0.39.4
 - replace gulp-jasmine-phantom with gulp-jasmine-browser
 - loosen lodash dependency
