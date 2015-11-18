@@ -1,12 +1,12 @@
 "use strict";
 
-var CloseableView = require("../../lib/traits/CloseableView");
-var Backbone = require("../../lib/application/Backbone");
-var Environment = require("../../lib/environment/Environment");
-var $ = require("../../lib/application/jquery");
-var _ = require("lodash");
-
 describe("closing CloseableView on server", function() {
+    var CloseableView = require("../../lib/viewing/CloseableView");
+    var Backbone = require("../../lib/application/Backbone");
+    var Environment = require("../../lib/environment/Environment");
+    var $ = require("../../lib/application/jquery");
+    var _ = require("lodash");
+
     var ViewThatCloses;
     var view;
 

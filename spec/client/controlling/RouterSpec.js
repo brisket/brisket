@@ -1,21 +1,32 @@
 "use strict";
 
-var CloseableRouter = require("lib/traits/CloseableRouter");
-var Backbone = require("lib/application/Backbone");
-var Errors = require("lib/errors/Errors");
-var _ = require("lodash");
+describe("Router", function() {
+    var Errors = require("lib/errors/Errors");
+    var Router = require("lib/controlling/Router");
+    var noop = require("lib/util/noop");
 
-describe("CloseableRouter", function() {
-
-    var RouterThatCloses;
     var router;
+    var error;
+
+    beforeEach(function() {
+        router = new Router();
+    });
+
+    it("has a noop onClose by default", function() {
+        expect(router.onClose).toBe(noop);
+    });
+
+    it("has a noop onRouteStart by default", function() {
+        expect(router.onRouteStart).toBe(noop);
+    });
+
+    it("has a noop onRouteComplete by default", function() {
+        expect(router.onRouteComplete).toBe(noop);
+    });
 
     describe("#close", function() {
 
         beforeEach(function() {
-            RouterThatCloses = Backbone.Router.extend(_.extend({}, CloseableRouter));
-            router = new RouterThatCloses();
-
             spyOn(router, "onClose");
 
             router.close();
@@ -26,8 +37,6 @@ describe("CloseableRouter", function() {
         });
 
         describe("when there is an error in onClose", function() {
-
-            var error;
 
             beforeEach(function() {
                 error = new Error();
@@ -44,6 +53,17 @@ describe("CloseableRouter", function() {
                 expect(Errors.notify).toHaveBeenCalledWith(error);
             });
 
+        });
+
+    });
+
+    describe("#renderError", function() {
+
+        it("returns a rejected promise with specified status code", function(done) {
+            router.renderError(413).then(null, function(data) {
+                expect(data.status).toBe(413);
+                done();
+            });
         });
 
     });

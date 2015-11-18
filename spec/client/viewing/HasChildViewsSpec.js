@@ -1,10 +1,9 @@
 "use strict";
 
-var HasChildViews = require("lib/traits/HasChildViews");
-var _ = require("lodash");
-var Backbone = require("lib/application/Backbone");
-
 describe("HasChildViews", function() {
+    var HasChildViews = require("lib/viewing/HasChildViews");
+    var _ = require("lodash");
+    var Backbone = require("lib/application/Backbone");
 
     var ParentView;
     var parentView;
