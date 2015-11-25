@@ -3,7 +3,7 @@
 var gulp = require("gulp");
 var jshint = require("gulp-jshint");
 var stylish = require("jshint-stylish");
-var jshintConfig = require("../config/jshintrc.json");
+var jshintConfig = require("./config/jshintrc.json");
 
 function lintJs(what) {
     return gulp.src(what)

@@ -4,7 +4,7 @@ var gulp = require("gulp");
 var prettify = require("gulp-jsbeautifier");
 
 var BEAUTY_CONFIG = {
-    config: __dirname + "/../config/jsbeautifyrc.json",
+    config: __dirname + "/config/jsbeautifyrc.json",
     mode: "VERIFY_AND_WRITE"
 };
 
