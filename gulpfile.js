@@ -11,7 +11,7 @@ var benchmark = require("./build_tools/benchmark");
 
 var LIB = "./lib/**/*.js";
 var REST = "./*.js";
-var BUILD_TOOLS = "./build_tools/**/*.js";
+var BUILD_TOOLS = "./build_tools/*.js";
 var TEST_HELPERS = "./spec/helpers/**/*.js";
 var CLIENT_TESTS = "./spec/client/**/*.js";
 var CLIENT_TEST_BUNDLE = "./spec/build/lib.js";
@@ -78,7 +78,7 @@ gulp.task("test-on-client", ["bundle-for-client"], function() {
             TEST_HELPERS,
             CLIENT_TESTS
         ],
-        vendor: "vendor/es5-shim.js"
+        vendor: "build_tools/vendor/es5-shim.js"
     });
 });
 
