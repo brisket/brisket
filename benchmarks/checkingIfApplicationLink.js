@@ -1,3 +1,5 @@
+"use strict";
+
 var isApplicationLink = require("../lib/controlling/isApplicationLink");
 
 var result;
