@@ -37,4 +37,4 @@ appFoo.someFeature(); // example
 
 ## Routing to apiHost
 
-Any model request received by Brisket with ```/api``` as a prefix will be rerouted to the [apiHost](brisket.createserver.md#apihost).
+Any model request received by Brisket with ```/api``` as a prefix will be rerouted to the [apiHost](brisket.createserver.md#apiconfighost).

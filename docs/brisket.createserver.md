@@ -10,12 +10,14 @@ Use Brisket.createServer to create a Brisket express engine that you can use in 
 ## Required Configuration Options
 `createServer` takes parameters so that you can customize your app. Here are the required options:
 
-#### apiHost
+#### apiConfig.host
 This is the fully qualified path to the api your Brisket app will hit. This value will be prepended to all model and collection urls during server-side requests and to any client-side request containing the prefix ```/api```.
 
 ```js
 var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000/api/v2'
+    apiConfig: {
+        host: 'http://api.example.com:8080'
+    }
 });
 
 var myModel = Brisket.Model.extend({
@@ -25,7 +27,17 @@ var myModel = Brisket.Model.extend({
 
 Any client-side request for a model of type ```myModel``` will be rerouted by Brisket to ```http://localhost:4000/api/v2/models```.
 
-**Note:** Your apiHost will be fully exposed by Brisket. You should ensure only your intended public endpoints are accessible.
+#### apiConfig.proxy
+If you need to specify a proxy server, use the proxy option:
+
+```js
+var brisketServer = Brisket.createServer({
+    apiConfig: {
+        host: 'http://api.example.com:8080',
+        proxy: 'http://proxy.example.com'
+    }
+});
+```
 
 #### clientAppRequirePath
 This option is the path to your ClientApp module. Brisket will use it to find your ClientApp and call start for you on the client.
@@ -34,7 +46,9 @@ Here is a valid call to `createServer` with the fewest possible options:
 
 ```js
 var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000',
+    apiConfig: {
+        host: 'http://localhost:4000',
+    },
     clientAppRequirePath: 'app/ClientApp',
     environmentConfig: {
         clientAppUrl: '//www.myapp.com/application.js'
@@ -57,7 +71,9 @@ var ServerApp = Brisket.ServerApp.extend({
 });
 
 var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000',
+    apiConfig: {
+        host: 'http://api.example.com:8080',
+    },
     clientAppRequirePath: 'app/ClientApp',
     environmentConfig: {
         clientAppUrl: '//www.myapp.com/application.js'
@@ -82,7 +98,9 @@ var ServerApp = Brisket.ServerApp.extend({
 });
 
 var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000',
+    apiConfig: {
+        host: 'http://api.example.com:8080',
+    },
     clientAppRequirePath: 'app/ClientApp',
 
     ServerApp: ServerApp,
@@ -98,7 +116,9 @@ This is the root of your application as far as pushState is concerned. If you de
 
 ```js
 var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000',
+    apiConfig: {
+        host: 'http://api.example.com:8080',
+    },
     clientAppRequirePath: 'app/ClientApp',
 
     ServerApp: ServerApp,
@@ -112,7 +132,9 @@ var brisketServer = Brisket.createServer({
 ```js
 // On the server
 var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000',
+    apiConfig: {
+        host: 'http://api.example.com:8080',
+    },
     clientAppRequirePath: 'app/ClientApp',
 
     ServerApp: ServerApp,
@@ -128,7 +150,9 @@ var brisketServer = Brisket.createServer({
 
 ```js
 var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000',
+    apiConfig: {
+        host: 'http://api.example.com:8080',
+    },
     clientAppRequirePath: 'app/ClientApp',
     environmentConfig: {
         clientAppUrl: '//www.myapp.com/application.js',
@@ -151,7 +175,9 @@ var ServerApp = Brisket.ServerApp.extend({
 });
 
 var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000',
+    apiConfig: {
+        host: 'http://api.example.com:8080',
+    },
     clientAppRequirePath: 'app/ClientApp',
 
     ServerApp: ServerApp,

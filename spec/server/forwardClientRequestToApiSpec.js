@@ -1,37 +1,76 @@
 "use strict";
 
-var forwardClientRequestToApi = require("../../lib/server/forwardClientRequestToApi");
+describe("forwardClientRequestToApi", function() {
+    var forwardClientRequestToApi = require("../../lib/server/forwardClientRequestToApi");
 
-describe("forwardClientRequestToApi", function(){
-    var app;
+    var apiConfig;
+    var forwardClientRequestToApiMiddleware;
     var req;
     var res;
     var pipe;
 
-    beforeEach(function(){
-        var apiHost = "http://api.example.com/api";
+    beforeEach(function() {
+        apiConfig = {
+            host: "http://api.example.com"
+        };
+
         spyOn(forwardClientRequestToApi, "request").and.returnValue(true);
-        app = forwardClientRequestToApi(apiHost);
-        pipe = jasmine.createSpy('pipe').and.callFake(function(){
+
+        pipe = jasmine.createSpy('pipe').and.callFake(function() {
             return this;
         });
+
         req = {
             url: "/model/1",
             pipe: pipe
         };
     });
 
-    it("replaces /api with apiHost", function(){
-        var options = {url: "http://api.example.com/api/model/1" };
-        app(req,res);
-        expect(forwardClientRequestToApi.request).toHaveBeenCalledWith(options);
+    it("replaces /api with apiConfig.host", function() {
+        givenApiConfigHost();
+        whenMiddlewareRuns();
+
+        expect(forwardClientRequestToApi.request).toHaveBeenCalledWith({
+            url: "http://api.example.com/model/1",
+            proxy: undefined
+        });
     });
 
-    it("pipes request and response", function(){
-        app(req,res);
+    it("pipes request and response", function() {
+        givenApiConfigHost();
+        whenMiddlewareRuns();
+
         expect(pipe).toHaveBeenCalledWith(true);
         expect(pipe).toHaveBeenCalledWith(res);
     });
+
+    it("pipes request with proxy", function() {
+        givenApiConfigProxy();
+        whenMiddlewareRuns();
+
+        expect(forwardClientRequestToApi.request).toHaveBeenCalledWith({
+            url: "http://api.example.com/model/1",
+            proxy: "http://proxy.example.com"
+        });
+    });
+
+    function givenApiConfigHost() {
+        apiConfig = {
+            host: "http://api.example.com"
+        };
+    }
+
+    function givenApiConfigProxy() {
+        apiConfig = {
+            host: "http://api.example.com",
+            proxy: "http://proxy.example.com"
+        };
+    }
+
+    function whenMiddlewareRuns() {
+        forwardClientRequestToApiMiddleware = forwardClientRequestToApi(apiConfig);
+        forwardClientRequestToApiMiddleware(req, res);
+    }
 });
 
 // ----------------------------------------------------------------------------

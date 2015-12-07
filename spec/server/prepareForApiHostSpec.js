@@ -2,20 +2,61 @@
 
 var prepareForApiHost = require("../../lib/server/prepareForApiHost");
 
-describe("prepareForApiHost", function(){
-    var prepare;
+describe("prepareForApiHost", function() {
+    var prepareForApiHostMiddleware;
+    var apiHost;
+    var options;
 
-    beforeEach(function(){
-        var apiHost = "http://api.example.com/api";
-        prepare = prepareForApiHost(apiHost);
-        spyOn(prepareForApiHost,'calculateSyncRequestUrl').and.returnValue("/api/model/1");
+    beforeEach(function() {
+        apiHost = "http://api.example.com/";
+        options = {};
+        prepareForApiHostMiddleware = prepareForApiHost(apiHost);
     });
 
-    it("should include apiHost", function(){
-        var options = {};
-        prepare(null, null, options);
-        expect(options.url).toBe("http://api.example.com/api/model/1");
+    describe("when sync request's url starts with '/api'", function() {
+
+        it("replaces ^/api with apiHost", function() {
+            options.url = "/api/path/to/data";
+            prepareForApiHostMiddleware("GET", null, options);
+
+            expect(options.url).toBe("http://api.example.com/path/to/data");
+        });
+
     });
+
+    describe("when sync request's url starts with 'api'", function() {
+
+        it("replaces ^api with apiHost", function() {
+            options.url = "api/path/to/data";
+            prepareForApiHostMiddleware("GET", null, options);
+
+            expect(options.url).toBe("http://api.example.com/path/to/data");
+        });
+
+    });
+
+    describe("when sync request's url is an absolute url path", function() {
+
+        it("replaces ^/ with apiHost", function() {
+            options.url = "/notapi/path/to/data";
+            prepareForApiHostMiddleware("GET", null, options);
+
+            expect(options.url).toBe("http://api.example.com/notapi/path/to/data");
+        });
+
+    });
+
+    describe("when sync request's url is a relative url path", function() {
+
+        it("replaces ^ with apiHost", function() {
+            options.url = "notapi/path/to/data";
+            prepareForApiHostMiddleware("GET", null, options);
+
+            expect(options.url).toBe("http://api.example.com/notapi/path/to/data");
+        });
+
+    });
+
 });
 
 // ----------------------------------------------------------------------------
