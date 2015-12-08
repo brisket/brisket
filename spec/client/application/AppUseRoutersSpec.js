@@ -1,10 +1,9 @@
 "use strict";
 
 describe("Routers", function() {
-    var Routers = require("lib/controlling/Routers");
+    var App = require("lib/application/App");
     var Backbone = require("lib/application/Backbone");
 
-    var routers;
     var CatchAllRouter;
     var Router1;
     var Router2;
@@ -30,12 +29,16 @@ describe("Routers", function() {
         });
     });
 
+    afterEach(function() {
+        App.reset();
+    });
+
     describe("#init", function() {
 
         describe("when catch all router is set", function() {
 
             beforeEach(function() {
-                routers = Routers.toUse({
+                App.useRouters({
                     CatchAllRouter: CatchAllRouter,
 
                     routers: [
@@ -44,7 +47,7 @@ describe("Routers", function() {
                     ]
                 });
 
-                routers.init();
+                App.initialize();
             });
 
             it("initializes catch all router first", function() {
@@ -56,7 +59,7 @@ describe("Routers", function() {
         describe("when no catch all router is set", function() {
 
             beforeEach(function() {
-                routers = Routers.toUse({
+                App.useRouters({
                     routers: [
                         Router1,
                         Router2,
@@ -67,7 +70,7 @@ describe("Routers", function() {
 
             it("does NOT throw an error", function() {
                 var initializingRoutersWithoutCatchAll = function() {
-                    routers.init();
+                    App.initialize();
                 };
 
                 expect(initializingRoutersWithoutCatchAll).not.toThrow();
