@@ -47,8 +47,7 @@ describe("Server side rendering order", function() {
         return ServerRenderingWorkflow.execute(
             mockRouter,
             originalHandler, [null],
-            MockExpressRequest.basic(), {},
-            "app/ClientApp"
+            MockExpressRequest.basic(), {}
         );
     }
 

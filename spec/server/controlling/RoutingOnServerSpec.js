@@ -7,7 +7,6 @@ describe("Routing on server", function() {
 
     var mockRequest;
     var mockEnvironmentConfig;
-    var mockClientAppRequirePath;
     var routeHandler;
     var ExampleRouter;
     var router;
@@ -20,7 +19,6 @@ describe("Routing on server", function() {
 
         mockRequest = {};
         mockEnvironmentConfig = {};
-        mockClientAppRequirePath = "some/path";
 
         routeHandler = function() {};
 
@@ -45,8 +43,7 @@ describe("Routing on server", function() {
             handledRoute = ServerDispatcher.dispatch(
                 "route/1",
                 mockRequest,
-                mockEnvironmentConfig,
-                mockClientAppRequirePath
+                mockEnvironmentConfig
             );
         });
 
@@ -59,8 +56,7 @@ describe("Routing on server", function() {
                 routeHandler,
                 expectedParams,
                 mockRequest,
-                mockEnvironmentConfig,
-                mockClientAppRequirePath
+                mockEnvironmentConfig
             );
         });
 
@@ -80,8 +76,7 @@ describe("Routing on server", function() {
             handledRoute = ServerDispatcher.dispatch(
                 "notroute",
                 mockRequest,
-                mockEnvironmentConfig,
-                mockClientAppRequirePath
+                mockEnvironmentConfig
             );
         });
 
