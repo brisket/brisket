@@ -1,25 +1,21 @@
 "use strict";
 
-describe("ServerConfigure", function() {
-    var ServerConfigure = require("../../lib/server/ServerConfigure");
-    var applicationJquery = require("../../lib/application/jquery");
-    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+describe("Initializer", function() {
+    var Initializer = require("lib/application/Initializer");
+    var Configure = require("lib/application/Configure");
 
-    describe("#configureJquery", function() {
+    beforeEach(function() {
+        spyOn(Configure, "backbone");
 
-        beforeEach(function() {
-            ServerConfigure.configureJquery();
+        Initializer.forApp({
+            environmentConfig: {
+                appRoot: "root"
+            }
         });
+    });
 
-        it("tells application jquery to support cors for server side requests", function() {
-            expect(applicationJquery.support.cors).toBe(true);
-        });
-
-        it("ensures application jquery's xhr transport exists", function() {
-            var xhrTransport = applicationJquery.ajaxSettings.xhr();
-            expect(xhrTransport instanceof XMLHttpRequest).toBe(true);
-        });
-
+    it("configures backbone", function() {
+        expect(Configure.backbone).toHaveBeenCalled();
     });
 
 });

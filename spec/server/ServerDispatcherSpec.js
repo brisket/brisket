@@ -7,7 +7,6 @@ describe("ServerDispatcher", function() {
     var ExampleServerRouter;
     var mockRequest;
     var mockEnvironmentConfig;
-    var mockClientAppRequirePath;
     var routeHandler;
     var handledRoute;
     var mockServerRenderingWorkflowResponse;
@@ -17,7 +16,6 @@ describe("ServerDispatcher", function() {
 
         mockRequest = {};
         mockEnvironmentConfig = {};
-        mockClientAppRequirePath = "some/path";
 
         mockServerRenderingWorkflowResponse = {
             html: "content"
@@ -51,8 +49,7 @@ describe("ServerDispatcher", function() {
                 handledRoute = ServerDispatcher.dispatch(
                     "route/1",
                     mockRequest,
-                    mockEnvironmentConfig,
-                    mockClientAppRequirePath
+                    mockEnvironmentConfig
                 );
             });
 
@@ -63,8 +60,7 @@ describe("ServerDispatcher", function() {
                 expect(routeHandler).toHaveBeenCalledWith(
                     expectedParams,
                     mockRequest,
-                    mockEnvironmentConfig,
-                    mockClientAppRequirePath
+                    mockEnvironmentConfig
                 );
             });
 
@@ -84,8 +80,7 @@ describe("ServerDispatcher", function() {
                 handledRoute = ServerDispatcher.dispatch(
                     "notroute",
                     mockRequest,
-                    mockEnvironmentConfig,
-                    mockClientAppRequirePath
+                    mockEnvironmentConfig
                 );
             });
 
