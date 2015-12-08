@@ -3,12 +3,12 @@
 describe("public interface to Brisket", function() {
     var Brisket = require("../../lib/brisket");
 
-    it("exposes Brisket.RouterBrewery", function() {
-        expect(Brisket.RouterBrewery).toBe(requireFromLib("controlling/RouterBrewery"));
+    it("exposes Brisket.App", function() {
+        expect(Brisket.App).toBe(requireFromLib("application/App"));
     });
 
-    it("exposes Brisket.Routers", function() {
-        expect(Brisket.Routers).toBe(requireFromLib("controlling/Routers"));
+    it("exposes Brisket.RouterBrewery", function() {
+        expect(Brisket.RouterBrewery).toBe(requireFromLib("controlling/RouterBrewery"));
     });
 
     it("exposes Brisket.Router", function() {
@@ -49,14 +49,6 @@ describe("public interface to Brisket", function() {
 
     it("exposes Brisket.Templating.StringTemplateAdapter", function() {
         expect(Brisket.Templating.StringTemplateAdapter).toBe(requireFromLib("templating/StringTemplateAdapter"));
-    });
-
-    it("exposes Brisket.ServerApp", function() {
-        expect(Brisket.ServerApp).toBe(requireFromLib("server/ServerApp"));
-    });
-
-    it("exposes Brisket.ClientApp", function() {
-        expect(Brisket.ClientApp).toBe(requireFromLib("client/ClientApp"));
     });
 
     it("exposes Brisket.Testing", function() {
