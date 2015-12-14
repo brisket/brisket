@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.40.3
+- modified order of decorator execution to occur after afterRender
+
 ### 0.40.2
 - fix missing most of the html
 
