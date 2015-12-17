@@ -68,9 +68,10 @@
     "./lib/server/ServerRouter.js": "./lib/util/noop.js"
   },
   "scripts": {
-    "test": "gulp",
     "benchmarks": "gulp benchmarks",
-    "client-tests": "gulp test-on-client"
+    "client-tests": "gulp test-on-client",
+    "preinstall": "./bin/setup-jsdom-version.sh",
+    "test": "gulp"
   },
   "repository": {
     "type": "git",

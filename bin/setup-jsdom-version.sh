@@ -1,7 +1,17 @@
-if [[ $TRAVIS_NODE_VERSION == "iojs" ]]; then
-	sed -i -e 's/"jsdom": ">=3.0.0"/"jsdom": "^6.0.0"/' 'package.json'
-fi
+#!/bin/bash
 
-if [[ $TRAVIS_NODE_VERSION == 0.1* ]]; then
-	sed -i -e 's/"jsdom": ">=3.0.0"/"jsdom": "^3.0.0"/' 'package.json'
+cmds_exist() {
+    if (command -v node 2>/dev/null) && (command -v npm 2>/dev/null); then
+        return 0
+    else
+        return 1
+    fi
+}
+
+if [ cmds_exist ]; then
+    NODE_VERSION=$(node -v);
+
+    if [[ $NODE_VERSION == v0.1* ]]; then
+        npm install jsdom@3 --save
+    fi
 fi
