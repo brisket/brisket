@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.41.0
+- support iojs, node4+
+
 ### 0.40.3
 - modified order of decorator execution to occur after afterRender
 
