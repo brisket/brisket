@@ -69,7 +69,8 @@
   },
   "scripts": {
     "test": "gulp",
-    "benchmarks": "gulp benchmarks"
+    "benchmarks": "gulp benchmarks",
+    "client-tests": "gulp test-on-client"
   },
   "repository": {
     "type": "git",
