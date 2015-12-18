@@ -90,25 +90,9 @@ Check the [Bundling With Browserify](/docs/recipes/bundling-with-browserify.md) 
 
 Please refer to `package.json` for Brisket's dependencies
 
-### Legacy Node.js and io.js Support
+### Node.js and io.js Support
 
-To support Node.js 0.10.x, 0.11.x and 0.12.x, you need to install and specify the version (v3.x) of [jsdom](https://github.com/tmpvar/jsdom) in the `package.json` of your application:
-
-```json
-"dependencies": {
-    "jsdom": "^3.0.0",
-},
-```
-
-To support io.js, you need to install and specify the version (v6.x) of [jsdom](https://github.com/tmpvar/jsdom) in the `package.json` of your application:
-
-```json
-"dependencies": {
-    "jsdom": "^6.0.0",
-},
-```
-
-There is no need for users with Node.js 4.x to include [jsdom](https://github.com/tmpvar/jsdom) in their `package.json`. By default, Brisket will install the latest [jsdom](https://github.com/tmpvar/jsdom) which works with Node.js 4.x.
+Brisket supports Node.js `>=0.10.0` and io.js `>=3.0.0`.
 
 ### Browser Support
 Chrome, Firefox, Safari, iOS 6+, Android 4+, Internet Explorer 9+
@@ -147,6 +131,24 @@ $ npm test
 To run benchmarks:
 ```shell
 $ npm run benchmarks
+```
+
+## Troubleshoot
+
+### `jsdom` error with Legacy Node.js and io.js
+
+For Node.js 0.10.x, 0.11.x and 0.12.x, specify the version of [jsdom](https://github.com/tmpvar/jsdom) to be v3.x,
+
+```bash
+rm -rf ./node_modules/brisket/node_modules/jsdom
+npm install jsdom@3 --save
+```
+
+For io.js, specify the version of [jsdom](https://github.com/tmpvar/jsdom) to be v6.x,
+
+```bash
+rm -rf ./node_modules/brisket/node_modules/jsdom
+npm install jsdom@6 --save
 ```
 
 ## License
