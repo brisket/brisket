@@ -1,6 +1,10 @@
 Changelog
 ==========
 
+### 0.42.0
+- Setup jsdom version on preinstall. Fixes #219
+- go native for global click handler
+
 ### 0.41.0
 - support iojs, node4+
 
