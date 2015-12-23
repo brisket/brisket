@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.42.1
+- fix caching of mockajax which prevented subsequent requests with query param changes from resolving correctly  
+
 ### 0.42.0
 - Setup jsdom version on preinstall. Fixes #219
 - go native for global click handler
