@@ -32,10 +32,7 @@ describe("BootstrappedDataService", function() {
                 '/url%7B%22query%22%3A%22param%22%7D': {
                     "data-type": "object"
                 },
-                '/url%22query%3Dparam%22': {
-                    "data-type": "string"
-                },
-                '/url%5B%22query1%3Dparam1%22%2C%22query2%3Dparam2%22%5D': {
+                '/url%7B%22query%22%3A%5B%22param1%22%2C%22param2%22%5D%7D': {
                     "data-type": "array"
                 }
             };
@@ -50,6 +47,25 @@ describe("BootstrappedDataService", function() {
             });
 
             itMocksAjaxCallsFor("/url");
+        });
+
+        describe("when there is bootstrapped data and request changes query params", function() {
+            beforeEach(function() {
+                options = {};
+                bootstrappedDataService = new BootstrappedDataService(bootstrappedData);
+                bootstrappedDataService.checkAlreadyHasData(method, model, options);
+            });
+
+            it("must create mockajax mapping for option with changed query param", function() {
+                bootstrappedDataService.checkAlreadyHasData(method, model, {
+                    data: {
+                        query: "param"
+                    }
+                });
+
+                expect(bootstrappedDataService.mockjaxIds["/url"]).toBe(0);
+                expect(bootstrappedDataService.mockjaxIds["/url%7B%22query%22%3A%22param%22%7D"]).toBe(1);
+            });
         });
 
         describe("when there is bootstrapped data and request has object query params", function() {
@@ -68,32 +84,20 @@ describe("BootstrappedDataService", function() {
             itMocksAjaxCallsFor('/url' + encodeURIComponent('{"query":"param"}'));
         });
 
-        describe("when there is bootstrapped data and request has string query params ", function() {
+        describe("when there is bootstrapped data and request has query param with array value ", function() {
             beforeEach(function() {
                 options = {
-                    data: "query=param"
+                    data: {
+                        query: ["param1", "param2"]
+                    }
                 };
 
                 bootstrappedDataService = new BootstrappedDataService(bootstrappedData);
                 bootstrappedDataService.checkAlreadyHasData(method, model, options);
-                makeAjaxRequest = ajaxRequestModelDataWithQueryParams;
+                makeAjaxRequest = ajaxRequestModelDataWithArrayQueryParam;
             });
 
-            itMocksAjaxCallsFor('/url' + encodeURIComponent('"query=param"'));
-        });
-
-        describe("when there is bootstrapped data and request has array query params ", function() {
-            beforeEach(function() {
-                options = {
-                    data: ["query1=param1", "query2=param2"]
-                };
-
-                bootstrappedDataService = new BootstrappedDataService(bootstrappedData);
-                bootstrappedDataService.checkAlreadyHasData(method, model, options);
-                makeAjaxRequest = ajaxRequestModelDataWithQueryParams;
-            });
-
-            itMocksAjaxCallsFor('/url' + encodeURIComponent('["query1=param1","query2=param2"]'));
+            itMocksAjaxCallsFor('/url' + encodeURIComponent('{"query":["param1","param2"]}'));
         });
 
         describe("when there is no bootstrapped data and request does NOT have query params", function() {
@@ -178,6 +182,16 @@ describe("BootstrappedDataService", function() {
             dataType: "json",
             data: {
                 query: "param"
+            }
+        });
+    }
+
+    function ajaxRequestModelDataWithArrayQueryParam() {
+        return $.ajax({
+            url: "/url",
+            dataType: "json",
+            data: {
+                query: ["param1", "param2"]
             }
         });
     }
