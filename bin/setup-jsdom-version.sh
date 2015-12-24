@@ -8,10 +8,11 @@ cmds_exist() {
     fi
 }
 
+
 if [ cmds_exist ]; then
     NODE_VERSION=$(node -v);
 
     if [[ $NODE_VERSION == v0.1* ]]; then
-        npm install jsdom@3 --save
+        npm list jsdom@3 >/dev/null || npm install jsdom@3 --save
     fi
 fi
