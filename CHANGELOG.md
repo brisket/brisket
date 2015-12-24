@@ -1,5 +1,7 @@
 Changelog
 ==========
+### 0.42.2
+- fix setup-jsdom-version.sh to not install jsdom if correct version is already installed
 
 ### 0.42.1
 - fix caching of mockajax which prevented subsequent requests with query param changes from resolving correctly  
