@@ -3,6 +3,7 @@
 var gulp = require("gulp");
 var jasmineBrowser = require("gulp-jasmine-browser");
 var gulpif = require("gulp-if");
+var plumber = require("gulp-plumber");
 
 function clientSideJasmine(config) {
     var specs = config.specs;
@@ -16,6 +17,11 @@ function clientSideJasmine(config) {
     );
 
     return gulp.src(files)
+        .pipe(plumber({
+            errorHandler: function() {
+                process.exit(1);
+            }
+        }))
         .pipe(jasmineBrowser.specRunner({
             console: !debug
         }))
