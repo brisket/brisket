@@ -15,9 +15,9 @@ You can use all or none of the parameters that are passed to templateToHTML, but
 Below is a TemplateAdapter that always returns "hello world";
 
 ```js
-var HelloWorldTemplateAdapter = Brisket.Templating.TemplateAdapter.extend({
+const HelloWorldTemplateAdapter = Brisket.Templating.TemplateAdapter.extend({
 
-    templateToHTML: function(template, data, partials) {
+    templateToHTML(template, data, partials) {
         return 'hello world';
     }
 
@@ -27,9 +27,9 @@ var HelloWorldTemplateAdapter = Brisket.Templating.TemplateAdapter.extend({
 Here is the implementation of the StringTemplateAdapter that ships with Brisket:
 
 ```js
-var StringTemplateAdapter = Brisket.Templating.TemplateAdapter.extend({
+const StringTemplateAdapter = Brisket.Templating.TemplateAdapter.extend({
 
-    templateToHTML: function(template, data, partials) {
+    templateToHTML(template, data, partials) {
         if (typeof template !== "function") {
             return template;
         }
@@ -45,9 +45,9 @@ The StringTemplateAdapter uses the `template` and `data` but ignores`partials`.
 Below is an example implementation of a Mustache TemplateAdapter. It uses all three parameters:
 
 ```js
-var MustacheTemplateAdapter = TemplateAdapter.extend({
+const MustacheTemplateAdapter = TemplateAdapter.extend({
 
-    templateToHTML: function(template, data, partials) {
+    templateToHTML(template, data, partials) {
         return Mustache.render(template, data, partials);
     }
 

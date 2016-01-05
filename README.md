@@ -48,6 +48,14 @@ Now that you have a working app, check out our [Recipes](docs/recipes/README.md)
 
 ## Documentation
 
+### Brisket Concepts And High Level Systems
+* [**Application Links**](docs/brisket.applicationlinks.md): How to link from one route to another in a Brisket app.
+* [**Brisket Router vs Backbone.Router**](docs/brisket.router.md): What makes a Brisket Router different from a regular Backbone.Router.
+* [**Brisket Request Object**](docs/brisket.requestobject.md): The Brisket request object normalizes access to important data about the current request.
+* [**Brisket Response Object**](docs/brisket.responseobject.md): The Brisket response object normalizes modifying the current response.
+* [**Child Views**](docs/brisket.childviews.md): Brisket provides a system to help you manage a View's child views.
+* [**Navigating with Brisket**](docs/brisket.navigating.md): Brisket provides methods to navigate the app in the browser.
+
 ### Brisket's Parts
 * [**Brisket.createServer**](docs/brisket.createserver.md): A function that returns an express engine that you can use in your application to run the server.
 * [**Brisket.Routers**](docs/brisket.routers.md): A helper object to help you initialize Backbone Routers.
@@ -66,14 +74,6 @@ Now that you have a working app, check out our [Recipes](docs/recipes/README.md)
 * [**Brisket.ErrorViewMapping**](docs/brisket.errorviewmapping.md): Creates errorViewMappings for your routers (e.g. 404 should show Page Not Found).
 * Brisket.version: The version of Brisket. On the client, the version can be accessed by `window.Brisket.version` after the ClientApp has started.
 * [**Brisket.onError**](docs/brisket.onerror.md): Registers error callback.
-
-### Brisket Concepts And High Level Systems
-* [**Application Links**](docs/brisket.applicationlinks.md): How to link from one route to another in a Brisket app.
-* [**Brisket Router vs Backbone.Router**](docs/brisket.router.md): What makes a Brisket Router different from a regular Backbone.Router.
-* [**Brisket Request Object**](docs/brisket.requestobject.md): The Brisket request object normalizes access to important data about the current request.
-* [**Brisket Response Object**](docs/brisket.responseobject.md): The Brisket response object normalizes modifying the current response.
-* [**Child Views**](docs/brisket.childviews.md): Brisket provides a system to help you manage a View's child views.
-* [**Navigating with Brisket**](docs/brisket.navigating.md): Brisket provides methods to navigate the app in the browser.
 
 ## Using Brisket in your project
 
