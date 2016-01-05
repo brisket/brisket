@@ -1,10 +1,14 @@
 Changelog
 ==========
+
+### 0.43.0
+- enhance StringTemplateAdapter to render functions
+
 ### 0.42.2
 - fix setup-jsdom-version.sh to not install jsdom if correct version is already installed
 
 ### 0.42.1
-- fix caching of mockajax which prevented subsequent requests with query param changes from resolving correctly  
+- fix caching of mockajax which prevented subsequent requests with query param changes from resolving correctly
 
 ### 0.42.0
 - Setup jsdom version on preinstall. Fixes #219
