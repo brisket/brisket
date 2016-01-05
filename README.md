@@ -38,7 +38,7 @@ cd projectname
 Finally, initiate the generator and run your app:
 
 ```bash
-yo brisket && grunt
+yo brisket && npm start
 ```
 
 Your first brisket app will be available at http://localhost:8080
