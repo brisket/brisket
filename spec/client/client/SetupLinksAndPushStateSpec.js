@@ -131,6 +131,20 @@ describe("SetupLinksAndPushState", function() {
                 expect(Backbone.history.navigate).not.toHaveBeenCalled();
             });
 
+            it("Firefox bubbles right click", function() {
+                whenFirefoxRightClick();
+                whenLinkClicked();
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
+            it("Firefox bubbles middle button click", function() {
+                whenFirefoxMiddleButtonClick();
+                whenLinkClicked();
+
+                expect(Backbone.history.navigate).not.toHaveBeenCalled();
+            });
+
             it("alt + click", function() {
                 whenHoldingAltKey();
                 whenLinkClicked();
@@ -419,6 +433,14 @@ describe("SetupLinksAndPushState", function() {
             });
 
         });
+    }
+
+    function whenFirefoxRightClick() {
+        clickEvent.button = 2;
+    }
+
+    function whenFirefoxMiddleButtonClick() {
+        clickEvent.button = 1;
     }
 
     function whenHoldingAltKey() {
