@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.43.2
+- fix preinstall script fails when npm list throws errors
+
 ### 0.43.1
 - fix Firefox users can't right click on links
 
