@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.43.1
+- fix Firefox users can't right click on links
+
 ### 0.43.0
 - enhance StringTemplateAdapter to render functions
 
