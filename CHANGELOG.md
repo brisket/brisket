@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.43.3
+- fix preinstall script outputs errors
+
 ### 0.43.2
 - fix preinstall script fails when npm list throws errors
 

@@ -13,6 +13,6 @@ if [ cmds_exist ]; then
     NODE_VERSION=$(node -v);
 
     if [[ $NODE_VERSION == v0.1* ]]; then
-        npm list | grep 'jsdom@3.1.2' >/dev/null || npm install jsdom@3.1.2 --save
+        npm list 2>/dev/null | grep 'jsdom@3.1.2' >/dev/null || npm install jsdom@3.1.2 --save
     fi
 fi
