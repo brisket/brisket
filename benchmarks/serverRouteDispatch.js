@@ -6,16 +6,41 @@ var ServerDispatcher = require("../lib/server/ServerDispatcher");
 
 Brisket.Testing.setup();
 
+var Layout = Brisket.Layout.extend({
+
+    template: "<!DOCTYPE html>\n<html><head><title>sample</title></head><body></body></html>",
+
+    content: "body"
+
+});
+
 var Router = RouterBrewery.create({
 
-    layout: Brisket.Layout,
+    layout: Layout,
 
     routes: {
         "path": "handler"
     },
 
     handler: function() {
-        return new Brisket.View();
+        return new Brisket.View()
+            .withMetatags(new Brisket.Layout.Metatags({
+                "canonical": "http://www.example.com",
+                "description": "summary",
+                "og:image": "http://www.example.com/image.png",
+                "twitter:card": "summary",
+                "twitter:site": "business",
+                "twitter:description": "summary",
+                "twitter:title": "title",
+                "twitter:url": "url",
+                "og:description": "summary",
+                "og:title": "title",
+                "og:url": "url",
+                "parsely-title": "title",
+                "parsely-link": "url",
+                "parsely-type": "frontpage",
+                "parsely-section": "home"
+            }));
     }
 
 });

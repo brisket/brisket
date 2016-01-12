@@ -1,16 +1,19 @@
 "use strict";
 
-var ClientRenderer = require("lib/client/ClientRenderer");
-var HasPageLevelData = require("lib/traits/HasPageLevelData");
-var Layout = require("lib/viewing/Layout");
-var View = require("lib/viewing/View");
-
 describe("ClientRenderer", function() {
+    var ClientRenderer = require("lib/client/ClientRenderer");
+    var HasPageLevelData = require("lib/traits/HasPageLevelData");
+    var Layout = require("lib/viewing/Layout");
+    var View = require("lib/viewing/View");
+    var $ = require("lib/application/jquery");
 
     var layout;
     var view;
     var metatags;
     var ViewWithPageLevelData;
+    var originalMetatag;
+    var head;
+    var $brisketMetatags;
 
     beforeEach(function() {
         layout = new Layout();
@@ -20,8 +23,6 @@ describe("ClientRenderer", function() {
         spyOn(layout, "backToNormal");
         spyOn(layout, "setContentToAttachedView");
         spyOn(layout, "setContent");
-        spyOn(layout, "renderMetatags");
-        spyOn(layout, "flushMetatags");
 
         view = new View();
         spyOn(view, "render");
@@ -30,12 +31,22 @@ describe("ClientRenderer", function() {
         spyOn(view, "setUid");
 
         ViewWithPageLevelData = View.extend(HasPageLevelData);
+
+        originalMetatag = document.createElement("meta");
+        originalMetatag.setAttribute("data-ephemeral", true);
+
+        head = document.head;
+        head.appendChild(originalMetatag);
+    });
+
+    afterEach(function() {
+        $brisketMetatags.remove();
     });
 
     describe("on all renders", function() {
 
         beforeEach(function() {
-            ClientRenderer.render(layout, view, 1);
+            whenClientRenders(1);
         });
 
         it("attempts to reattach view", function() {
@@ -48,7 +59,7 @@ describe("ClientRenderer", function() {
 
         beforeEach(function() {
             view.isAttached = true;
-            ClientRenderer.render(layout, view, 1);
+            whenClientRenders(1);
         });
 
         it("renders the view", function() {
@@ -69,7 +80,7 @@ describe("ClientRenderer", function() {
 
         beforeEach(function() {
             view.isAttached = false;
-            ClientRenderer.render(layout, view, 1);
+            whenClientRenders(1);
         });
 
         it("does NOT render the view directly", function() {
@@ -89,7 +100,7 @@ describe("ClientRenderer", function() {
     describe("when view is Brisket.View", function() {
 
         beforeEach(function() {
-            ClientRenderer.render(layout, view, 1);
+            whenClientRenders(1);
         });
 
         it("sets uid to reflect current request and it's creation order", function() {
@@ -103,25 +114,19 @@ describe("ClientRenderer", function() {
         beforeEach(function() {
             layout.updateMetatagsOnClientRender = true;
 
-            metatags = {
+            view.withMetatags(new Layout.Metatags({
                 description: "description"
-            };
-
-            view.withMetatags(metatags);
+            }));
         });
 
         describe("and it is the first request", function() {
 
             beforeEach(function() {
-                ClientRenderer.render(layout, view, 1);
+                whenClientRenders(1);
             });
 
-            it("does NOT render the metatags", function() {
-                expect(layout.renderMetatags).not.toHaveBeenCalledWith(metatags);
-            });
-
-            it("does NOT flush the existing metatags", function() {
-                expect(layout.flushMetatags).not.toHaveBeenCalled();
+            it("does NOT modify metatags", function() {
+                expectMetatagsDidntChange();
             });
 
         });
@@ -129,15 +134,15 @@ describe("ClientRenderer", function() {
         describe("and it is NOT the first request", function() {
 
             beforeEach(function() {
-                ClientRenderer.render(layout, view, 2);
+                whenClientRenders(2);
             });
 
-            it("renders the metatags", function() {
-                expect(layout.renderMetatags).toHaveBeenCalledWith(metatags);
+            it("renders the new metatags", function() {
+                expectNormalMetatag("description", "description");
             });
 
             it("flushes the existing metatags", function() {
-                expect(layout.flushMetatags).toHaveBeenCalled();
+                expectExistingMetatagFlushed();
             });
 
         });
@@ -159,15 +164,11 @@ describe("ClientRenderer", function() {
         describe("and it is the first request", function() {
 
             beforeEach(function() {
-                ClientRenderer.render(layout, view, 1);
+                whenClientRenders(1);
             });
 
-            it("does NOT render the metatags", function() {
-                expect(layout.renderMetatags).not.toHaveBeenCalledWith(metatags);
-            });
-
-            it("does NOT flush the existing metatags", function() {
-                expect(layout.flushMetatags).not.toHaveBeenCalled();
+            it("does NOT modify metatags", function() {
+                expectMetatagsDidntChange();
             });
 
         });
@@ -175,15 +176,11 @@ describe("ClientRenderer", function() {
         describe("and it is NOT the first request", function() {
 
             beforeEach(function() {
-                ClientRenderer.render(layout, view, 2);
+                whenClientRenders(2);
             });
 
-            it("does NOT render the metatags", function() {
-                expect(layout.renderMetatags).not.toHaveBeenCalledWith(metatags);
-            });
-
-            it("does NOT flush the existing metatags", function() {
-                expect(layout.flushMetatags).not.toHaveBeenCalled();
+            it("does NOT modify metatags", function() {
+                expectMetatagsDidntChange();
             });
 
         });
@@ -204,7 +201,7 @@ describe("ClientRenderer", function() {
         it("does NOT change page title on initial request", function() {
             layout.defaultTitle = "Default Title";
             view = new ViewWithPageLevelData().withTitle("Title");
-            ClientRenderer.render(layout, view, 1);
+            whenClientRenders(1);
 
             expect(document.title).toBe(originalPageTitle);
         });
@@ -214,27 +211,27 @@ describe("ClientRenderer", function() {
             it("renders title from view's page level data", function() {
                 layout.defaultTitle = "Default Title";
                 view = new ViewWithPageLevelData().withTitle("Title");
-                ClientRenderer.render(layout, view, 2);
+                whenClientRenders(2);
 
                 expect(document.title).toBe("Title");
             });
 
             it("renders layout's defaultTitle when view does NOT have page level data", function() {
                 layout.defaultTitle = "Default Title";
-                ClientRenderer.render(layout, view, 2);
+                whenClientRenders(2);
 
                 expect(document.title).toBe("Default Title");
             });
 
             it("does NOT render title when view does NOT have page level data NOR layout has defaultTitle", function() {
-                ClientRenderer.render(layout, view, 2);
+                whenClientRenders(2);
 
                 expect(document.title).toBe(originalPageTitle);
             });
 
             it("escapes title for use in html", function() {
                 layout.defaultTitle = "Title \" ' & < > $ $$ $' $` $& $3";
-                ClientRenderer.render(layout, view, 2);
+                whenClientRenders(2);
 
                 expect(document.title).toBe("Title \" ' & < > $ $$ $' $` $& $3");
             });
@@ -242,7 +239,7 @@ describe("ClientRenderer", function() {
             it("renders title when title tag is on multiple lines", function() {
                 layout.el.innerHTML = "<html><head><title>\n</title></head><body></body></html>";
                 layout.defaultTitle = "Default Title";
-                ClientRenderer.render(layout, view, 2);
+                whenClientRenders(2);
 
                 expect(document.title).toBe("Default Title");
             });
@@ -258,27 +255,27 @@ describe("ClientRenderer", function() {
             it("renders title from view's page level data", function() {
                 layout.defaultTitle = "Default Title";
                 view = new ViewWithPageLevelData().withTitle("Title");
-                ClientRenderer.render(layout, view, 2);
+                whenClientRenders(2);
 
                 expect(document.title).toBe("Title");
             });
 
             it("renders layout's defaultTitle when view does NOT have page level data", function() {
                 layout.defaultTitle = "Default Title";
-                ClientRenderer.render(layout, view, 2);
+                whenClientRenders(2);
 
                 expect(document.title).toBe("Default Title");
             });
 
             it("does NOT render title when view does NOT have page level data NOR layout has defaultTitle", function() {
-                ClientRenderer.render(layout, view, 2);
+                whenClientRenders(2);
 
                 expect(document.title).toBe(originalPageTitle);
             });
 
             it("escapes title for use in html", function() {
                 layout.defaultTitle = "Title \" ' & < > $ $$ $' $` $& $3";
-                ClientRenderer.render(layout, view, 2);
+                whenClientRenders(2);
 
                 expect(document.title).toBe("Title \" ' & < > $ $$ $' $` $& $3");
             });
@@ -286,7 +283,7 @@ describe("ClientRenderer", function() {
             it("renders title when title tag is on multiple lines", function() {
                 layout.el.innerHTML = "<html><head><title class='klass'>\n</title></head><body></body></html>";
                 layout.defaultTitle = "Default Title";
-                ClientRenderer.render(layout, view, 2);
+                whenClientRenders(2);
 
                 expect(document.title).toBe("Default Title");
             });
@@ -294,6 +291,102 @@ describe("ClientRenderer", function() {
         });
 
     });
+
+    describe("rendering metatags", function() {
+
+        beforeEach(function() {
+            layout.updateMetatagsOnClientRender = true;
+        });
+
+        describe("when there are no metatags", function() {
+
+            beforeEach(function() {
+                view = new ViewWithPageLevelData();
+                whenClientRenders(2);
+            });
+
+            it("does nothing", function() {
+                expectMetatagsDidntChange();
+            });
+
+        });
+
+        describe("when there is only 1 group of metatags", function() {
+
+            beforeEach(function() {
+                view = new ViewWithPageLevelData()
+                    .withMetatags(new Layout.Metatags({
+                        "description": "a",
+                        "keywords": "b"
+                    }));
+
+                whenClientRenders(2);
+            });
+
+            it("renders metatags into html", function() {
+                expectNormalMetatag("description", "a");
+                expectNormalMetatag("keywords", "b");
+            });
+
+        });
+
+        describe("when there are many groups of metatags", function() {
+
+            beforeEach(function() {
+                view = new ViewWithPageLevelData()
+                    .withMetatags([
+                        new Layout.Metatags({
+                            "description": "a",
+                            "keywords": "b"
+                        }),
+                        new Layout.OpenGraphTags({
+                            "og:image": "b"
+                        }),
+                        new Layout.LinkTags({
+                            "canonical": "c"
+                        })
+                    ]);
+
+                whenClientRenders(2);
+            });
+
+            it("renders metatags into html", function() {
+                expectNormalMetatag("description", "a");
+                expectNormalMetatag("keywords", "b");
+                expectOpenGraphTag("og:image", "b");
+                expectLinkTag("canonical", "c");
+            });
+
+        });
+
+    });
+
+    function whenClientRenders(requestId) {
+        ClientRenderer.render(layout, view, requestId);
+        $brisketMetatags = $(head).children("[data-ephemeral]");
+    }
+
+    function expectMetatagsDidntChange() {
+        expect(originalMetatag.parentNode).toBe(head);
+        expect($brisketMetatags.length).toBe(1);
+    }
+
+    function expectExistingMetatagFlushed() {
+        expect(originalMetatag.parentNode).not.toBe(head);
+        expect($brisketMetatags.length).toBe(1);
+    }
+
+    function expectNormalMetatag(name, content) {
+        expect($brisketMetatags.filter("meta[name='" + name + "'][content='" + content + "']")).toExist();
+    }
+
+    function expectOpenGraphTag(name, content) {
+        expect($brisketMetatags.filter("meta[property='" + name + "'][content='" + content + "']")).toExist();
+    }
+
+    function expectLinkTag(name, content) {
+        expect($brisketMetatags.filter("link[rel='" + name + "'][href='" + content + "']")).toExist();
+    }
 
 });
 

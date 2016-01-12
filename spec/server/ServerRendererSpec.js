@@ -27,7 +27,6 @@ describe("ServerRenderer", function() {
         layout = new Layout();
         layout.el.innerHTML = "<html><head><title></title></head><body></body></html>";
         spyOn(layout, "setContent");
-        spyOn(layout, "renderMetatags");
         spyOn(layout, "setEnvironmentConfig");
         spyOn(layout, "close");
 
@@ -230,19 +229,19 @@ describe("ServerRenderer", function() {
     describe("when view has a page level data", function() {
 
         beforeEach(function() {
-            metatags = {
+            metatags = new Layout.Metatags({
                 description: "description"
-            };
+            });
 
             view = new ViewWithPageLevelData()
                 .withTitle("Title")
                 .withMetatags(metatags);
 
-            ServerRenderer.render(layout, view, null, null, mockServerRequest);
+            html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
         });
 
         it("renders layout metatags", function() {
-            expect(layout.renderMetatags).toHaveBeenCalledWith(metatags);
+            expect(html).toMatch(/<meta name="description" content="description"/);
         });
 
         it("sets the layout content", function() {
@@ -254,11 +253,11 @@ describe("ServerRenderer", function() {
     describe("when view does NOT have page level data", function() {
 
         beforeEach(function() {
-            ServerRenderer.render(layout, view, null, null, mockServerRequest);
+            html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
         });
 
-        it("renders the layout metatags with null", function() {
-            expect(layout.renderMetatags).toHaveBeenCalledWith(null);
+        it("it does NOT render layout metatags", function() {
+            expect(html).not.toMatch(/<meta/);
         });
 
         it("sets the layout content", function() {
@@ -349,6 +348,84 @@ describe("ServerRenderer", function() {
                 html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
 
                 expect(html).toMatch(/<html>(.|\r|\n)*<title class="klass">Default Title<\/title>(.|\r|\n)*<\/html>/i);
+            });
+
+        });
+
+    });
+
+    describe("rendering metatags", function() {
+
+        it("escapes metatags for use in html", function() {
+            view = new ViewWithPageLevelData()
+                .withMetatags(new Layout.Metatags({
+                    "description": "Title \" ' & < > $ $$ $' $` $& $3"
+                }));
+
+            html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
+
+            expect(html)
+                .toMatch(/<meta name="description" content="Title &quot; &#39; &amp; &lt; &gt; \$ \$\$ \$&#39; \$` \$&amp; \$3" data-ephemeral="true"/);
+        });
+
+        describe("when there are no metatags", function() {
+
+            beforeEach(function() {
+                view = new ViewWithPageLevelData();
+
+                html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
+            });
+
+            it("does NOT render metatags", function() {
+                expect(html).not.toMatch(/<meta/);
+            });
+
+        });
+
+        describe("when there is only 1 group of metatags", function() {
+
+            beforeEach(function() {
+                view = new ViewWithPageLevelData()
+                    .withMetatags(new Layout.Metatags({
+                        "description": "a",
+                        "keywords": "b"
+                    }));
+
+                html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
+            });
+
+            it("renders metatags into html", function() {
+                expect(html).toMatch(/<meta name="description" content="a" data-ephemeral="true">/);
+                expect(html).toMatch(/<meta name="keywords" content="b" data-ephemeral="true">/);
+            });
+
+        });
+
+        describe("when there are many groups of metatags", function() {
+
+            beforeEach(function() {
+                view = new ViewWithPageLevelData()
+                    .withMetatags([
+                        new Layout.Metatags({
+                            "description": "a",
+                            "keywords": "b"
+                        }),
+                        new Layout.OpenGraphTags({
+                            "og:image": "b"
+                        }),
+                        new Layout.LinkTags({
+                            "canonical": "c"
+                        })
+                    ]);
+
+                html = ServerRenderer.render(layout, view, null, null, mockServerRequest);
+            });
+
+            it("renders metatags into html", function() {
+                expect(html).toMatch(/<meta name="description" content="a" data-ephemeral="true">/);
+                expect(html).toMatch(/<meta name="keywords" content="b" data-ephemeral="true">/);
+                expect(html).toMatch(/<meta property="og:image" content="b" data-ephemeral="true">/);
+                expect(html).toMatch(/<link rel="canonical" href="c" data-ephemeral="true">/);
             });
 
         });
