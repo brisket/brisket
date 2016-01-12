@@ -357,24 +357,36 @@ describe("ServerRenderer", function() {
 
     function clientStartScript(environmentConfig, clientAppPath, bootstrappedData, clientAppUrl) {
         var pattern = "<script type=\"text/javascript\">\n" +
-            "var s = document.createElement\\(\"script\"\\);\n" +
-            "var h = document.head;\n" +
-            "s.setAttribute\\(\"src\", \"" + clientAppUrl + "\"\\);\n" +
-            "function loaded\\(e\\) {\n" +
+            "var head = document.getElementsByTagName(\"head\")[0] || document.documentElement;\n" +
+            "var script = document.createElement(\"script\");\n" +
+            "script.src = \"" + clientAppUrl + "\";\n" +
+            "var done = false;\n" +
+            "script.onload = script.onreadystatechange = function() {\n" +
+            "if ( !done && (!this.readyState || this.readyState === \"loaded\" || this.readyState === \"complete\") ) {\n" +
+            "done = true;\n" +
+
+            "loaded();\n" +
+            // Handle memory leak in IE
+            "script.onload = script.onreadystatechange = null;\n" +
+            "if ( head && script.parentNode ) {\n" +
+            "head.removeChild( script );\n" +
+            "}\n" +
+            "script = null;\n" +
+            "}\n" +
+            "};\n" +
+
+            // Use insertBefore instead of appendChild  to circumvent an IE6 bug.
+            // This arises when a base node is used (#2709 and #4378).
+            "head.insertBefore( script, head.firstChild );\n" +
+
+            "function loaded() {\n" +
             "var ClientApp = require\\('" + clientAppPath + "'\\);\n" +
             "var clientApp = new ClientApp\\(\\);\n" +
             "clientApp.start\\({\n" +
             "environmentConfig: " + stringifyData(environmentConfig) + ",\n" +
             "bootstrappedData: " + stringifyData(bootstrappedData) + "\n" +
             "}\\);\n" +
-            "s.removeEventListener\\(\"load\", loaded, false\\);\n" +
-            "s = null;\n" +
             "}\n" +
-            "s.addEventListener\\(\"load\", loaded\\);\n" +
-            "setTimeout\\(function\\(\\){\n" +
-            "h.insertBefore\\(s, null\\);\n" +
-            "h = null;\n" +
-            "},0\\);\n" +
             "</script>";
 
         return new RegExp(stripIllegalCharacters(pattern), "m");

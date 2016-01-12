@@ -1,5 +1,7 @@
 Changelog
 ==========
+### 0.43.6
+- fix dynamic injection of script tags causing memory leaks in IE
 
 ### 0.43.5
 - fix first request ajax calls not requesting
