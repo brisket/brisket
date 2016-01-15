@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.43.5
+- fix first request ajax calls not requesting
+
 ### 0.43.4
 - deps: jquery >=1.11.1 <2.2.0
 
