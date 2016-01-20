@@ -117,8 +117,7 @@ var brisketServer = Brisket.createServer({
     apiHost: 'http://localhost:4000',
     clientAppRequirePath: 'app/ClientApp',
     environmentConfig: {
-        clientAppUrl: '//www.myapp.com/application.js',
-        startClientAppAsync: true
+        clientAppUrl: '//www.myapp.com/application.js'
     }
 });
 ```
