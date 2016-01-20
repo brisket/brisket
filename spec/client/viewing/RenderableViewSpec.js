@@ -7,6 +7,7 @@ describe("RenderableView", function() {
 
     var model;
     var BaseRenderableView;
+    var ChildViewsInTemplate;
     var ViewThatRenders;
     var view;
     var childView;
@@ -30,11 +31,12 @@ describe("RenderableView", function() {
             });
 
             it("combines the data in the model and returned from logic", function() {
-                expect(view.templateData()).toEqual({
+                expect(view.templateData()).toEqual(jasmine.objectContaining({
                     "from_model": "model data",
                     "from_logic": "logic data"
-                });
+                }));
             });
+
         });
 
         describe("when modelForView is present", function() {
@@ -47,10 +49,11 @@ describe("RenderableView", function() {
             });
 
             it("exposes the data from the view model", function() {
-                expect(view.templateData()).toEqual({
+                expect(view.templateData()).toEqual(jasmine.objectContaining({
                     "from_view_model": "view model data"
-                });
+                }));
             });
+
         });
 
         describe("when modelForView is NOT present", function() {
@@ -63,11 +66,47 @@ describe("RenderableView", function() {
             });
 
             it("exposes the data from the model", function() {
-                expect(view.templateData()).toEqual({
+                expect(view.templateData()).toEqual(jasmine.objectContaining({
                     "from_model": "model data"
-                });
+                }));
             });
+
         });
+
+        describe("when child View has child views", function() {
+
+            it("exposes child views that have not been placed in View through template data", function() {
+                ViewThatRenders = BaseRenderableView.extend({
+
+                    template: expectTemplateHasViews,
+
+                    beforeRender: function() {
+                        this.createChildView("identifier", BaseRenderableView);
+
+                        this.createChildView("identifier2", BaseRenderableView);
+
+                        this.createChildView("identifier3", BaseRenderableView)
+                            .andAppendIt();
+                    }
+                });
+
+                view = new ViewThatRenders({
+                    model: model
+                });
+
+                view.render();
+
+                function expectTemplateHasViews(data) {
+                    var views = data.views;
+
+                    expect(views["identifier"]).toBeDefined();
+                    expect(views["identifier2"]).toBeDefined();
+                    expect(views["identifier3"]).toBeUndefined();
+                }
+            });
+
+        });
+
     });
 
     describe("when rendering", function() {
@@ -75,11 +114,59 @@ describe("RenderableView", function() {
         var childView2;
         var childView3;
 
+        describe("when it has child views placed directly in template", function() {
+
+            beforeEach(function() {
+                childView1 = new Backbone.View();
+                childView2 = new Backbone.View();
+                childView3 = new Backbone.View();
+
+                ChildViewsInTemplate = BaseRenderableView.extend({
+                    template: function(data) {
+                        var views = data.views;
+
+                        return "<div class='first'></div>" +
+                            views.child1 +
+                            "<div class='third'></div>" +
+                            views.child2 +
+                            "<div class='fifth'></div>" +
+                            views.child3;
+                    },
+
+                    beforeRender: function() {
+                        this.createChildView("child1", childView1);
+                        this.createChildView("child2", childView2);
+                        this.createChildView("child3", childView3);
+                    }
+
+                });
+
+                view = new ChildViewsInTemplate();
+
+                view.render();
+            });
+
+            it("renders child views placed directly in template", function() {
+                expect(view.$(childView1.el)).toExist();
+                expect(view.$(childView2.el)).toExist();
+                expect(view.$(childView3.el)).toExist();
+            });
+
+            it("renders child views exactly where they had been placed in template", function() {
+                expect(view.$(".first").next().get(0)).toBe(childView1.el);
+                expect(view.$(".third").next().get(0)).toBe(childView2.el);
+                expect(view.$(".fifth").next().get(0)).toBe(childView3.el);
+            });
+
+        });
+
         describe("when it has unrendered child views", function() {
 
             beforeEach(function() {
                 view = new BaseRenderableView();
-                view.el.innerHTML = "<div class='first'></div>" + "<div class='descendant'></div>" + "<div class='last'></div>";
+                view.el.innerHTML = "<div class='first'></div>" +
+                    "<div class='descendant'></div>" +
+                    "<div class='last'></div>";
 
                 childView1 = new Backbone.View();
                 childView2 = new Backbone.View();
@@ -173,7 +260,6 @@ describe("RenderableView", function() {
         });
 
         describe("when view has decorators", function() {
-
             var firstDecorateFunction;
             var secondDecorateFunction;
 
@@ -296,12 +382,42 @@ describe("RenderableView", function() {
     });
 
     describe("when entering the DOM", function() {
+        var childViewInTemplate;
+        var childViewWithIdentifier;
 
         beforeEach(function() {
-            ViewThatRenders = BaseRenderableView.extend();
+            childView = new BaseRenderableView();
+            childViewWithIdentifier = new BaseRenderableView();
+            childViewInTemplate = new BaseRenderableView();
+
+            spyOn(childView, "enterDOM");
+            spyOn(childViewWithIdentifier, "enterDOM");
+            spyOn(childViewInTemplate, "enterDOM");
+
+            ViewThatRenders = BaseRenderableView.extend({
+                template: function(data) {
+                    var views = data.views;
+
+                    return views.childViewInTemplate;
+                },
+
+                beforeRender: function() {
+                    this.createChildView("childViewInTemplate", childViewInTemplate);
+
+                    this.createChildView(childView)
+                        .andAppendIt();
+
+                    this.createChildView("identifier", childViewWithIdentifier)
+                        .andAppendIt();
+                }
+
+            });
+
             view = new ViewThatRenders({
                 model: model
             });
+
+            view.render();
         });
 
         it("calls onDOM callback", function() {
@@ -320,26 +436,12 @@ describe("RenderableView", function() {
             expect(view.trigger).toHaveBeenCalledWith("on-dom");
         });
 
-        describe("when view has child views", function() {
-            var childViewWithIdentifier;
+        it("alerts child views that they have entered the DOM", function() {
+            view.enterDOM();
 
-            beforeEach(function() {
-                childView = new BaseRenderableView();
-                childViewWithIdentifier = new BaseRenderableView();
-                spyOn(childView, "enterDOM");
-                spyOn(childViewWithIdentifier, "enterDOM");
-
-                view.createChildView(childView);
-                view.createChildView("identifier", childViewWithIdentifier);
-            });
-
-            it("alerts child views that they have entered the DOM", function() {
-                view.enterDOM();
-
-                expect(childView.enterDOM).toHaveBeenCalled();
-                expect(childViewWithIdentifier.enterDOM).toHaveBeenCalled();
-            });
-
+            expect(childView.enterDOM).toHaveBeenCalled();
+            expect(childViewWithIdentifier.enterDOM).toHaveBeenCalled();
+            expect(childViewInTemplate.enterDOM).toHaveBeenCalled();
         });
 
     });
