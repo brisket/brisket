@@ -1,66 +1,110 @@
 "use strict";
 
-var Metatags = require("lib/metatags/Metatags");
-
 describe("Metatags", function() {
+    var Metatags = require("lib/metatags/Metatags");
 
     var metatags;
+    var tags;
 
-    describe("instantiation", function() {
+    describe("normal metatags", function() {
 
-        describe("when pairs are NOT provided", function() {
-
-            function instantiateMetatagsWithoutPairs() {
-                return new Metatags();
-            }
-
-            it("throws an error", function() {
-                expect(instantiateMetatagsWithoutPairs).toThrow();
-            });
-
-        });
+        itRequiresPairs(Metatags.NormalTags);
 
         describe("when pairs are provided", function() {
 
             beforeEach(function() {
-                metatags = new Metatags({
+                metatags = new Metatags.NormalTags({
                     "description": "desc",
                     "og:image": "a.jpg",
                     "canonical": "a.com/c"
                 });
             });
 
-            it("sets html property to markup of metatags", function() {
-                expect(metatags.html).toEqual(
+            it("#asHtml", function() {
+                expect(metatags.asHtml()).toEqual(
                     '<meta name="description" content="desc" data-ephemeral="true">' +
                     '<meta property="og:image" content="a.jpg" data-ephemeral="true">' +
                     '<link rel="canonical" href="a.com/c" data-ephemeral="true">'
                 );
             });
 
-        });
+            it("#asTags", function() {
+                tags = metatags.asTags();
 
-        describe("deprecation", function() {
-            beforeEach(function() {
-                spyOn(console, "warn");
+                expect(tags.querySelector("[name='description'][content='desc']")).toBeDefined();
+                expect(tags.querySelector("[property='og:image'][content='a.jpg']")).toBeDefined();
+                expect(tags.querySelector("[rel='canonical'][href='a.com/c']")).toBeDefined();
             });
 
-            it("logs deprecation method for open graph tags", function() {
-                metatags = new Metatags({
-                    "og:image": "a.jpg"
-                });
-                expect(console.warn).toHaveBeenCalled();
-            });
-
-            it("logs deprecation method for canonical tags", function() {
-                metatags = new Metatags({
-                    "canonical": "a.com/c"
-                });
-                expect(console.warn).toHaveBeenCalled();
-            });
         });
 
     });
+
+    describe("opengraph metatags", function() {
+
+        itRequiresPairs(Metatags.OpenGraphTags);
+
+        describe("when pairs are provided", function() {
+
+            beforeEach(function() {
+                metatags = new Metatags.OpenGraphTags({
+                    "og:image": "a.jpg"
+                });
+            });
+
+            it("#asHtml", function() {
+                expect(metatags.asHtml()).toEqual(
+                    '<meta property="og:image" content="a.jpg" data-ephemeral="true">'
+                );
+            });
+
+            it("#asTags", function() {
+                tags = metatags.asTags();
+
+                expect(tags.querySelector("[property='og:image'][content='a.jpg']")).toBeDefined();
+            });
+
+        });
+
+    });
+
+    describe("link tags", function() {
+
+        itRequiresPairs(Metatags.LinkTags);
+
+        describe("when pairs are provided", function() {
+
+            beforeEach(function() {
+                metatags = new Metatags.LinkTags({
+                    "canonical": "a.com/c"
+                });
+            });
+
+            it("#asHtml", function() {
+                expect(metatags.asHtml()).toEqual(
+                    '<link rel="canonical" href="a.com/c" data-ephemeral="true">'
+                );
+            });
+
+            it("#asTags", function() {
+                tags = metatags.asTags();
+
+                expect(tags.querySelector("[rel='canonical'][href='a.com/c']")).toBeDefined();
+            });
+
+        });
+
+    });
+
+    function itRequiresPairs(Type) {
+        it("throws an error when pairs are NOT provided", function() {
+            function instantiateMetatagsWithoutPairs() {
+                return new Type();
+            }
+
+            expect(instantiateMetatagsWithoutPairs).toThrow();
+        });
+    }
 
 });
 
