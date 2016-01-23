@@ -4,7 +4,7 @@ describe("validateView", function() {
     var validateView = require("lib/util/validateView");
     var Backbone = require("lib/application/Backbone");
     var View = require("lib/viewing/View");
-    var _ = require("lodash");
+    var _ = require("underscore");
 
     it("does NOT throw when passed a Backbone.View", function() {
         function validatingABackboneView() {

@@ -5,7 +5,7 @@ describe("CloseableView", function() {
     var HasChildViews = require("lib/viewing/HasChildViews");
     var Backbone = require("lib/application/Backbone");
     var Errors = require("lib/errors/Errors");
-    var _ = require("lodash");
+    var _ = require("underscore");
 
     var ViewThatCloses;
     var view;
