@@ -1,5 +1,10 @@
 Changelog
 ==========
+
+### 0.44.0
+- renderers render metatags instead of layout
+- support child views in template
+
 ### 0.43.6
 - fix dynamic injection of script tags causing memory leaks in IE
 
