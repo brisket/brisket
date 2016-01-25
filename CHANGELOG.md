@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+### 0.45.0
+- loosen cookie dependency
+- loosen express dependency
+- Missing head = null in server Renderer
+- remove lodash for smaller bundles
+
 ### 0.44.0
 - renderers render metatags instead of layout
 - support child views in template
