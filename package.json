@@ -23,7 +23,7 @@
   "dependencies": {
     "backbone": "~1.1.2",
     "bluebird": "2.x",
-    "cookie": "0.1.2",
+    "cookie": ">=0.1.2",
     "escape-html": "~1.0.3",
     "express": "4.x",
     "jquery": ">=1.11.1 <2.2.0",
