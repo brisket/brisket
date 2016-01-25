@@ -4,7 +4,7 @@ var Server = require("../../lib/server/Server");
 var App = require("../../lib/application/App");
 var ServerApp = require("../../lib/server/ServerApp");
 var ServerResponseWorkflow = require("../../lib/server/ServerResponseWorkflow");
-var _ = require("lodash");
+var _ = require("underscore");
 
 describe("Server", function() {
 
@@ -335,7 +335,7 @@ describe("Server", function() {
     }
 
     function validConfigWith(customSettings) {
-        return _.merge(validConfig(), customSettings);
+        return _.extend(validConfig(), customSettings);
     }
 
     function objectPassedToServerApp() {

@@ -2,7 +2,7 @@
 
 describe("HasChildViews", function() {
     var HasChildViews = require("lib/viewing/HasChildViews");
-    var _ = require("lodash");
+    var _ = require("underscore");
     var Backbone = require("lib/application/Backbone");
 
     var ParentView;

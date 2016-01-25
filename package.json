@@ -22,17 +22,17 @@
   },
   "dependencies": {
     "backbone": "~1.1.2",
+    "bluebird": "2.x",
+    "cookie": "0.1.2",
+    "escape-html": "~1.0.3",
     "express": "~4.11.0",
     "jquery": ">=1.11.1 <2.2.0",
+    "jquery-mockjax": "^2.0.1",
     "jsdom": ">=3.0.0",
-    "bluebird": "2.x",
-    "lodash": ">=2.4.1 <4.0.0",
     "qs": "2.3.3",
     "request": "^2.60.0",
-    "xmlhttprequest": "1.7.0",
-    "cookie": "0.1.2",
-    "jquery-mockjax": "^2.0.1",
-    "escape-html": "~1.0.3"
+    "underscore": "^1.8.3",
+    "xmlhttprequest": "1.7.0"
   },
   "devDependencies": {
     "browserify": "^10.2.6",

@@ -5,7 +5,7 @@ describe("closing CloseableView on server", function() {
     var Backbone = require("../../lib/application/Backbone");
     var Environment = require("../../lib/environment/Environment");
     var $ = require("../../lib/application/jquery");
-    var _ = require("lodash");
+    var _ = require("underscore");
 
     var ViewThatCloses;
     var view;
