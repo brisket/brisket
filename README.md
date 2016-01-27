@@ -114,7 +114,7 @@ To support IE7, include the snippet above AND the following:
 <![endif]-->
 ```
 
-**Note:** In IEs < 10, the single page app functionality that Brisket provides will not work since pushState is not available. Brisket does not support hash tag SPA's (TODO: link this to a page describing why not). When the SPA functionality is disabled, Brisket will operate like a standard website i.e. clicking application links will cause a page reload.
+**Note:** In IEs < 10, the single page app functionality that Brisket provides will not work since pushState is not available. Brisket does not support hash tag SPA's. When the SPA functionality is disabled, Brisket will operate like a standard website i.e. clicking application links will cause a page reload.
 
 ## Development
 
