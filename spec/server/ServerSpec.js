@@ -80,16 +80,41 @@ describe("Server", function() {
 
     });
 
-    describe("apiHost", function() {
+    describe("[deprecated] apiHost", function() {
 
-        it("throws if apiHost is NOT string", function() {
+        it("exposes apiConfig to ServerApp", function() {
+            Server.create(validConfigWith({
+                apiHost: API_HOST,
+                apiConfig: null
+            }));
+
+            expect(objectPassedToServerApp().apiConfig).toEqual({
+                host: API_HOST
+            });
+        });
+
+    });
+
+    describe("apiConfig", function() {
+
+        it("throws if apiConfig.host is NOT string", function() {
             function creatingServerWithoutApiHostString() {
                 Server.create(validConfigWith({
-                    apiHost: 123
+                    apiConfig: {
+                        host: 123
+                    }
                 }));
             }
 
             expect(creatingServerWithoutApiHostString).toThrow();
+        });
+
+        it("exposes apiConfig to ServerApp", function() {
+            Server.create(validConfig());
+
+            expect(objectPassedToServerApp().apiConfig).toEqual({
+                host: API_HOST
+            });
         });
 
     });
@@ -164,10 +189,6 @@ describe("Server", function() {
 
         it("it's properties are passed to ServerApp start method", function() {
             expect(objectPassedToServerApp().serverConfig).toHaveKeyValue("some", "data");
-        });
-
-        it("exposes apiHost to ServerApp through serverConfig", function() {
-            expect(objectPassedToServerApp().serverConfig).toHaveKeyValue("apiHost", API_HOST);
         });
 
     });
@@ -326,7 +347,9 @@ describe("Server", function() {
     function validConfig() {
         return {
             clientAppRequirePath: "app/ClientApp",
-            apiHost: API_HOST,
+            apiConfig: {
+                host: API_HOST
+            },
             ServerApp: ServerApp,
             environmentConfig: {
                 clientAppUrl: "application.js"
