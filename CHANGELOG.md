@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.45.1
+- harden jsdom dependency because of performance regression
+
 ### 0.45.0
 - loosen cookie dependency
 - loosen express dependency
