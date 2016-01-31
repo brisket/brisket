@@ -14,6 +14,35 @@ describe("Environment", function() {
         expect(Environment.isClient()).toBe(true);
     });
 
+    describe("#clientDebuggingEnabled", function() {
+
+        it("returns false when on server", function() {
+            spyOn(Environment, "isServer").and.returnValue(true);
+            expect(Environment.clientDebuggingEnabled()).toBe(false);
+        });
+
+        it("returns false when window.Brisket does NOT exist", function() {
+            expect(Environment.clientDebuggingEnabled()).toBe(false);
+        });
+
+        it("returns false when window.Brisket.debug !== true", function() {
+            window.Brisket = {
+                debug: false
+            };
+            expect(Environment.clientDebuggingEnabled()).toBe(false);
+            delete window.Brisket;
+        });
+
+        it("returns true when on client and window.Brisket.debug === true", function() {
+            window.Brisket = {
+                debug: true
+            };
+            expect(Environment.clientDebuggingEnabled()).toBe(true);
+            delete window.Brisket;
+        });
+
+    });
+
 });
 
 // ----------------------------------------------------------------------------

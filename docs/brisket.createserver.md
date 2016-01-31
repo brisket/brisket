@@ -153,3 +153,16 @@ var ClientApp = Brisket.ClientApp.extend({
 ```
 
 `serverConfig` is a good place to put any values that your end-users should not see but are necessary to run the server.
+
+#### debug
+Set `debug` to true to enable instrumentation with [Backbone Debugger](https://chrome.google.com/webstore/detail/backbone-debugger/bhljhndlimiafopmmhjlgfpnnchjjbhd?hl=en):
+
+```
+var brisketServer = Brisket.createServer({
+    apiHost: 'http://localhost:4000',
+    clientAppRequirePath: 'app/ClientApp',
+    debug: true
+});
+```
+
+Once you install the extension and set `debug` true, you can [use the debugger in your inspector](https://github.com/Maluen/Backbone-Debugger#screenshots)
