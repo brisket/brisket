@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.46.0
+- add support for Backbone Debugger
+
 ### 0.45.1
 - harden jsdom dependency because of performance regression
 
