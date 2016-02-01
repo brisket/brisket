@@ -1,29 +1,30 @@
 "use strict";
 
-var gulp = require("gulp");
-var jasmineBrowser = require("gulp-jasmine-browser");
-var gulpif = require("gulp-if");
+describe("Brisket in debug mode", function() {
 
-function clientSideJasmine(config) {
-    var specs = config.specs || [];
-    var debug = config.debug === true;
-    var src = config.src || [];
-    var vendor = config.vendor || [];
-    var files = [].concat(
-        src,
-        vendor,
-        specs
-    );
+    it("sets up instrumentation for Backbone when debug mode enabled", function() {
+        window.Brisket = {
+            debug: true
+        };
+        spyOnBackboneDebbuger();
 
-    return gulp.src(files)
-        .pipe(jasmineBrowser.specRunner({
-            console: !debug
-        }))
-        .pipe(gulpif(debug, jasmineBrowser.server()))
-        .pipe(gulpif(!debug, jasmineBrowser.headless()));
-}
+        var Backbone = require("../../lib/application/Backbone");
 
-module.exports = clientSideJasmine;
+        expect(window.__backboneAgent.handleBackbone).toHaveBeenCalledWith(Backbone);
+    });
+
+    function spyOnBackboneDebbuger() {
+        if (window.__backboneAgent) {
+            spyOn(window.__backboneAgent, "handleBackbone");
+            return;
+        }
+
+        window.__backboneAgent = {
+            handleBackbone: jasmine.createSpy("handleBackbone")
+        };
+    }
+
+});
 
 // ----------------------------------------------------------------------------
 // Copyright (C) 2016 Bloomberg Finance L.P.

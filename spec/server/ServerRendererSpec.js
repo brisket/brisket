@@ -432,6 +432,22 @@ describe("ServerRenderer", function() {
 
     });
 
+    describe("enabling debug mode", function() {
+
+        it("injects client side debug mode script into html when debug is true", function() {
+            environmentConfig.debug = true;
+            html = ServerRenderer.render(layout, view, environmentConfig, null, mockServerRequest);
+            expect(html).toMatch(/<script>window.Brisket={debug:true};<\/script>/);
+        });
+
+        it("does NOT inject client side debug mode script into html when debug is false", function() {
+            environmentConfig.debug = false;
+            html = ServerRenderer.render(layout, view, environmentConfig, null, mockServerRequest);
+            expect(html).not.toMatch(/<script>window.Brisket={debug:true};<\/script>/);
+        });
+
+    });
+
     function clientStartScript(environmentConfig, clientAppPath, bootstrappedData, clientAppUrl) {
         var pattern = "<script type=\"text/javascript\">\n" +
             "var head = document.getElementsByTagName(\"head\")[0] || document.documentElement;\n" +

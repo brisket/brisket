@@ -15,7 +15,9 @@ var BUILD_TOOLS = "./build_tools/*.js";
 var TEST_HELPERS = "./spec/helpers/**/*.js";
 var CLIENT_TESTS = "./spec/client/**/*.js";
 var CLIENT_TEST_BUNDLE = "./spec/build/lib.js";
+var DEBUG_MODE_TEST_BUNDLE = "./spec/build/debugModeSpec.js";
 var CONFIGURE_CLIENT_TEST = "./spec/configureClientTesting.js";
+var DEBUG_MODE_TEST = "./spec/debug_mode/debugModeSpec.js";
 var SERVER_TESTS = "./spec/server/**/*.js";
 var CONFIGURE_SERVER_TEST = "./spec/configureServerTesting.js";
 var BENCHMARKS = "./benchmarks/**/*.js";
@@ -27,6 +29,7 @@ var ALL_CODE = [
     LIB,
     REST,
     ALL_TEST_CODE,
+    DEBUG_MODE_TEST,
     NOT_BUILD_DIRECTORY_THOUGH
 ];
 
@@ -48,6 +51,21 @@ gulp.task("test-on-server", function() {
 
 gulp.task("benchmarks", function() {
     return benchmark(BENCHMARKS);
+});
+
+gulp.task("bundle-for-debug-mode", function() {
+    return bundle({
+        src: DEBUG_MODE_TEST,
+        dest: DEBUG_MODE_TEST_BUNDLE
+    });
+});
+
+// wawjr3d [1/31/2016]: test debug mode separately because the code in Backbone module
+//  can only be spied on before executing the module.
+gulp.task("test-debug-mode", ["bundle-for-debug-mode"], function() {
+    return clientSideJasmine({
+        src: DEBUG_MODE_TEST_BUNDLE
+    });
 });
 
 gulp.task("bundle-for-client", function() {
@@ -86,6 +104,7 @@ gulp.task("default", sequence(
     "beautifyJs", [
         "lintJs",
         "test-on-server",
+        "test-debug-mode",
         "test-on-client"
     ]
 ));
