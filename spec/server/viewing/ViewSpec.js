@@ -1,9 +1,16 @@
 "use strict";
 
-describe("View", function() {
+describe("View on server", function() {
     var View = require("../../../lib/viewing/View");
     var Backbone = require("../../../lib/application/Backbone");
     var noop = require("../../../lib/util/noop");
+
+    var ExampleView;
+    var ChildViewsInTemplate;
+    var view;
+    var childView1;
+    var childView2;
+    var childView3;
 
     it("overwrites delegateEvents", function() {
         expect(View.prototype.delegateEvents).not.toBe(Backbone.View.prototype.delegateEvents);
@@ -14,8 +21,6 @@ describe("View", function() {
     });
 
     describe("Backbone events", function() {
-        var ExampleView;
-        var view;
 
         beforeEach(function() {
             ExampleView = View.extend({
@@ -40,6 +45,56 @@ describe("View", function() {
             view.undelegateEvents();
             expect(Backbone.View.prototype.undelegateEvents).not.toHaveBeenCalled();
         });
+    });
+
+    describe("when rendering", function() {
+
+        describe("when it has child views placed directly in template", function() {
+
+            beforeEach(function() {
+                childView1 = new Backbone.View({
+                    className: "child1"
+                });
+                childView2 = new Backbone.View({
+                    className: "child2"
+                });
+                childView3 = new Backbone.View({
+                    className: "child3"
+                });
+
+                ChildViewsInTemplate = View.extend({
+                    template: function(data) {
+                        var views = data.views;
+
+                        return "<div class='first'></div>" +
+                            views.child1 +
+                            "<div class='third'></div>" +
+                            views.child2 +
+                            "<div class='fifth'></div>" +
+                            views.child3;
+                    },
+
+                    beforeRender: function() {
+                        this.createChildView("child1", childView1);
+                        this.createChildView("child2", childView2);
+                        this.createChildView("child3", childView3);
+                    }
+
+                });
+
+                view = new ChildViewsInTemplate();
+
+                view.render();
+            });
+
+            it("renders child views exactly where they had been placed in template", function() {
+                expect(view.$(".first").next().hasClass("child1")).toBe(true);
+                expect(view.$(".third").next().hasClass("child2")).toBe(true);
+                expect(view.$(".fifth").next().hasClass("child3")).toBe(true);
+            });
+
+        });
+
     });
 
 });
