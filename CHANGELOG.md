@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.46.1
+- optimize child views in template
+
 ### 0.46.0
 - add support for Backbone Debugger
 
