@@ -21,7 +21,7 @@
     "node": ">=0.10.0"
   },
   "dependencies": {
-    "backbone": "~1.1.2",
+    "backbone": "~1.2.3",
     "bluebird": ">=2.0.0",
     "cookie": ">=0.1.2",
     "escape-html": "~1.0.3",
@@ -53,19 +53,19 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "browser": {
-    "./lib/server/AjaxCallsForCurrentRequest.js": "./lib/util/noop.js",
-    "./lib/server/DomainLocalStorage.js": "./lib/util/noop.js",
-    "./lib/server/Server.js": "./lib/util/noop.js",
-    "./lib/server/ServerApp.js": "./lib/util/noop.js",
-    "./lib/server/ServerConfigure.js": "./lib/util/noop.js",
-    "./lib/server/ServerDispatcher.js": "./lib/util/noop.js",
-    "./lib/server/serverJquery.js": "./lib/util/noop.js",
-    "./lib/server/ServerRenderer.js": "./lib/util/noop.js",
-    "./lib/server/ServerRenderingWorkflow.js": "./lib/util/noop.js",
-    "./lib/server/ServerRequest.js": "./lib/util/noop.js",
-    "./lib/server/ServerResponse.js": "./lib/util/noop.js",
-    "./lib/server/ServerResponseWorkflow.js": "./lib/util/noop.js",
-    "./lib/server/ServerRouter.js": "./lib/util/noop.js"
+    "./lib/server/AjaxCallsForCurrentRequest.js": false,
+    "./lib/server/DomainLocalStorage.js": false,
+    "./lib/server/Server.js": false,
+    "./lib/server/ServerApp.js": false,
+    "./lib/server/ServerConfigure.js": false,
+    "./lib/server/ServerDispatcher.js": false,
+    "./lib/server/serverWindow.js": false,
+    "./lib/server/ServerRenderer.js": false,
+    "./lib/server/ServerRenderingWorkflow.js": false,
+    "./lib/server/ServerRequest.js": false,
+    "./lib/server/ServerResponse.js": false,
+    "./lib/server/ServerResponseWorkflow.js": false,
+    "./lib/server/ServerRouter.js": false
   },
   "scripts": {
     "benchmarks": "gulp benchmarks",
