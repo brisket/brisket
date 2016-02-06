@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "backbone": "~1.1.2",
-    "bluebird": "2.x",
+    "bluebird": ">=2.0.0",
     "cookie": ">=0.1.2",
     "escape-html": "~1.0.3",
     "express": "4.x",
