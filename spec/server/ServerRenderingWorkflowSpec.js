@@ -39,6 +39,8 @@ describe("ServerRenderingWorkflow", function() {
             name: "unhandled_error"
         });
 
+        originalHandler = function() {};
+
         fakeRouter = {
             layout: Layout,
             errorViewMapping: errorViewMapping(),
@@ -60,100 +62,19 @@ describe("ServerRenderingWorkflow", function() {
         spyOn(ServerResponse, "create").and.returnValue(mockServerResponse);
     });
 
-    it("ensures layout has been rendered before it is passed to route handlers", function(done) {
-        originalHandler = function() {
-            expect(Layout.prototype.render).toHaveBeenCalled();
-            done();
-
-            return expectedView;
-        };
-
-        handlerReturns = callAugmentedRouterHandler();
-    });
-
     it("ensures layout has environmentConfig before it is passed to route handlers", function(done) {
         fakeRouter.layout = Layout.extend({
 
-            testEnvironmentConfig: function() {
+            beforeRender: function() {
                 expect(this.environmentConfig).toEqual({
                     "made": "in server rendering spec"
                 });
+                done();
             }
 
         });
-
-        originalHandler = function(layout) {
-            layout.testEnvironmentConfig();
-            done();
-
-            return expectedView;
-        };
 
         handlerReturns = callAugmentedRouterHandler();
-    });
-
-    it("executes layout commands AFTER route handlers", function(done) {
-        var codeWasExecuted = false;
-
-        fakeRouter.layout = Layout.extend({
-
-            testCodeWasExecuted: function() {
-                codeWasExecuted = true;
-            }
-
-        });
-
-        originalHandler = function(layout) {
-            layout.testCodeWasExecuted();
-
-            expect(codeWasExecuted).toBe(false);
-
-            return expectedView;
-        };
-
-        callAugmentedRouterHandler().lastly(function() {
-            expect(codeWasExecuted).toBe(true);
-            done();
-        });
-    });
-
-    describe("when route has finished", function() {
-        var layoutCommandWasExecuted;
-        var whenRouteFinished;
-
-        beforeEach(function() {
-            layoutCommandWasExecuted = false;
-
-            fakeRouter.layout = Layout.extend({
-
-                testLayoutCommandWasExecuted: function() {
-                    layoutCommandWasExecuted = true;
-                }
-
-            });
-
-            originalHandler = function(layout) {
-                expectedView.on("event", function() {
-                    layout.testLayoutCommandWasExecuted();
-                });
-
-                return expectedView;
-            };
-
-            whenRouteFinished = callAugmentedRouterHandler();
-        });
-
-        it("executes layout commands from route handler immediately", function(done) {
-            whenRouteFinished.lastly(function() {
-                expect(layoutCommandWasExecuted).toBe(false);
-
-                expectedView.trigger("event");
-
-                expect(layoutCommandWasExecuted).toBe(true);
-                done();
-            });
-        });
-
     });
 
     describe("whenever handler is called", function() {
@@ -626,6 +547,7 @@ describe("ServerRenderingWorkflow", function() {
     function makeBackboneRouteArguments(args) {
         return Array.prototype.slice.call(args, 0).concat(null);
     }
+
 });
 
 // ----------------------------------------------------------------------------

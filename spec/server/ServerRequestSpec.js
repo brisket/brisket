@@ -2,6 +2,7 @@
 
 describe("ServerRequest", function() {
     var ServerRequest = require("../../lib/server/ServerRequest");
+    var MockExpressRequest = require("../mock/MockExpressRequest");
     var noop = require("../../lib/util/noop");
 
     var serverRequest;
@@ -9,7 +10,7 @@ describe("ServerRequest", function() {
     describe("from returns Brisket normalized values", function() {
 
         beforeEach(function() {
-            serverRequest = ServerRequest.from(mockExpressRequest());
+            serverRequest = ServerRequest.from(MockExpressRequest.basic());
         });
 
         it("exposes protocol", function() {
@@ -38,7 +39,7 @@ describe("ServerRequest", function() {
         });
 
         it("exposes request with no query params", function() {
-            var serverRequestNoQueryParam = ServerRequest.from(mockExpressRequestNoQueryParam());
+            var serverRequestNoQueryParam = ServerRequest.from(MockExpressRequest.withoutQueryParam());
             expect(serverRequestNoQueryParam.rawQuery).toEqual(null);
             expect(serverRequestNoQueryParam.query).toEqual(undefined);
         });
@@ -72,7 +73,7 @@ describe("ServerRequest", function() {
     describe("environmentConfig", function() {
 
         it("exposes environmentConfig when created WITH one", function() {
-            serverRequest = ServerRequest.from(mockExpressRequest(), {
+            serverRequest = ServerRequest.from(MockExpressRequest.basic(), {
                 "a": "b",
                 "c": "d"
             });
@@ -84,7 +85,7 @@ describe("ServerRequest", function() {
         });
 
         it("exposes empty environmentConfig when created WITHOUT one", function() {
-            serverRequest = ServerRequest.from(mockExpressRequest());
+            serverRequest = ServerRequest.from(MockExpressRequest.basic());
 
             expect(serverRequest.environmentConfig).toEqual({});
         });
@@ -94,7 +95,7 @@ describe("ServerRequest", function() {
     describe("when environmentConfig has appRoot", function() {
 
         beforeEach(function() {
-            serverRequest = ServerRequest.from(mockExpressRequest(), {
+            serverRequest = ServerRequest.from(MockExpressRequest.basic(), {
                 appRoot: "/appRoot"
             });
         });
@@ -112,7 +113,7 @@ describe("ServerRequest", function() {
     describe("when environmentConfig does NOT have appRoot", function() {
 
         beforeEach(function() {
-            serverRequest = ServerRequest.from(mockExpressRequest(), {});
+            serverRequest = ServerRequest.from(MockExpressRequest.basic(), {});
         });
 
         it("exposes path", function() {
@@ -128,7 +129,7 @@ describe("ServerRequest", function() {
     describe("cookies", function() {
 
         it("exposes cookies when express request provides them", function() {
-            var expressRequestWithCookies = mockExpressRequest();
+            var expressRequestWithCookies = MockExpressRequest.basic();
             expressRequestWithCookies.cookies = {
                 "foo": "a",
                 "bar": "b"
@@ -143,46 +144,12 @@ describe("ServerRequest", function() {
         });
 
         it("exposes cookies as null when express request does NOT provide them", function() {
-            serverRequest = ServerRequest.from(mockExpressRequest());
+            serverRequest = ServerRequest.from(MockExpressRequest.basic());
 
             expect(serverRequest.cookies).toBeNull();
         });
 
     });
-
-    function mockExpressRequest() {
-        return {
-            protocol: "http",
-            path: "/requested/path",
-            host: "example.com",
-            headers: {
-                "host": "example.com:8080",
-                "referer": "theReferrer.com",
-                "user-agent": "A wonderful computer"
-            },
-            query: {
-                some: "param",
-                another: {
-                    param: "value"
-                }
-            },
-            originalUrl: "/requested/path?some=param&another%5Bparam%5D=value"
-        };
-    }
-
-    function mockExpressRequestNoQueryParam() {
-        return {
-            protocol: "http",
-            path: "/requested/path",
-            host: "example.com",
-            headers: {
-                "host": "example.com:8080",
-                "referer": "theReferrer.com",
-                "user-agent": "A wonderful computer"
-            },
-            originalUrl: "/requested/path"
-        };
-    }
 
 });
 
