@@ -1,9 +1,9 @@
 "use strict";
 
-var View = require("lib/viewing/View");
-var Layout = require("lib/viewing/Layout");
-var ErrorViewMapping = require("lib/errors/ErrorViewMapping");
-var noop = require("lib/util/noop");
+var View = require("../../lib/viewing/View");
+var Layout = require("../../lib/viewing/Layout");
+var ErrorViewMapping = require("../../lib/errors/ErrorViewMapping");
+var noop = require("../../lib/util/noop");
 var _ = require("underscore");
 
 var PageNotFoundView = View.extend({
