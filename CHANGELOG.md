@@ -1,6 +1,11 @@
 Changelog
 ==========
 
+### 0.47.0
+- render layout on server after choose route
+- upgrade backbone to 1.2.3
+- loosen bluebird dependency
+
 ### 0.46.0
 - add support for Backbone Debugger
 
