@@ -189,6 +189,13 @@ describe("ServerRenderingWorkflow", function() {
             });
         });
 
+        it("still renders Layout", function(done) {
+            handlerReturns.lastly(function() {
+                expect(Layout.prototype.render).toHaveBeenCalled();
+                done();
+            });
+        });
+
         it("renders error view", function(done) {
             handlerReturns.lastly(function() {
                 expectRenderFor(jasmine.any(Layout), jasmine.any(ErrorView));
@@ -277,7 +284,10 @@ describe("ServerRenderingWorkflow", function() {
 
         it("logs the error", function(done) {
             handlerReturns.lastly(function() {
-                expect(Errors.notify).toHaveBeenCalledWith(error);
+                expect(Errors.notify).toHaveBeenCalledWith(
+                    error,
+                    mockServerRequest
+                );
                 done();
             });
         });
@@ -295,6 +305,13 @@ describe("ServerRenderingWorkflow", function() {
             };
 
             handlerReturns = callAugmentedRouterHandler();
+        });
+
+        it("still renders Layout", function(done) {
+            handlerReturns.lastly(function() {
+                expect(Layout.prototype.render).toHaveBeenCalled();
+                done();
+            });
         });
 
         it("renders 404 view", function(done) {
@@ -326,6 +343,13 @@ describe("ServerRenderingWorkflow", function() {
             handlerReturns = callAugmentedRouterHandler();
         });
 
+        it("still renders Layout", function(done) {
+            handlerReturns.lastly(function() {
+                expect(Layout.prototype.render).toHaveBeenCalled();
+                done();
+            });
+        });
+
         it("renders error view", function(done) {
             handlerReturns.lastly(function() {
                 expectRenderFor(jasmine.any(Layout), jasmine.any(ErrorView));
@@ -353,6 +377,13 @@ describe("ServerRenderingWorkflow", function() {
             };
 
             handlerReturns = callAugmentedRouterHandler();
+        });
+
+        it("still renders Layout", function(done) {
+            handlerReturns.lastly(function() {
+                expect(Layout.prototype.render).toHaveBeenCalled();
+                done();
+            });
         });
 
         it("renders error view", function(done) {
@@ -396,6 +427,13 @@ describe("ServerRenderingWorkflow", function() {
             handlerReturns = callAugmentedRouterHandler();
         });
 
+        it("still renders Layout", function(done) {
+            handlerReturns.lastly(function() {
+                expect(Layout.prototype.render).toHaveBeenCalled();
+                done();
+            });
+        });
+
         it("returns status from view failure", function(done) {
             handlerReturns.caught(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(404);
@@ -432,6 +470,13 @@ describe("ServerRenderingWorkflow", function() {
             handlerReturns = callAugmentedRouterHandler();
         });
 
+        it("still renders Layout", function(done) {
+            handlerReturns.lastly(function() {
+                expect(Layout.prototype.render).toHaveBeenCalled();
+                done();
+            });
+        });
+
         it("returns status from layout failure", function(done) {
             handlerReturns.caught(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(404);
@@ -450,6 +495,13 @@ describe("ServerRenderingWorkflow", function() {
             };
 
             handlerReturns = callAugmentedRouterHandler();
+        });
+
+        it("still renders Layout", function(done) {
+            handlerReturns.lastly(function() {
+                expect(Layout.prototype.render).toHaveBeenCalled();
+                done();
+            });
         });
 
         it("renders error view", function(done) {

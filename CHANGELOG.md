@@ -1,6 +1,10 @@
 Changelog
 ==========
 
+### 0.48.0
+- send request with Errors.notify
+- fix layout doesnt render on server error
+
 ### 0.47.0
 - render layout on server after choose route
 - upgrade backbone to 1.2.3
