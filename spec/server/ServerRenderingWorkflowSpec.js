@@ -284,7 +284,10 @@ describe("ServerRenderingWorkflow", function() {
 
         it("logs the error", function(done) {
             handlerReturns.lastly(function() {
-                expect(Errors.notify).toHaveBeenCalledWith(error);
+                expect(Errors.notify).toHaveBeenCalledWith(
+                    error,
+                    mockServerRequest
+                );
                 done();
             });
         });

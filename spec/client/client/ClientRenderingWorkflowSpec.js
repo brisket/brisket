@@ -370,7 +370,10 @@ describe("ClientRenderingWorkflow", function() {
         it("logs the error to console", function(done) {
             handlerReturns
                 .then(function() {
-                    expect(Errors.notify).toHaveBeenCalledWith("any error");
+                    expect(Errors.notify).toHaveBeenCalledWith(
+                        "any error",
+                        mockClientRequest
+                    );
                     done();
                 });
         });
@@ -505,7 +508,10 @@ describe("ClientRenderingWorkflow", function() {
         it("logs the jqxhr to console", function(done) {
             handlerReturns
                 .then(function() {
-                    expect(Errors.notify).toHaveBeenCalledWith(error);
+                    expect(Errors.notify).toHaveBeenCalledWith(
+                        error,
+                        mockClientRequest
+                    );
                     done();
                 });
         });

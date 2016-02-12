@@ -4,19 +4,21 @@ describe("Errors", function() {
     var Errors = require("lib/errors/Errors");
 
     var eventHandler;
+    var mockRequest;
     var error;
 
     beforeEach(function() {
         spyOn(console, "error");
 
         eventHandler = jasmine.createSpy("event-handler");
+        mockRequest = {};
         Errors.onError(eventHandler);
     });
 
     describe("when error is a string", function() {
 
         beforeEach(function() {
-            Errors.notify("there was an error");
+            Errors.notify("there was an error", mockRequest);
         });
 
         it("console.errors a string", function() {
@@ -24,7 +26,10 @@ describe("Errors", function() {
         });
 
         it("calls event handler with string", function() {
-            expect(eventHandler).toHaveBeenCalledWith("there was an error");
+            expect(eventHandler).toHaveBeenCalledWith(
+                "there was an error",
+                mockRequest
+            );
         });
 
     });
@@ -34,7 +39,7 @@ describe("Errors", function() {
         beforeEach(function() {
             Errors.notify({
                 some: "object"
-            });
+            }, mockRequest);
         });
 
         it("console.errors objects", function() {
@@ -45,8 +50,10 @@ describe("Errors", function() {
 
         it("calls event handler with object", function() {
             expect(eventHandler).toHaveBeenCalledWith({
-                some: "object"
-            });
+                    some: "object"
+                },
+                mockRequest
+            );
         });
 
     });
@@ -57,7 +64,7 @@ describe("Errors", function() {
 
             beforeEach(function() {
                 error = errorWithStack();
-                Errors.notify(error);
+                Errors.notify(error, mockRequest);
             });
 
             it("console.errors the error's stack trace", function() {
@@ -65,7 +72,10 @@ describe("Errors", function() {
             });
 
             it("calls event handler with error", function() {
-                expect(eventHandler).toHaveBeenCalledWith(error);
+                expect(eventHandler).toHaveBeenCalledWith(
+                    error,
+                    mockRequest
+                );
             });
 
         });
@@ -74,7 +84,7 @@ describe("Errors", function() {
 
             beforeEach(function() {
                 error = errorWithoutStack();
-                Errors.notify(error);
+                Errors.notify(error, mockRequest);
             });
 
             it("console.errors the error", function() {
@@ -82,7 +92,10 @@ describe("Errors", function() {
             });
 
             it("calls event handler with error", function() {
-                expect(eventHandler).toHaveBeenCalledWith(error);
+                expect(eventHandler).toHaveBeenCalledWith(
+                    error,
+                    mockRequest
+                );
             });
 
         });
