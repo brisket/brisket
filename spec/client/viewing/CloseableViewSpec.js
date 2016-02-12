@@ -4,7 +4,6 @@ describe("CloseableView", function() {
     var CloseableView = require("lib/viewing/CloseableView");
     var HasChildViews = require("lib/viewing/HasChildViews");
     var Backbone = require("lib/application/Backbone");
-    var Errors = require("lib/errors/Errors");
     var _ = require("underscore");
 
     var ViewThatCloses;
@@ -103,18 +102,24 @@ describe("CloseableView", function() {
         });
 
         describe("when there is an error in onClose", function() {
-
             var error;
+            var catchError;
 
             beforeEach(function() {
                 error = new Error();
+                catchError = jasmine.createSpy();
+
                 view.onClose.and.callFake(function() {
                     throw error;
                 });
 
-                spyOn(Errors, "notify");
+                spyOn(console, "error");
 
-                view.close();
+                try {
+                    view.close();
+                } catch (e) {
+                    catchError(e);
+                }
             });
 
             it("still removes the view from the DOM", function() {
@@ -126,7 +131,14 @@ describe("CloseableView", function() {
             });
 
             it("reports the error to the console", function() {
-                expect(Errors.notify).toHaveBeenCalledWith(error);
+                expect(console.error).toHaveBeenCalledWith(
+                    "Error: There is an error in an onClose callback.\n" +
+                    "View with broken onClose is: " + view
+                );
+            });
+
+            it("rethrows error", function() {
+                expect(catchError).toHaveBeenCalledWith(error);
             });
 
         });
@@ -179,18 +191,24 @@ describe("CloseableView", function() {
         });
 
         describe("when there is an error in onClose", function() {
-
             var error;
+            var catchError;
 
             beforeEach(function() {
                 error = new Error();
+                catchError = jasmine.createSpy();
+
                 view.onClose.and.callFake(function() {
                     throw error;
                 });
 
-                spyOn(Errors, "notify");
+                spyOn(console, "error");
 
-                view.closeAsChild();
+                try {
+                    view.closeAsChild();
+                } catch (e) {
+                    catchError(e);
+                }
             });
 
             it("does NOT remove the view from the DOM", function() {
@@ -201,12 +219,19 @@ describe("CloseableView", function() {
                 expect(view.unbind).toHaveBeenCalled();
             });
 
-            it("reports the error to the console", function() {
-                expect(Errors.notify).toHaveBeenCalledWith(error);
-            });
-
             it("stops listening to new events", function() {
                 expect(view.stopListening).toHaveBeenCalled();
+            });
+
+            it("reports the error to the console", function() {
+                expect(console.error).toHaveBeenCalledWith(
+                    "Error: There is an error in an onClose callback.\n" +
+                    "View with broken onClose is: " + view
+                );
+            });
+
+            it("rethrows error", function() {
+                expect(catchError).toHaveBeenCalledWith(error);
             });
 
         });

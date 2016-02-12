@@ -3,7 +3,6 @@
 describe("ServerResponseWorkflow", function() {
     var ServerResponseWorkflow = require("../../lib/server/ServerResponseWorkflow");
     var ServerResponse = require("../../lib/server/ServerResponse");
-    var Errors = require("../../lib/errors/Errors");
     var Promise = require("bluebird");
 
     var mockExpressResponse;
@@ -192,13 +191,6 @@ describe("ServerResponseWorkflow", function() {
                 });
             });
 
-            it("logs the error", function(done) {
-                whenAppCannotHandleError(function() {
-                    expect(Errors.notify).toHaveBeenCalledWith(error);
-                    done();
-                });
-            });
-
             it("continues to the next middleware with error", function(done) {
                 whenAppCannotHandleError(function() {
                     expect(mockNext).toHaveBeenCalledWith(error);
@@ -237,8 +229,6 @@ describe("ServerResponseWorkflow", function() {
     function whenAppCannotHandleError(expectThings) {
         error = new Error();
         whenContentIsReturned = Promise.reject(error);
-
-        spyOn(Errors, "notify");
 
         return sendResponse()
             .lastly(expectThings);
