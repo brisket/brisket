@@ -1,7 +1,7 @@
 Brisket Response Object
 ======================
 
-The last parameter of every route handler is a Brisket response object - an environment agnostic set of tools for modifying the current resposne.
+The last parameter of every route handler is a Brisket response object - an environment agnostic set of tools for modifying the current response.
 
 ## Documentation Index
 
