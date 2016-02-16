@@ -521,6 +521,78 @@ describe("ServerRenderingWorkflow", function() {
         itCleansUpLayoutAndRouter();
     });
 
+    describe("when layout errors on close", function() {
+        var error;
+
+        beforeEach(function() {
+            error = new Error();
+
+            spyOn(Layout.prototype, "onClose").and.callFake(function() {
+                throw error;
+            });
+
+            spyOn(Errors, "notify");
+        });
+
+        it("notifies about error", function(done) {
+            handlerReturns = callAugmentedRouterHandler().caught();
+
+            handlerReturns.lastly(function() {
+                expect(Errors.notify).toHaveBeenCalledWith(
+                    error,
+                    mockServerRequest
+                );
+
+                done();
+            });
+        });
+
+        it("rethrows error", function(done) {
+            handlerReturns = callAugmentedRouterHandler().caught(function(e) {
+                expect(e).toBe(error);
+
+                done();
+            });
+        });
+
+    });
+
+    describe("when router errors on close", function() {
+        var error;
+
+        beforeEach(function() {
+            error = new Error();
+
+            fakeRouter.close = function() {
+                throw error;
+            };
+
+            spyOn(Errors, "notify");
+        });
+
+        it("notifies about error", function(done) {
+            handlerReturns = callAugmentedRouterHandler().caught();
+
+            handlerReturns.lastly(function() {
+                expect(Errors.notify).toHaveBeenCalledWith(
+                    error,
+                    mockServerRequest
+                );
+
+                done();
+            });
+        });
+
+        it("rethrows error", function(done) {
+            handlerReturns = callAugmentedRouterHandler().caught(function(e) {
+                expect(e).toBe(error);
+
+                done();
+            });
+        });
+
+    });
+
     function itCleansUpLayoutAndRouter() {
 
         describe("cleaning up", function() {

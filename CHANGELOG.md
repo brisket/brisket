@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.48.1
+- guarantee that Errors.notify called w/ request
+
 ### 0.48.0
 - send request with Errors.notify
 - fix layout doesnt render on server error

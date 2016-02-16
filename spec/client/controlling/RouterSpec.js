@@ -1,12 +1,12 @@
 "use strict";
 
 describe("Router", function() {
-    var Errors = require("lib/errors/Errors");
     var Router = require("lib/controlling/Router");
     var noop = require("lib/util/noop");
 
     var router;
     var error;
+    var catchError;
 
     beforeEach(function() {
         router = new Router();
@@ -40,17 +40,29 @@ describe("Router", function() {
 
             beforeEach(function() {
                 error = new Error();
+                catchError = jasmine.createSpy();
+
                 router.onClose.and.callFake(function() {
                     throw error;
                 });
 
-                spyOn(Errors, "notify");
+                spyOn(console, "error");
 
-                router.close();
+                try {
+                    router.close();
+                } catch (e) {
+                    catchError(e);
+                }
             });
 
             it("reports the error to the console", function() {
-                expect(Errors.notify).toHaveBeenCalledWith(error);
+                expect(console.error).toHaveBeenCalledWith(
+                    "Error: There is an error in a Router's onClose callback."
+                );
+            });
+
+            it("rethrows error", function() {
+                expect(catchError).toHaveBeenCalledWith(error);
             });
 
         });
