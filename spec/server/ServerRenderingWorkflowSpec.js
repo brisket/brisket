@@ -22,6 +22,7 @@ describe("ServerRenderingWorkflow", function() {
     var ErrorView;
     var mockServerRequest;
     var mockServerResponse;
+    var error;
 
     beforeEach(function() {
         Backbone.$ = $;
@@ -40,6 +41,8 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         originalHandler = function() {};
+
+        spyOn(Errors, "notify");
 
         fakeRouter = {
             layout: Layout,
@@ -203,7 +206,7 @@ describe("ServerRenderingWorkflow", function() {
             });
         });
 
-        it("returns status of 500", function(done) {
+        it("returns 500 status", function(done) {
             handlerReturns.caught(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(500);
                 done();
@@ -268,16 +271,13 @@ describe("ServerRenderingWorkflow", function() {
     });
 
     describe("when original handler returns rejected promise", function() {
-        var error;
 
         beforeEach(function() {
-            error = new Error("any error");
+            error = new Error("original handler returns rejected promise");
 
             originalHandler = function() {
                 return Promise.reject(error);
             };
-
-            spyOn(Errors, "notify");
 
             handlerReturns = callAugmentedRouterHandler();
         });
@@ -293,15 +293,18 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         itCleansUpLayoutAndRouter();
+        itDoesNotRethrowError();
     });
 
     describe("when original handler returns with a 404", function() {
 
         beforeEach(function() {
+            error = {
+                status: 404
+            };
+
             originalHandler = function() {
-                return Promise.reject({
-                    status: 404
-                });
+                return Promise.reject(error);
             };
 
             handlerReturns = callAugmentedRouterHandler();
@@ -329,15 +332,18 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         itCleansUpLayoutAndRouter();
+        itDoesNotRethrowError();
     });
 
     describe("when original handler returns with a 500", function() {
 
         beforeEach(function() {
+            error = {
+                status: 500
+            };
+
             originalHandler = function() {
-                return Promise.reject({
-                    status: 500
-                });
+                return Promise.reject(error);
             };
 
             handlerReturns = callAugmentedRouterHandler();
@@ -365,15 +371,18 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         itCleansUpLayoutAndRouter();
+        itDoesNotRethrowError();
     });
 
     describe("when original handler returns error (not 500 or 404)", function() {
 
         beforeEach(function() {
+            error = {
+                status: 503
+            };
+
             originalHandler = function() {
-                return Promise.reject({
-                    status: 503
-                });
+                return Promise.reject(error);
             };
 
             handlerReturns = callAugmentedRouterHandler();
@@ -401,6 +410,7 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         itCleansUpLayoutAndRouter();
+        itDoesNotRethrowError();
     });
 
     describe("when original handler returns error and layout fetch data succeeds", function() {
@@ -418,10 +428,12 @@ describe("ServerRenderingWorkflow", function() {
                 close: jasmine.createSpy()
             };
 
+            error = {
+                status: 404
+            };
+
             originalHandler = function() {
-                return Promise.reject({
-                    status: 404
-                });
+                return Promise.reject(error);
             };
 
             handlerReturns = callAugmentedRouterHandler();
@@ -442,16 +454,19 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         itCleansUpLayoutAndRouter();
+        itDoesNotRethrowError();
     });
 
     describe("when original handler returns error and layout fetch data returns error", function() {
 
         beforeEach(function() {
+            error = {
+                status: 404
+            };
+
             var LayoutWithFailingFetch = Layout.extend({
                 fetchData: function() {
-                    return Promise.reject({
-                        status: 404
-                    });
+                    return Promise.reject(error);
                 }
             });
 
@@ -485,13 +500,16 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         itCleansUpLayoutAndRouter();
+        itDoesNotRethrowError();
     });
 
     describe("when original handler has an uncaught error", function() {
 
         beforeEach(function() {
+            error = new Error("original handler has uncaught error");
+
             originalHandler = function() {
-                throw new Error("something blew up");
+                throw error;
             };
 
             handlerReturns = callAugmentedRouterHandler();
@@ -519,61 +537,40 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         itCleansUpLayoutAndRouter();
+        itDoesNotRethrowError();
     });
 
     describe("when layout errors on close", function() {
-        var error;
 
         beforeEach(function() {
-            error = new Error();
+            error = new Error("layout close error");
 
             spyOn(Layout.prototype, "onClose").and.callFake(function() {
                 throw error;
             });
-
-            spyOn(Errors, "notify");
         });
 
-        it("notifies about error", function(done) {
-            handlerReturns = callAugmentedRouterHandler().caught();
-
-            handlerReturns.lastly(function() {
-                expect(Errors.notify).toHaveBeenCalledWith(
-                    error,
-                    mockServerRequest
-                );
-
-                done();
-            });
-        });
-
-        it("rethrows error", function(done) {
-            handlerReturns = callAugmentedRouterHandler().caught(function(e) {
-                expect(e).toBe(error);
-
-                done();
-            });
-        });
-
+        itNotifiesAboutError();
+        itRethrowsError();
     });
 
     describe("when router errors on close", function() {
-        var error;
 
         beforeEach(function() {
-            error = new Error();
+            error = new Error("router close error");
 
-            fakeRouter.close = function() {
+            fakeRouter.close.and.callFake(function() {
                 throw error;
-            };
-
-            spyOn(Errors, "notify");
+            });
         });
 
-        it("notifies about error", function(done) {
-            handlerReturns = callAugmentedRouterHandler().caught();
+        itNotifiesAboutError();
+        itRethrowsError();
+    });
 
-            handlerReturns.lastly(function() {
+    function itNotifiesAboutError() {
+        it("notifies about error", function(done) {
+            callAugmentedRouterHandler().caught(function() {
                 expect(Errors.notify).toHaveBeenCalledWith(
                     error,
                     mockServerRequest
@@ -582,19 +579,27 @@ describe("ServerRenderingWorkflow", function() {
                 done();
             });
         });
+    }
 
-        it("rethrows error", function(done) {
-            handlerReturns = callAugmentedRouterHandler().caught(function(e) {
-                expect(e).toBe(error);
-
+    function itDoesNotRethrowError() {
+        it("does NOT rethrow error", function(done) {
+            handlerReturns.caught(function(e) {
+                expect(e).not.toBe(error);
                 done();
             });
         });
+    }
 
-    });
+    function itRethrowsError() {
+        it("rethrows error", function(done) {
+            callAugmentedRouterHandler().caught(function(e) {
+                expect(e).toBe(error);
+                done();
+            });
+        });
+    }
 
     function itCleansUpLayoutAndRouter() {
-
         describe("cleaning up", function() {
 
             beforeEach(function() {
@@ -616,7 +621,6 @@ describe("ServerRenderingWorkflow", function() {
             });
 
         });
-
     }
 
     function expectRenderFor(layout, view) {
