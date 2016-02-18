@@ -30,6 +30,7 @@ describe("ClientRenderingWorkflow", function() {
     var windough;
     var mockClientRequest;
     var mockClientResponse;
+    var error;
 
     beforeEach(function() {
         ExampleLayout = Layout.extend({
@@ -125,13 +126,13 @@ describe("ClientRenderingWorkflow", function() {
                     expect(this.environmentConfig).toEqual({
                         "made": "in client rendering spec"
                     });
+                    done();
                 }
 
             });
 
             originalHandler = function(layout) {
                 layout.testEnvironmentConfig();
-                done();
 
                 return expectedView;
             };
@@ -289,11 +290,10 @@ describe("ClientRenderingWorkflow", function() {
         });
 
         it("renders error view", function(done) {
-            handlerReturns
-                .then(function() {
-                    expectRenderFor(jasmine.any(ErrorView));
-                    done();
-                });
+            handlerReturns.then(function() {
+                expectRenderFor(jasmine.any(ErrorView));
+                done();
+            });
         });
 
     });
@@ -360,135 +360,139 @@ describe("ClientRenderingWorkflow", function() {
     describe("when original handler returns a rejected promise", function() {
 
         beforeEach(function() {
+            error = "original handler returns a rejected promise";
+
             originalHandler = function() {
-                return Promise.reject("any error");
+                return Promise.reject(error);
             };
 
             handlerReturns = callAugmentedRouterHandler();
         });
 
         it("logs the error to console", function(done) {
-            handlerReturns
-                .then(function() {
-                    expect(Errors.notify).toHaveBeenCalledWith(
-                        "any error",
-                        mockClientRequest
-                    );
-                    done();
-                });
+            handlerReturns.then(function() {
+                expect(Errors.notify).toHaveBeenCalledWith(
+                    "original handler returns a rejected promise",
+                    mockClientRequest
+                );
+                done();
+            });
         });
 
         itResetsLayout();
         itCleansUpRouter();
+        itDoesNotRethrowError();
     });
 
     describe("when original handler returns with a 404", function() {
 
         beforeEach(function() {
+            error = {
+                status: 404
+            };
+
             originalHandler = function() {
-                return Promise.reject({
-                    status: 404
-                });
+                return Promise.reject(error);
             };
 
             handlerReturns = callAugmentedRouterHandler();
         });
 
         it("renders 404 view", function(done) {
-            handlerReturns
-                .then(function() {
-                    expectRenderFor(jasmine.any(PageNotFoundView));
-                    done();
-                });
+            handlerReturns.then(function() {
+                expectRenderFor(jasmine.any(PageNotFoundView));
+                done();
+            });
         });
 
         it("logs the jqxhr to console", function(done) {
-            handlerReturns
-                .then(function() {
-                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual({
-                        status: 404
-                    });
-                    done();
+            handlerReturns.then(function() {
+                expect(Errors.notify.calls.mostRecent().args[0]).toEqual({
+                    status: 404
                 });
+                done();
+            });
         });
 
         itResetsLayout();
         itCleansUpRouter();
+        itDoesNotRethrowError();
     });
 
     describe("when original handler returns with a 500", function() {
 
         beforeEach(function() {
+            error = {
+                status: 500
+            };
+
             originalHandler = function() {
-                return Promise.reject({
-                    status: 500
-                });
+                return Promise.reject(error);
             };
 
             handlerReturns = callAugmentedRouterHandler();
         });
 
         it("renders error view", function(done) {
-            handlerReturns
-                .then(function() {
-                    expectRenderFor(jasmine.any(ErrorView));
-                    done();
-                });
+            handlerReturns.then(function() {
+                expectRenderFor(jasmine.any(ErrorView));
+                done();
+            });
         });
 
         it("logs the jqxhr to console", function(done) {
-            handlerReturns
-                .then(function() {
-                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual({
-                        status: 500
-                    });
-                    done();
+            handlerReturns.then(function() {
+                expect(Errors.notify.calls.mostRecent().args[0]).toEqual({
+                    status: 500
                 });
+                done();
+            });
         });
 
         itResetsLayout();
         itCleansUpRouter();
+        itDoesNotRethrowError();
     });
 
     describe("when original handler returns error (not 500 or 404)", function() {
 
         beforeEach(function() {
+            error = {
+                status: 503
+            };
+
             originalHandler = function() {
-                return Promise.reject({
-                    status: 503
-                });
+                return Promise.reject(error);
             };
 
             handlerReturns = callAugmentedRouterHandler();
         });
 
         it("renders error view", function(done) {
-            handlerReturns
-                .then(function() {
-                    expectRenderFor(jasmine.any(ErrorView));
-                    done();
-                });
+            handlerReturns.then(function() {
+                expectRenderFor(jasmine.any(ErrorView));
+                done();
+            });
         });
 
         it("logs the jqxhr to console", function(done) {
-            handlerReturns
-                .then(function() {
-                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual({
-                        status: 503
-                    });
-                    done();
+            handlerReturns.then(function() {
+                expect(Errors.notify.calls.mostRecent().args[0]).toEqual({
+                    status: 503
                 });
+                done();
+            });
         });
 
         itResetsLayout();
         itCleansUpRouter();
+        itDoesNotRethrowError();
     });
 
     describe("when original handler has an uncaught error", function() {
-        var error;
 
         beforeEach(function() {
-            error = new Error("something blew up");
+            error = new Error("original handler has uncaught error");
 
             originalHandler = function() {
                 throw error;
@@ -498,26 +502,25 @@ describe("ClientRenderingWorkflow", function() {
         });
 
         it("renders error view", function(done) {
-            handlerReturns
-                .then(function() {
-                    expectRenderFor(jasmine.any(ErrorView));
-                    done();
-                });
+            handlerReturns.then(function() {
+                expectRenderFor(jasmine.any(ErrorView));
+                done();
+            });
         });
 
         it("logs the jqxhr to console", function(done) {
-            handlerReturns
-                .then(function() {
-                    expect(Errors.notify).toHaveBeenCalledWith(
-                        error,
-                        mockClientRequest
-                    );
-                    done();
-                });
+            handlerReturns.then(function() {
+                expect(Errors.notify).toHaveBeenCalledWith(
+                    error,
+                    mockClientRequest
+                );
+                done();
+            });
         });
 
         itResetsLayout();
         itCleansUpRouter();
+        itDoesNotRethrowError();
     });
 
     describe("the first client side render", function() {
@@ -985,16 +988,15 @@ describe("ClientRenderingWorkflow", function() {
 
                 expect(onRouteComplete).not.toHaveBeenCalled();
 
-                handlerReturns
-                    .then(function() {
-                        expect(onRouteComplete).toHaveBeenCalledWith(
-                            jasmine.any(Layout),
-                            mockClientRequest,
-                            mockClientResponse
-                        );
+                handlerReturns.then(function() {
+                    expect(onRouteComplete).toHaveBeenCalledWith(
+                        jasmine.any(Layout),
+                        mockClientRequest,
+                        mockClientResponse
+                    );
 
-                        done();
-                    });
+                    done();
+                });
             });
 
         });
@@ -1010,26 +1012,107 @@ describe("ClientRenderingWorkflow", function() {
             });
 
             it("only fires onRouteComplete for second request", function(done) {
-                secondReturns
-                    .then(function() {
-                        expect(onRouteComplete).toHaveBeenCalledWith(
-                            jasmine.any(Layout),
-                            mockClientRequest,
-                            mockClientResponse
-                        );
-                        expect(onRouteComplete.calls.count()).toBe(1);
-                    });
-
-                bothReturn
-                    .then(function() {
-                        expect(onRouteComplete.calls.count()).toBe(1);
-                        done();
-                    });
+                bothReturn.then(function() {
+                    expect(onRouteComplete).toHaveBeenCalledWith(
+                        jasmine.any(Layout),
+                        mockClientRequest,
+                        mockClientResponse
+                    );
+                    expect(onRouteComplete.calls.count()).toBe(1);
+                    done();
+                });
             });
 
         });
 
     });
+
+    describe("when onRouteComplete callback errors", function() {
+
+        beforeEach(function() {
+            error = new Error("onRouteComplete callback error");
+
+            onRouteComplete.and.callFake(function() {
+                throw error;
+            });
+
+            handlerReturns = callAugmentedRouterHandler();
+        });
+
+        itNotifiesAboutError();
+        itRethrowsError();
+    });
+
+    describe("when request.onComplete callback errors", function() {
+
+        beforeEach(function() {
+            error = new Error("request.onComplete callback error");
+
+            originalHandler = function(layout, request) {
+                request.onComplete(function() {
+                    throw error;
+                });
+
+                return expectedView;
+            };
+
+            handlerReturns = callAugmentedRouterHandler();
+        });
+
+        itNotifiesAboutError();
+        itRethrowsError();
+    });
+
+    describe("when router errors on close", function() {
+
+        beforeEach(function() {
+            error = new Error("router close error");
+
+            fakeRouter.close.and.callFake(function() {
+                throw error;
+            });
+
+            handlerReturns = callAugmentedRouterHandler();
+        });
+
+        itNotifiesAboutError();
+        itRethrowsError();
+    });
+
+    function itNotifiesAboutError() {
+        it("notifies about error", function(done) {
+            handlerReturns.caught(function() {
+                expect(Errors.notify).toHaveBeenCalledWith(
+                    error,
+                    mockClientRequest
+                );
+
+                done();
+            });
+        });
+    }
+
+    function itDoesNotRethrowError() {
+        var noError = true;
+
+        it("does NOT rethrow error", function(done) {
+            handlerReturns.then(function() {
+                    expect(noError).toBe(true);
+                }, function() {
+                    expect(noError).toBe(false);
+                })
+                .lastly(done);
+        });
+    }
+
+    function itRethrowsError() {
+        it("rethrows error", function(done) {
+            handlerReturns.caught(function(e) {
+                expect(e).toBe(error);
+                done();
+            });
+        });
+    }
 
     function itCleansUpRouter() {
         it("cleans up router", function(done) {

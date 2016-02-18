@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.48.2
+- fix caught errors being thrown from rendering workflow
+
 ### 0.48.1
 - guarantee that Errors.notify called w/ request
 
