@@ -209,7 +209,7 @@ describe("ServerRenderer", function() {
         });
 
         it("sets uid to reflect initial request and it's creation order", function() {
-            expect(view.setUid).toHaveBeenCalledWith("1|0_0");
+            expect(view.setUid).toHaveBeenCalledWith("1|0_1");
         });
 
     });
