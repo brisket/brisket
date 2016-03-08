@@ -198,19 +198,36 @@ describe("RenderableView", function() {
 
         });
 
-        describe("when instantiating child views", function() {
+        describe("when instantiating child view", function() {
 
             beforeEach(function() {
                 view = new BaseRenderableView();
+                view.setUid("0");
+
+                childView1 = new BaseRenderableView();
+            });
+
+            it("does NOT set uid", function() {
+                view.createChildView(childView1).instantiateChildView();
+                expect(childView1.uid).toBeNull();
+            });
+
+        });
+
+        describe("when rendering child views", function() {
+
+            beforeEach(function() {
+                view = new BaseRenderableView();
+                view.setUid("0");
+
                 childView1 = new BaseRenderableView();
             });
 
             describe("when child view already has a uid", function() {
 
                 beforeEach(function() {
-                    view.setUid("0");
                     childView1.setUid("a valid uid");
-                    view.createChildView(childView1).instantiateChildView();
+                    view.createChildView(childView1).andAppendIt();
                 });
 
                 it("does NOT change the child view's uid", function() {
@@ -222,9 +239,8 @@ describe("RenderableView", function() {
             describe("when child view does NOT have a uid", function() {
 
                 beforeEach(function() {
-                    view.setUid("0");
                     childView1.setUid(null);
-                    view.createChildView(childView1).instantiateChildView();
+                    view.createChildView(childView1).andAppendIt();
                 });
 
                 it("sets the child view's uid", function() {
@@ -234,25 +250,49 @@ describe("RenderableView", function() {
             });
 
             describe("when number of child views goes down and then back up", function() {
-                var uids;
 
                 beforeEach(function() {
-                    uids = [];
                     childView2 = new BaseRenderableView();
                     childView3 = new BaseRenderableView();
                 });
 
                 it("sets the child view to a unique uid", function() {
-                    view.createChildView("childview1", childView1).instantiateChildView();
-                    uids.push(childView1.uid);
-                    view.createChildView("childview2", childView2).instantiateChildView();
-                    uids.push(childView2.uid);
+                    view.createChildView("childview1", childView1).andAppendIt();
+                    view.createChildView("childview2", childView2).andAppendIt();
 
                     view.closeChildView("childview2");
 
-                    view.createChildView("childview3", childView3).instantiateChildView();
+                    view.createChildView("childview3", childView3).andAppendIt();
 
-                    expect(uids).not.toContain(childView3);
+                    expect(childView1.uid).toBe("0_1");
+                    expect(childView3.uid).toBe("0_3");
+                });
+
+            });
+
+            describe("when child multiple child views are created and then all rendered", function() {
+
+                beforeEach(function() {
+                    childView2 = new BaseRenderableView();
+                    childView3 = new BaseRenderableView();
+                });
+
+                it("sets the child view to a unique uid", function() {
+                    view.createChildView("childview1", childView1);
+                    view.createChildView("childview2", childView2);
+                    view.createChildView("childview3", childView3);
+
+                    view.template = function(data) {
+                        return data.views.childview1 +
+                            data.views.childview2 +
+                            data.views.childview3;
+                    };
+
+                    view.render();
+
+                    expect(childView1.uid).toBe("0_1");
+                    expect(childView2.uid).toBe("0_2");
+                    expect(childView3.uid).toBe("0_3");
                 });
 
             });
