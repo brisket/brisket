@@ -18,5 +18,5 @@ Suppose you had all of your server code in a single directory, e.g.
 Based on [Browserify's documentation](https://github.com/substack/node-browserify#usage), you would ignore all of your server-side code as follows:
 
 ```bash
-browserify app/**/*.js --ignore app/server/**/*.js
+browserify app/client/ClientApp.js
 ```
