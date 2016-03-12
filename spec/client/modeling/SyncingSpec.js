@@ -1,14 +1,20 @@
 "use strict";
 
-var Syncing = require("lib/modeling/Syncing");
-var Backbone = require("backbone");
-var Promise = require("bluebird");
-
 describe("Syncing", function() {
+    var Syncing = require("lib/modeling/Syncing");
+    var Backbone = require("backbone");
+    var Promise = require("bluebird");
+
+    var error;
+    var data;
+    var sync;
 
     beforeEach(function() {
+        data = {};
+
         Syncing.clearMiddlewares();
-        spyOn(Backbone, "sync").and.returnValue(Promise.resolve());
+        spyOn(Backbone, "sync").and.returnValue(Promise.resolve(data));
+        error = new Error();
     });
 
     afterEach(function() {
@@ -24,10 +30,11 @@ describe("Syncing", function() {
             });
 
             it("returns a rejected promise", function(done) {
-                var sync = Syncing.sync();
+                sync = Syncing.sync();
 
                 sync.lastly(function() {
                     expect(sync.isRejected()).toBe(true);
+                    expect(sync.reason()).toBe(error);
                     done();
                 });
             });
@@ -41,10 +48,11 @@ describe("Syncing", function() {
             });
 
             it("returns a fulfilled promise", function(done) {
-                var sync = Syncing.sync();
+                sync = Syncing.sync();
 
                 sync.lastly(function() {
                     expect(sync.isFulfilled()).toBe(true);
+                    expect(sync.value()).toBe(data);
                     done();
                 });
             });
@@ -54,7 +62,7 @@ describe("Syncing", function() {
     });
 
     function forceRejectSyncMiddleware(method, model, options, renderError) {
-        renderError("Expecting this rejection for sync test");
+        renderError(error);
     }
 
     function doNotRejectSyncMiddleware() {}

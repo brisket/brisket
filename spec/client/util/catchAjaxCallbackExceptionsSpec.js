@@ -1,77 +1,42 @@
 "use strict";
 
-var catchAjaxCallbackExceptions = require("lib/util/catchAjaxCallbackExceptions");
-
 describe("catchAjaxCallbackExceptions", function() {
+    var catchAjaxCallbackExceptions = require("lib/util/catchAjaxCallbackExceptions");
 
     var options;
+    var bubbleError;
+    var error;
 
-    describe("when success, error, complete provided", function() {
-
-        beforeEach(function() {
-            options = {
-                success: noop,
-                error: noop,
-                complete: noop
-            };
-
-            catchAjaxCallbackExceptions(null, null, options, noop);
-        });
-
-        itWrapsCallbackInAPromise("success");
-        itWrapsCallbackInAPromise("error");
-        itWrapsCallbackInAPromise("complete");
-
+    beforeEach(function() {
+        bubbleError = jasmine.createSpy("bubbleError");
+        error = new Error();
     });
 
-    describe("when complete is NOT provided", function() {
+    itBubblesErrorFromCallback("success");
+    itBubblesErrorFromCallback("error");
 
-        beforeEach(function() {
-            options = {
-                success: noop,
-                error: noop
-            };
+    itDoesNotAddCallbackIfNotInOriginalOptions("success");
+    itDoesNotAddCallbackIfNotInOriginalOptions("error");
 
-            catchAjaxCallbackExceptions(null, null, options, noop);
+    function itBubblesErrorFromCallback(which) {
+        it("bubbles error when " + which + " callback throws an error", function() {
+            options = {};
+            options[which] = jasmine.createSpy(which).and.throwError(error);
+
+            catchAjaxCallbackExceptions(null, null, options, bubbleError);
+
+            options[which]();
+
+            expect(bubbleError).toHaveBeenCalledWith(error);
         });
-
-        itWrapsCallbackInAPromise("success");
-        itWrapsCallbackInAPromise("error");
-
-        it("does nothing to complete", function() {
-            expect(options.complete).toBeUndefined();
-        });
-
-    });
-
-    describe("when success throws exception", function() {
-
-        beforeEach(function() {
-            options = {
-                success: callbackThatThrows
-            };
-
-            catchAjaxCallbackExceptions(null, null, options, noop);
-        });
-
-        itWrapsCallbackInAPromise("success");
-
-    });
-
-    function noop() {}
-
-    function callbackThatThrows() {
-        throw new Error("Expected error for testing catchAjaxCallbackExceptions");
     }
 
-    function itWrapsCallbackInAPromise(callback) {
-        it("wraps " + callback + " in a promise", function(done) {
-            var promise = options[callback]();
+    function itDoesNotAddCallbackIfNotInOriginalOptions(which) {
+        it("does NOT add " + which + " callback to options if not already there", function() {
+            options = {};
 
-            promise.then(function() {
-                expect(promise.isFulfilled()).toBe(true);
-                done();
-            });
+            catchAjaxCallbackExceptions(null, null, options, bubbleError);
+
         });
     }
 
