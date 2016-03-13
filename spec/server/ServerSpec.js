@@ -8,8 +8,6 @@ var _ = require("underscore");
 
 describe("Server", function() {
 
-    var API_HOST = "http://localhost:4000";
-
     beforeEach(function() {
         spyOn(ServerApp.prototype, "start");
     });
@@ -80,16 +78,57 @@ describe("Server", function() {
 
     });
 
-    describe("apiHost", function() {
+    describe("apis", function() {
 
-        it("throws if apiHost is NOT string", function() {
-            function creatingServerWithoutApiHostString() {
+        it("does NOT throw when all apis have host", function() {
+            function creatingServerWithValidApis() {
+                Server.create(validConfig());
+            }
+
+            expect(creatingServerWithValidApis).not.toThrow();
+        });
+
+        it("throws if any api alias does NOT have a valid config", function() {
+            function creatingServerWithApiWithInvalidConfig() {
                 Server.create(validConfigWith({
-                    apiHost: 123
+                    apis: {
+                        "api": "not a valid config"
+                    }
                 }));
             }
 
-            expect(creatingServerWithoutApiHostString).toThrow();
+            expect(creatingServerWithApiWithInvalidConfig).toThrow();
+        });
+
+        it("throws if any api alias does NOT have a valid host", function() {
+            function creatingServerWithApiWithInvalidHost() {
+                Server.create(validConfigWith({
+                    apis: {
+                        "api": {
+                            host: null
+                        }
+                    }
+                }));
+            }
+
+            expect(creatingServerWithApiWithInvalidHost).toThrow();
+        });
+
+    });
+
+    describe("[deprecation] passing apiHost without apis is the same as passing apis.api.host", function() {
+
+        it("throws if apiHost is NOT string", function() {
+            Server.create(validConfigWith({
+                apis: null,
+                apiHost: "http://api.example.com"
+            }));
+
+            expect(objectPassedToServerApp().serverConfig["apis"]).toEqual({
+                "api": {
+                    host: "http://api.example.com"
+                }
+            });
         });
 
     });
@@ -166,8 +205,15 @@ describe("Server", function() {
             expect(objectPassedToServerApp().serverConfig).toHaveKeyValue("some", "data");
         });
 
-        it("exposes apiHost to ServerApp through serverConfig", function() {
-            expect(objectPassedToServerApp().serverConfig).toHaveKeyValue("apiHost", API_HOST);
+        it("exposes apis to ServerApp through serverConfig", function() {
+            expect(objectPassedToServerApp().serverConfig["apis"]).toEqual({
+                "api": {
+                    host: "http://api.example.com"
+                },
+                "other-api": {
+                    host: "http://other-api.example.com"
+                }
+            });
         });
 
     });
@@ -326,7 +372,14 @@ describe("Server", function() {
     function validConfig() {
         return {
             clientAppRequirePath: "app/ClientApp",
-            apiHost: API_HOST,
+            apis: {
+                "api": {
+                    host: "http://api.example.com"
+                },
+                "other-api": {
+                    host: "http://other-api.example.com"
+                }
+            },
             ServerApp: ServerApp,
             environmentConfig: {
                 clientAppUrl: "application.js"
