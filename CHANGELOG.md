@@ -1,6 +1,10 @@
 Changelog
 ==========
 
+### 0.48.3
+- fix client rendering workflow order should match server
+- fix broken uid for some child views
+
 ### 0.48.2
 - fix caught errors being thrown from rendering workflow
 
