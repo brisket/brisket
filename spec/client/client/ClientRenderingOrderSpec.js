@@ -45,9 +45,10 @@ describe("Client side rendering order", function() {
     it("maintains a predictable rendering lifecycle for layout AND view on first request", function(done) {
         runFirstRequest().lastly(function() {
             expect(renderingOrder).toEqual([
+                "layout fetches data",
+                "route handler runs",
                 "layout reattaches",
                 "layout renders",
-                "route handler runs",
                 "layout instructions from route handler run",
                 "view for route renders",
                 "layout enters DOM",
@@ -79,9 +80,10 @@ describe("Client side rendering order", function() {
         function(done) {
             runAnotherRequestWhereLayoutChanges().lastly(function() {
                 expect(renderingOrder).toEqual([
+                    "layout fetches data",
+                    "route handler runs",
                     "layout reattaches",
                     "layout renders",
-                    "route handler runs",
                     "layout back to normal",
                     "layout instructions from route handler run",
                     "view for route renders",
@@ -122,6 +124,9 @@ describe("Client side rendering order", function() {
     }
 
     function spyRenderingFor(router) {
+        spyOn(router.layout.prototype, "fetchData").and.callFake(function() {
+            renderingOrder.push("layout fetches data");
+        });
 
         spyOn(router.layout.prototype, "reattach").and.callFake(function() {
             renderingOrder.push("layout reattaches");
