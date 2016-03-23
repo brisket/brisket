@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.48.4
+- fix initial route starts before App start completes
+
 ### 0.48.3
 - fix client rendering workflow order should match server
 - fix broken uid for some child views

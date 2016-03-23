@@ -8,6 +8,8 @@ describe("ClientApp", function() {
     var ClientRenderingWorkflow = require("lib/client/ClientRenderingWorkflow");
     var ViewsFromServer = require("lib/viewing/ViewsFromServer");
 
+    var WAIT_FOR_PUSHSTATE_START = 10;
+
     var clientApp;
 
     beforeEach(function() {
@@ -40,8 +42,11 @@ describe("ClientApp", function() {
             clientApp.start();
         });
 
-        it("sets up links and push state", function() {
-            expect(SetupLinksAndPushState.start).toHaveBeenCalled();
+        it("sets up links and push state", function(done) {
+            setTimeout(function() {
+                expect(SetupLinksAndPushState.start).toHaveBeenCalled();
+                done();
+            }, WAIT_FOR_PUSHSTATE_START);
         });
 
         it("initializes views from server", function() {
@@ -79,9 +84,13 @@ describe("ClientApp", function() {
             });
         });
 
-        it("sets up links and push state with appRoot from configuration", function() {
-            expect(SetupLinksAndPushState.start.calls.mostRecent().args[0])
-                .toHaveKeyValue("root", "/appRoot");
+        it("sets up links and push state with appRoot from configuration", function(done) {
+            setTimeout(function() {
+                expect(SetupLinksAndPushState.start.calls.mostRecent().args[0])
+                    .toHaveKeyValue("root", "/appRoot");
+
+                done();
+            }, WAIT_FOR_PUSHSTATE_START);
         });
 
     });
@@ -92,9 +101,13 @@ describe("ClientApp", function() {
             clientApp.start();
         });
 
-        it("sets up links and push state with appRoot from configuration", function() {
-            expect(SetupLinksAndPushState.start.calls.mostRecent().args[0])
-                .toHaveKeyValue("root", "");
+        it("sets up links and push state with appRoot from configuration", function(done) {
+            setTimeout(function() {
+                expect(SetupLinksAndPushState.start.calls.mostRecent().args[0])
+                    .toHaveKeyValue("root", "");
+
+                done();
+            }, WAIT_FOR_PUSHSTATE_START);
         });
 
     });
@@ -106,9 +119,13 @@ describe("ClientApp", function() {
             clientApp.start();
         });
 
-        it("sets up links and push state with appRoot from configuration", function() {
-            expect(SetupLinksAndPushState.start.calls.mostRecent().args[0])
-                .toHaveKeyValue("browserSupportsPushState", true);
+        it("sets up links and push state with appRoot from configuration", function(done) {
+            setTimeout(function() {
+                expect(SetupLinksAndPushState.start.calls.mostRecent().args[0])
+                    .toHaveKeyValue("browserSupportsPushState", true);
+
+                done();
+            }, WAIT_FOR_PUSHSTATE_START);
         });
 
     });
@@ -120,9 +137,13 @@ describe("ClientApp", function() {
             clientApp.start();
         });
 
-        it("sets up links and push state with appRoot from configuration", function() {
-            expect(SetupLinksAndPushState.start.calls.mostRecent().args[0])
-                .toHaveKeyValue("browserSupportsPushState", false);
+        it("sets up links and push state with appRoot from configuration", function(done) {
+            setTimeout(function() {
+                expect(SetupLinksAndPushState.start.calls.mostRecent().args[0])
+                    .toHaveKeyValue("browserSupportsPushState", false);
+
+                done();
+            }, WAIT_FOR_PUSHSTATE_START);
         });
 
     });
