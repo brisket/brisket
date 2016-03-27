@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.48.5
+- fix mock ajax calls take 500ms to finish
+
 ### 0.48.4
 - fix initial route starts before App start completes
 
