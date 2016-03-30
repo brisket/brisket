@@ -63,6 +63,9 @@ Here is a listing of all the data provided by the Brisket request object.
 ### request.host
 The host of the url including the port e.g. 'example.com:8080'.
 
+### request.hostname
+The host of the url 'example.com'.
+
 ### request.isFirstRequest
 A boolean that let's you know if this is the first request to your Brisket application e.g. the initial request for your application, a page refresh.
 

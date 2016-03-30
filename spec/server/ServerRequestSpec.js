@@ -21,6 +21,10 @@ describe("ServerRequest", function() {
             expect(serverRequest.host).toBe("example.com:8080");
         });
 
+        it("exposes hostname", function() {
+            expect(serverRequest.hostname).toBe("example.com");
+        });
+
         it("exposes user agent", function() {
             expect(serverRequest.userAgent).toBe("A wonderful computer");
         });

@@ -7,6 +7,7 @@ var MockExpressRequest = {
             protocol: "http",
             path: "/requested/path",
             host: "example.com",
+            hostname: "example.com",
             headers: {
                 "host": "example.com:8080",
                 "referer": "theReferrer.com",
