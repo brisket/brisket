@@ -63,7 +63,7 @@ describe("ClientRenderingWorkflow", function() {
 
         spyOn(Errors, "notify");
 
-        spyOn(ClientRenderer, "render").and.returnValue("page was rendered");
+        spyOn(ClientRenderer, "render");
 
         windough = mockWindow();
 
@@ -316,14 +316,6 @@ describe("ClientRenderingWorkflow", function() {
                 });
         });
 
-        it("returns promise of rendered page", function(done) {
-            handlerReturns
-                .then(function(html) {
-                    expect(html).toBe("page was rendered");
-                    done();
-                });
-        });
-
         itCleansUpRouter();
     });
 
@@ -337,21 +329,13 @@ describe("ClientRenderingWorkflow", function() {
             handlerReturns = callAugmentedRouterHandler();
         });
 
-        it("render page", function(done) {
+        it("renders page", function(done) {
             handlerReturns
                 .then(function() {
                     expectRenderFor(expectedView);
                     done();
                 });
 
-        });
-
-        it("returns promise of rendered page", function(done) {
-            handlerReturns
-                .then(function(html) {
-                    expect(html).toBe("page was rendered");
-                    done();
-                });
         });
 
         itCleansUpRouter();

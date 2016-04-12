@@ -59,6 +59,47 @@ describe("Client side rendering order", function() {
         });
     });
 
+    it("maintains a predictable rendering lifecycle for layout AND view on first request erroring", function(done) {
+        var ErrorView = mockRouter.errorViewMapping.viewFor(500);
+
+        spyOn(ErrorView.prototype, "render").and.callFake(function() {
+            renderingOrder.push("error view for route renders");
+        });
+
+        spyOn(ErrorView.prototype, "onDOM").and.callFake(function() {
+            renderingOrder.push("error view enters DOM");
+        });
+
+        function throwsError() {
+            throw "an error";
+        }
+
+        originalHandler = function(layout) {
+            renderingOrder.push("route handler runs");
+
+            layout.customMethod();
+
+            throwsError();
+
+            return expectedView;
+        };
+
+        runFirstRequest().lastly(function() {
+            expect(renderingOrder).toEqual([
+                "layout fetches data",
+                "route handler runs",
+                "layout reattaches",
+                "layout renders",
+                "layout back to normal",
+                "error view for route renders",
+                "layout enters DOM",
+                "error view enters DOM"
+            ]);
+
+            done();
+        });
+    });
+
     it("maintains a predictable rendering lifecycle for layout " +
         "AND view on all other requests when layout does NOT change",
         function(done) {
