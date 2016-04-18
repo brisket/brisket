@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.48.6
+- remove custom layout render implementation
+
 ### 0.48.5
 - fix mock ajax calls take 500ms to finish
 
