@@ -1,9 +1,16 @@
 "use strict";
 
 function mockWindow() {
+    var replace = function() {};
+
+    if (typeof jasmine !== "undefined") {
+        replace = jasmine.createSpy("mockWindow.location.replace");
+    }
+
     return {
         document: {
-            referrer: "theReferrer"
+            referrer: "theReferrer",
+            cookie: "a=b; c=d; e=f; g=h; i=j; k=l; m=n; o=p; q=r; s=t; u=v; w=x; y=z"
         },
         location: {
             protocol: "http:",
@@ -11,7 +18,7 @@ function mockWindow() {
             hostname: "example.com",
             pathname: "/requested/path",
             search: "?some=param&another%5Bparam%5D=value",
-            replace: jasmine.createSpy("mockWindow.location.replace")
+            replace: replace
         },
         navigator: {
             userAgent: "A wonderful computer"
