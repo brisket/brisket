@@ -5,14 +5,22 @@ var catchAjaxCallbackExceptions = require("lib/util/catchAjaxCallbackExceptions"
 describe("catchAjaxCallbackExceptions", function() {
 
     var options;
+    var callbackThatReceivesCorrectParams;
+    var param;
 
     describe("when success, error, complete provided", function() {
 
         beforeEach(function() {
+            param = {};
+
+            callbackThatReceivesCorrectParams = function(param1) {
+                expect(param1).toBe(param);
+            };
+
             options = {
-                success: noop,
-                error: noop,
-                complete: noop
+                success: callbackThatReceivesCorrectParams,
+                error: callbackThatReceivesCorrectParams,
+                complete: callbackThatReceivesCorrectParams
             };
 
             catchAjaxCallbackExceptions(null, null, options, noop);
@@ -28,8 +36,8 @@ describe("catchAjaxCallbackExceptions", function() {
 
         beforeEach(function() {
             options = {
-                success: noop,
-                error: noop
+                success: callbackThatReceivesCorrectParams,
+                error: callbackThatReceivesCorrectParams
             };
 
             catchAjaxCallbackExceptions(null, null, options, noop);
@@ -66,12 +74,13 @@ describe("catchAjaxCallbackExceptions", function() {
 
     function itWrapsCallbackInAPromise(callback) {
         it("wraps " + callback + " in a promise", function(done) {
-            var promise = options[callback]();
+            var promise = options[callback](param);
 
-            promise.then(function() {
-                expect(promise.isFulfilled()).toBe(true);
-                done();
-            });
+            promise
+                .then(done)
+                .catch(function() {
+                    throw new Error("Expected promise to resolve");
+                });
         });
     }
 

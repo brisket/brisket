@@ -26,10 +26,13 @@ describe("Syncing", function() {
             it("returns a rejected promise", function(done) {
                 var sync = Syncing.sync();
 
-                sync.lastly(function() {
-                    expect(sync.isRejected()).toBe(true);
-                    done();
-                });
+                sync
+                    .catch(function() {
+                        done();
+                    })
+                    .then(function() {
+                        throw new Error("Expected promise to reject");
+                    });
             });
 
         });
@@ -43,10 +46,13 @@ describe("Syncing", function() {
             it("returns a fulfilled promise", function(done) {
                 var sync = Syncing.sync();
 
-                sync.lastly(function() {
-                    expect(sync.isFulfilled()).toBe(true);
-                    done();
-                });
+                sync
+                    .finally(function() {
+                        done();
+                    })
+                    .catch(function() {
+                        throw new Error("Expected promise to resolve");
+                    });
             });
 
         });
