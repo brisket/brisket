@@ -6,10 +6,13 @@ describe("ClientApp", function() {
     var Backbone = require("lib/application/Backbone");
     var SetupLinksAndPushState = require("lib/client/SetupLinksAndPushState");
     var ClientRenderingWorkflow = require("lib/client/ClientRenderingWorkflow");
+    var ClientAjax = require("lib/client/ClientAjax");
     var ViewsFromServer = require("lib/viewing/ViewsFromServer");
 
     var clientApp;
     var callOrder;
+    var bootstrappedData;
+    var environmentConfig;
 
     beforeEach(function() {
         callOrder = [];
@@ -26,6 +29,10 @@ describe("ClientApp", function() {
         spyOn(ViewsFromServer, "initialize").and.callFake(function() {
             callOrder.push("ViewsFromServer.initialize");
         });
+
+        spyOn(ClientAjax, "setup").and.callFake(function() {
+            callOrder.push("ClientAjax.setup");
+        });
     });
 
     it("is a type of App", function() {
@@ -36,7 +43,7 @@ describe("ClientApp", function() {
         expect(ClientApp.extend().toString()).toEqual(Backbone.History.extend().toString());
     });
 
-    it("starts without config", function() {
+    it("starts without config", function(done) {
         var startingClientAppWithoutConfig = function() {
             clientApp.start();
         };
@@ -47,7 +54,15 @@ describe("ClientApp", function() {
     describe("when it starts", function() {
 
         beforeEach(function() {
-            clientApp.start();
+            bootstrappedData = {};
+            environmentConfig = {
+                appRoot: "/root"
+            };
+
+            clientApp.start({
+                bootstrappedData: bootstrappedData,
+                environmentConfig: environmentConfig
+            });
         });
 
         it("sets up links and push state", function() {
@@ -55,7 +70,11 @@ describe("ClientApp", function() {
             expectLastCallToBe("SetupLinksAndPushState.start");
         });
 
-        it("initializes views from server", function() {
+        it("sets up client ajax", function(done) {
+            expect(ClientAjax.setup).toHaveBeenCalledWith(bootstrappedData, "/root");
+        });
+
+        it("initializes views from server", function(done) {
             expect(ViewsFromServer.initialize).toHaveBeenCalled();
         });
 
@@ -71,7 +90,7 @@ describe("ClientApp", function() {
             });
         });
 
-        it("sets environment config for client rendering to be passed environmentConfig", function() {
+        it("sets environment config for client rendering to be passed environmentConfig", function(done) {
             expect(ClientRenderingWorkflow.setEnvironmentConfig)
                 .toHaveBeenCalledWith({
                     "made": "in client app spec"

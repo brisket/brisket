@@ -1,9 +1,8 @@
 "use strict";
 
-var DomainLocalStorage = require("../../lib/server/DomainLocalStorage");
-var createDomain = require("domain").create;
-
 describe("DomainLocalStorage", function() {
+    var DomainLocalStorage = require("../../lib/server/DomainLocalStorage");
+    var createDomain = require("domain").create;
 
     describe("middleware", function() {
 
