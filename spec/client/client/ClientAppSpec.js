@@ -43,7 +43,7 @@ describe("ClientApp", function() {
         expect(ClientApp.extend().toString()).toEqual(Backbone.History.extend().toString());
     });
 
-    it("starts without config", function(done) {
+    it("starts without config", function() {
         var startingClientAppWithoutConfig = function() {
             clientApp.start();
         };
@@ -70,11 +70,11 @@ describe("ClientApp", function() {
             expectLastCallToBe("SetupLinksAndPushState.start");
         });
 
-        it("sets up client ajax", function(done) {
+        it("sets up client ajax", function() {
             expect(ClientAjax.setup).toHaveBeenCalledWith(bootstrappedData, "/root");
         });
 
-        it("initializes views from server", function(done) {
+        it("initializes views from server", function() {
             expect(ViewsFromServer.initialize).toHaveBeenCalled();
         });
 
@@ -90,7 +90,7 @@ describe("ClientApp", function() {
             });
         });
 
-        it("sets environment config for client rendering to be passed environmentConfig", function(done) {
+        it("sets environment config for client rendering to be passed environmentConfig", function() {
             expect(ClientRenderingWorkflow.setEnvironmentConfig)
                 .toHaveBeenCalledWith({
                     "made": "in client app spec"

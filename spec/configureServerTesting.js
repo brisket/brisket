@@ -1,9 +1,11 @@
 "use strict";
 
 var Testing = require("../lib/testing/Testing");
+var Deprecated = require("../lib/util/Deprecated");
 
 beforeEach(function() {
     Testing.setup();
+    spyOn(Deprecated, "message");
 });
 
 // ----------------------------------------------------------------------------
