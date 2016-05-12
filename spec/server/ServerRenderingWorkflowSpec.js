@@ -91,7 +91,7 @@ describe("ServerRenderingWorkflow", function() {
         it("calls original handler with params, layoutDelegate, brisketRequest, and brisketResponse", function(done) {
             handlerReturns = callAugmentedRouterHandlerWith("param1", "param2");
 
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expect(originalHandler)
                     .toHaveBeenCalledWith("param1", "param2", jasmine.any(LayoutDelegate), mockServerRequest, mockServerResponse);
                 done();
@@ -111,7 +111,7 @@ describe("ServerRenderingWorkflow", function() {
         it("ensures original handler's scope is bound to router", function(done) {
             handlerReturns = callAugmentedRouterHandler();
 
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expect(fakeRouter.otherMethod).toHaveBeenCalled();
                 done();
             });
@@ -135,14 +135,14 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("does NOT execute the rest of code in the handler", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expect(restOfCodeInTheHandler).not.toHaveBeenCalled();
                 done();
             });
         });
 
         it("does NOT render a View", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expect(ServerRenderer.render).not.toHaveBeenCalled();
                 done();
             });
@@ -186,28 +186,28 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("does NOT render page without View", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expectNotToRender(jasmine.any(Layout), null);
                 done();
             });
         });
 
         it("still renders Layout", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expect(Layout.prototype.render).toHaveBeenCalled();
                 done();
             });
         });
 
         it("renders error view", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expectRenderFor(jasmine.any(Layout), jasmine.any(ErrorView));
                 done();
             });
         });
 
         it("returns 500 status", function(done) {
-            handlerReturns.caught(function(responseForRoute) {
+            handlerReturns.catch(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(500);
                 done();
             });
@@ -226,7 +226,7 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("renders page", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expectRenderFor(jasmine.any(Layout), expectedView);
                 done();
             });
@@ -253,7 +253,7 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("render page", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expectRenderFor(jasmine.any(Layout), expectedView);
                 done();
             });
@@ -283,7 +283,7 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("logs the error", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expect(Errors.notify).toHaveBeenCalledWith(
                     error,
                     mockServerRequest
@@ -311,21 +311,21 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("still renders Layout", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expect(Layout.prototype.render).toHaveBeenCalled();
                 done();
             });
         });
 
         it("renders 404 view", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expectRenderFor(jasmine.any(Layout), jasmine.any(PageNotFoundView));
                 done();
             });
         });
 
         it("returns status of 404", function(done) {
-            handlerReturns.caught(function(responseForRoute) {
+            handlerReturns.catch(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(404);
                 done();
             });
@@ -350,21 +350,21 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("still renders Layout", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expect(Layout.prototype.render).toHaveBeenCalled();
                 done();
             });
         });
 
         it("renders error view", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expectRenderFor(jasmine.any(Layout), jasmine.any(ErrorView));
                 done();
             });
         });
 
         it("returns status of 500", function(done) {
-            handlerReturns.caught(function(responseForRoute) {
+            handlerReturns.catch(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(500);
                 done();
             });
@@ -389,21 +389,21 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("still renders Layout", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expect(Layout.prototype.render).toHaveBeenCalled();
                 done();
             });
         });
 
         it("renders error view", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expectRenderFor(jasmine.any(Layout), jasmine.any(ErrorView));
                 done();
             });
         });
 
         it("returns status of 500", function(done) {
-            handlerReturns.caught(function(responseForRoute) {
+            handlerReturns.catch(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(500);
                 done();
             });
@@ -440,14 +440,14 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("still renders Layout", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expect(Layout.prototype.render).toHaveBeenCalled();
                 done();
             });
         });
 
         it("returns status from view failure", function(done) {
-            handlerReturns.caught(function(responseForRoute) {
+            handlerReturns.catch(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(404);
                 done();
             });
@@ -486,14 +486,14 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("still renders Layout", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expect(Layout.prototype.render).toHaveBeenCalled();
                 done();
             });
         });
 
         it("returns status from layout failure", function(done) {
-            handlerReturns.caught(function(responseForRoute) {
+            handlerReturns.catch(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(404);
                 done();
             });
@@ -516,21 +516,21 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("still renders Layout", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expect(Layout.prototype.render).toHaveBeenCalled();
                 done();
             });
         });
 
         it("renders error view", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expectRenderFor(jasmine.any(Layout), jasmine.any(ErrorView));
                 done();
             });
         });
 
         it("returns status of 500", function(done) {
-            handlerReturns.caught(function(responseForRoute) {
+            handlerReturns.catch(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(500);
                 done();
             });
@@ -570,7 +570,7 @@ describe("ServerRenderingWorkflow", function() {
 
     function itNotifiesAboutError() {
         it("notifies about error", function(done) {
-            callAugmentedRouterHandler().caught(function() {
+            callAugmentedRouterHandler().catch(function() {
                 expect(Errors.notify).toHaveBeenCalledWith(
                     error,
                     mockServerRequest
@@ -583,7 +583,7 @@ describe("ServerRenderingWorkflow", function() {
 
     function itDoesNotRethrowError() {
         it("does NOT rethrow error", function(done) {
-            handlerReturns.caught(function(e) {
+            handlerReturns.catch(function(e) {
                 expect(e).not.toBe(error);
                 done();
             });
@@ -592,7 +592,7 @@ describe("ServerRenderingWorkflow", function() {
 
     function itRethrowsError() {
         it("rethrows error", function(done) {
-            callAugmentedRouterHandler().caught(function(e) {
+            callAugmentedRouterHandler().catch(function(e) {
                 expect(e).toBe(error);
                 done();
             });
@@ -607,14 +607,14 @@ describe("ServerRenderingWorkflow", function() {
             });
 
             it("cleans up layout", function(done) {
-                handlerReturns.lastly(function() {
+                handlerReturns.finally(function() {
                     expect(Layout.prototype.close).toHaveBeenCalled();
                     done();
                 });
             });
 
             it("cleans up router", function(done) {
-                handlerReturns.lastly(function() {
+                handlerReturns.finally(function() {
                     expect(fakeRouter.close).toHaveBeenCalled();
                     done();
                 });

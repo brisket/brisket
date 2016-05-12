@@ -105,7 +105,7 @@ describe("ClientRenderingWorkflow", function() {
             return expectedView;
         };
 
-        callAugmentedRouterHandler().lastly(function() {
+        callAugmentedRouterHandler().finally(function() {
             expect(layoutCommandWasExecuted).toBe(true);
             done();
         });
@@ -169,7 +169,7 @@ describe("ClientRenderingWorkflow", function() {
         });
 
         it("executes layout commands from route handler immediately", function(done) {
-            whenRouteFinished.lastly(function() {
+            whenRouteFinished.finally(function() {
                 expect(layoutCommandWasExecuted).toBe(false);
 
                 expectedView.trigger("event");
@@ -238,14 +238,14 @@ describe("ClientRenderingWorkflow", function() {
         });
 
         it("does NOT execute the rest of code in the handler", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expect(restOfCodeInTheHandler).not.toHaveBeenCalled();
                 done();
             });
         });
 
         it("does NOT render a View", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expect(ClientRenderer.render).not.toHaveBeenCalled();
                 done();
             });
@@ -283,7 +283,7 @@ describe("ClientRenderingWorkflow", function() {
         });
 
         it("does NOT render without View", function(done) {
-            handlerReturns.lastly(function() {
+            handlerReturns.finally(function() {
                 expectNotToRender(null);
                 done();
             });
@@ -968,7 +968,7 @@ describe("ClientRenderingWorkflow", function() {
             it("fires the on route start callback", function(done) {
                 handlerReturns = callAugmentedRouterHandler();
 
-                handlerReturns.lastly(function() {
+                handlerReturns.finally(function() {
                     expect(onRouteStart).toHaveBeenCalledWith(
                         jasmine.any(Layout),
                         mockClientRequest,
@@ -1081,7 +1081,7 @@ describe("ClientRenderingWorkflow", function() {
 
     function itNotifiesAboutError() {
         it("notifies about error", function(done) {
-            handlerReturns.caught(function() {
+            handlerReturns.catch(function() {
                 expect(Errors.notify).toHaveBeenCalledWith(
                     error,
                     mockClientRequest
@@ -1101,13 +1101,13 @@ describe("ClientRenderingWorkflow", function() {
                 }, function() {
                     expect(noError).toBe(false);
                 })
-                .lastly(done);
+                .finally(done);
         });
     }
 
     function itRethrowsError() {
         it("rethrows error", function(done) {
-            handlerReturns.caught(function(e) {
+            handlerReturns.catch(function(e) {
                 expect(e).toBe(error);
                 done();
             });
