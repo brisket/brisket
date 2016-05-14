@@ -648,9 +648,16 @@ describe("ServerRenderingWorkflow", function() {
     }
 
     function callAugmentedRouterHandlerWith() {
-        var handler = ServerRenderingWorkflow.createHandlerFrom(originalHandler);
-        var routeArguments = makeBackboneRouteArguments(arguments);
-        return handler.call(fakeRouter, routeArguments, mockExpressRequest(), environmentConfig, "app/ClientApp");
+        var params = makeBackboneRouteArguments(arguments);
+
+        return ServerRenderingWorkflow.execute(
+            fakeRouter,
+            originalHandler,
+            params,
+            mockExpressRequest(),
+            environmentConfig,
+            "app/ClientApp"
+        );
     }
 
     function errorViewMapping() {

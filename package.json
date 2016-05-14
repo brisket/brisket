@@ -64,8 +64,7 @@
     "./lib/server/ServerRenderingWorkflow.js": false,
     "./lib/server/ServerRequest.js": false,
     "./lib/server/ServerResponse.js": false,
-    "./lib/server/ServerResponseWorkflow.js": false,
-    "./lib/server/ServerRouter.js": false
+    "./lib/server/ServerResponseWorkflow.js": false
   },
   "scripts": {
     "benchmarks": "gulp benchmarks",

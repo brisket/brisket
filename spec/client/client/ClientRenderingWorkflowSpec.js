@@ -1196,9 +1196,8 @@ describe("ClientRenderingWorkflow", function() {
 
     function callAugmentedRouterHandlerWith(handler) {
         var args = Array.prototype.slice.call(arguments, 1);
-        var augmentedHandler = ClientRenderingWorkflow.createHandlerFrom(handler);
 
-        return augmentedHandler.apply(fakeRouter, args.concat(null));
+        return ClientRenderingWorkflow.execute(fakeRouter, handler, args.concat(null));
     }
 
 });

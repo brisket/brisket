@@ -1,8 +1,8 @@
 "use strict";
 
 describe("Router", function() {
-    var Router = require("lib/controlling/Router");
-    var noop = require("lib/util/noop");
+    var Router = require("../../../lib/controlling/Router");
+    var noop = require("../../../lib/util/noop");
 
     var router;
     var error;
