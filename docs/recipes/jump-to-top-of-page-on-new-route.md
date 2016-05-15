@@ -2,7 +2,7 @@ Jump To Top Of Page On New Route
 ================================
 
 ```js
-var RouterBrewery = Brisket.RouterBrewery.makeBreweryWithDefaults({
+var BaseRouter = Brisket.Router.extend({
 
   onRouteComplete: function(layout, request) {
 
@@ -17,7 +17,7 @@ var RouterBrewery = Brisket.RouterBrewery.makeBreweryWithDefaults({
 
 });
 
-var BookRouter = RouterBrewery.create({
+var BookRouter = BaseRouter.extend({
    ...
 });
 
