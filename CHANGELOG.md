@@ -1,6 +1,14 @@
 Changelog
 ==========
 
+### 0.49.0
+- route handlers can call other functions on the same router
+- faster initial route start on client
+- loosen jquery dependency
+- loosen backbone dep
+- loosen qs dependency
+- always set layout tagName as html
+
 ### 0.48.6
 - remove custom layout render implementation
 
