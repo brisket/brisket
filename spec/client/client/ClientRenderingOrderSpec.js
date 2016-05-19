@@ -96,9 +96,7 @@ describe("Client side rendering order", function() {
         });
 
     function runRequest(router) {
-        var handler = ClientRenderingWorkflow.createHandlerFrom(originalHandler);
-
-        return handler.call(router);
+        return ClientRenderingWorkflow.execute(router, originalHandler, []);
     }
 
     function runFirstRequest() {

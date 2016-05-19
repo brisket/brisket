@@ -5,7 +5,7 @@ Let's say you had to build a simple page that only displays the details about a 
 details about the `Book` and then return a `BookView`:
 
 ```js
-var BookRouter = RouterBrewery.create({
+var BookRouter = Brisket.Router.extend({
 
     "book/:id": "book",
 
@@ -31,7 +31,7 @@ var BookView = require("./your/path/to/BookView");
 var CommentCollection = require("./your/path/to/CommentCollection");
 var Promise = require("bluebird");
 
-var BookRouter = RouterBrewery.create({
+var BookRouter = Brisket.Router.extend({
 
   "book/:bookId": "book",
 
@@ -68,7 +68,7 @@ var BookView = require("./your/path/to/BookView");
 var CommentCollection = require("./your/path/to/CommentCollection");
 var Promise = require("bluebird");
 
-var BookRouter = RouterBrewery.create({
+var BookRouter = Brisket.Router.extend({
 
   "book/:bookId": "book",
 

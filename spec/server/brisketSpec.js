@@ -11,6 +11,10 @@ describe("public interface to Brisket", function() {
         expect(Brisket.Routers).toBe(requireFromLib("controlling/Routers"));
     });
 
+    it("exposes Brisket.Router", function() {
+        expect(Brisket.Router).toBe(requireFromLib("controlling/Router"));
+    });
+
     it("exposes Brisket.Controller", function() {
         expect(Brisket.Controller).toBe(requireFromLib("controlling/Controller"));
     });

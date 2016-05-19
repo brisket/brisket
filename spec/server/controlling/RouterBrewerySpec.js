@@ -1,28 +1,13 @@
 "use strict";
 
 describe("RouterBrewery on client", function() {
-    var RouterBrewery = require("lib/controlling/RouterBrewery");
-    var Environment = require("lib/environment/Environment");
-    var BrisketRouter = require("lib/controlling/Router");
+    var RouterBrewery = require("../../../lib/controlling/RouterBrewery");
+    var BrisketRouter = require("../../../lib/controlling/Router");
 
     var ExampleRouter;
     var router;
 
-    beforeEach(function() {
-        spyOn(Environment, "isServer").and.returnValue(false);
-    });
-
     describe("#create", function() {
-
-        it("creates routers that CANNOT be extended the traditional way", function() {
-            createRouter();
-
-            var attemptingToExtendRouterBreweryCreatedRouter = function() {
-                ExampleRouter.extend();
-            };
-
-            expect(attemptingToExtendRouterBreweryCreatedRouter).toThrow();
-        });
 
         it("creates Brisket router", function() {
             createRouter();
@@ -33,7 +18,6 @@ describe("RouterBrewery on client", function() {
     });
 
     describe("#makeBreweryWithDefaults", function() {
-
         var Brewery;
         var defaults;
         var BreweryCreatedRouter;
@@ -54,22 +38,6 @@ describe("RouterBrewery on client", function() {
 
             expect(router.layout).toBe("some layout");
             expect(router.errorViewMapping).toBe("some error view mapping");
-        });
-
-    });
-
-    describe("when Router has a route without a handler", function() {
-
-        it("throws an error", function() {
-            var creatingRouterWithRouteAndMissingHandler = function() {
-                RouterBrewery.create({
-                    routes: {
-                        "routeTo": "missingHandler"
-                    }
-                });
-            };
-
-            expect(creatingRouterWithRouteAndMissingHandler).toThrow();
         });
 
     });

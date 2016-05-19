@@ -7,7 +7,7 @@ If you need to track a page view, use [request.onComplete](../brisket.requestobj
 var ga = require("path/to/GoogleAnalyticsLibrary");
 var BookView = require("path/to/BookView");
 
-var BookRouter = Brisket.RouterBrewery.create({
+var BookRouter = Brisket.Router.extend({
 
   routes: {
     'books/:bookId': 'books'

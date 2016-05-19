@@ -1,12 +1,10 @@
 Brisket Router vs Backbone.Router
 ===============================
 
-Brisket Routers are a little different from a standard Backbone.Router. The differences between the two are the key to making Brisket apps work the same on the client and the server.
+Brisket.Router are a little different from a standard Backbone.Router. The differences between the two are the key to making Brisket apps work the same on the client and the server.
 
 ## Documentation Index
 
-* [What's The Same?](#whats-the-same)
-* [What's Different?](#whats-different)
 * [Returning a View](#returning-a-view)
 * [Handling Errors](#handling-errors)
 * [Specifying a Layout](#specifying-a-layout)
@@ -14,11 +12,6 @@ Brisket Routers are a little different from a standard Backbone.Router. The diff
 * [Set/Update Page Title and Meta Tags](#setupdate-page-title-and-meta-tags)
 * [Executing Code When Routes Begin/End](#executing-code-when-routes-beginend)
 * [Closing a Router](#closing-a-router)
-
-## What's The Same?
-All Brisket Routers created by a [Brisket.RouterBrewery](brisket.routerbrewery.md) extend from Backbone.Router. That means they share all the same features. A Brisket Router can do anything that a Backbone.Router can.
-
-## What's Different?
 
 ### Returning a View
 One of the biggest differences between a Backbone.Router and a Brisket Router is that Brisket Router route handlers return Views. In a typical Backbone app, you would run code to modify the DOM right in the route handlers. In a Brisket app, route handlers should not modify the DOM. Instead they should return a View that should represent the route. Here is an example:
@@ -30,7 +23,7 @@ var Book = Brisket.Model.extend({
 
 var BookView = Brisket.View.extend();
 
-var BookRouter = Brisket.RouterBrewery.create({
+var BookRouter = Brisket.Router.extend({
 
   routes: {
     "books/:id": "book"
@@ -60,7 +53,7 @@ var ErrorViewMapping = Brisket.ErrorViewMapping.create({
   500: ErrorView
 });
 
-var BookRouter = Brisket.RouterBrewery.create({
+var BookRouter = Brisket.Router.extend({
 
   errorViewMapping: ErrorViewMapping,
 
@@ -95,7 +88,7 @@ var ErrorViewMapping = Brisket.ErrorViewMapping.create({
   500: ErrorView
 });
 
-var BookRouter = Brisket.RouterBrewery.create({
+var BookRouter = Brisket.Router.extend({
 
   errorViewMapping: ErrorViewMapping,
 
@@ -128,7 +121,7 @@ var ErrorViewMapping = Brisket.ErrorViewMapping.create({
   500: ErrorView
 });
 
-var BookRouter = Brisket.RouterBrewery.create({
+var BookRouter = Brisket.Router.extend({
 
   errorViewMapping: ErrorViewMapping,
 
@@ -151,7 +144,7 @@ You can specify the Layout for your Router by setting the layout property:
 ```js
 var BookLayout = Brisket.Layout.extend();
 
-var BookRouter = Brisket.RouterBrewery.create({
+var BookRouter = Brisket.Router.extend({
 
   layout: BookLayout,
 
@@ -175,7 +168,7 @@ There are some situations where you what to tell the page's Layout to do somethi
 ```js
 var BookLayout = Brisket.Layout.extend();
 
-var BookRouter = Brisket.RouterBrewery.create({
+var BookRouter = Brisket.Router.extend({
 
   layout: BookLayout,
 
@@ -202,7 +195,7 @@ You may want to set or update the page title and page meta tags when the route h
 
 ```js
 var Metatags = Brisket.Layout.Metatags;
-var BookRouter = Brisket.RouterBrewery.create({
+var BookRouter = Brisket.Router.extend({
 
   routes: {
     "books/:id": "book"
@@ -237,7 +230,7 @@ var Layout = Brisket.Layout.extend({
 You may want to run some code when route handlers fire e.g. make a loading spinny appear and disappear. To set that up, set the `onRouteStart` and `onRouteComplete` properties of your Router. These callbacks will be passed the `layout`:
 
 ```js
-var BookRouter = Brisket.RouterBrewery.create({
+var BookRouter = Brisket.Router.extend({
 
   onRouteStart: function(layout) {
     layout.doSomething();
@@ -268,7 +261,7 @@ In some cases your route handlers may need to be cleaned up e.g. if you bind to 
 var MyAppsEventBus = require("/path/to/my/apps/eventbus");
 var doSomething = function() {};
 
-var BookRouter = Brisket.RouterBrewery.create({
+var BookRouter = Brisket.Router.extend({
 
   routes: {
     "books/:id": "book"
