@@ -18,7 +18,7 @@ function bundle(options) {
     var shouldMinify = settings.minify === true;
     var shouldDebug = !!settings.debug;
 
-    var toBundle = glob.sync(src);
+    var toBundle = files(src);
 
     var bundler = browserify({
         entries: toBundle
@@ -49,7 +49,7 @@ function ignoreModules(ignore, bundler) {
         return;
     }
 
-    var toIgnore = glob.sync(ignore);
+    var toIgnore = files(ignore);
 
     toIgnore.forEach(function(ignoreFile) {
         bundler.ignore(ignoreFile);
@@ -70,7 +70,7 @@ function aliasDirectories(mapDirectories, bundler) {
     Object.keys(mapDirectories).forEach(function(newName) {
         var directory = mapDirectories[newName];
         var toMap = directory + "/**/*.js";
-        var matchedFiles = glob.sync(toMap);
+        var matchedFiles = files(toMap);
 
         matchedFiles.forEach(function(filePath) {
             var scriptName = filePath.split(directory)[1];
@@ -81,6 +81,18 @@ function aliasDirectories(mapDirectories, bundler) {
             });
         });
     });
+}
+
+function files(patterns) {
+    if (!Array.isArray(patterns)) {
+        return glob.sync(patterns);
+    }
+
+    var fileGroups = patterns.map(function(pattern) {
+        return glob.sync(pattern);
+    });
+
+    return Array.prototype.concat.apply([], fileGroups);
 }
 
 module.exports = bundle;

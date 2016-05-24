@@ -6,10 +6,13 @@ describe("ClientApp", function() {
     var Backbone = require("lib/application/Backbone");
     var SetupLinksAndPushState = require("lib/client/SetupLinksAndPushState");
     var ClientRenderingWorkflow = require("lib/client/ClientRenderingWorkflow");
+    var ClientAjax = require("lib/client/ClientAjax");
     var ViewsFromServer = require("lib/viewing/ViewsFromServer");
 
     var clientApp;
     var callOrder;
+    var bootstrappedData;
+    var environmentConfig;
 
     beforeEach(function() {
         callOrder = [];
@@ -25,6 +28,10 @@ describe("ClientApp", function() {
 
         spyOn(ViewsFromServer, "initialize").and.callFake(function() {
             callOrder.push("ViewsFromServer.initialize");
+        });
+
+        spyOn(ClientAjax, "setup").and.callFake(function() {
+            callOrder.push("ClientAjax.setup");
         });
     });
 
@@ -47,12 +54,24 @@ describe("ClientApp", function() {
     describe("when it starts", function() {
 
         beforeEach(function() {
-            clientApp.start();
+            bootstrappedData = {};
+            environmentConfig = {
+                appRoot: "/root"
+            };
+
+            clientApp.start({
+                bootstrappedData: bootstrappedData,
+                environmentConfig: environmentConfig
+            });
         });
 
         it("sets up links and push state", function() {
             expect(SetupLinksAndPushState.start).toHaveBeenCalled();
             expectLastCallToBe("SetupLinksAndPushState.start");
+        });
+
+        it("sets up client ajax", function() {
+            expect(ClientAjax.setup).toHaveBeenCalledWith(bootstrappedData, "/root");
         });
 
         it("initializes views from server", function() {

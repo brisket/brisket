@@ -22,17 +22,16 @@
   },
   "dependencies": {
     "backbone": ">=1.2.3 <=1.3.3",
+    "backbone.nativeajax": "^0.4.3",
     "bluebird": ">=2.0.0",
     "cookie": ">=0.1.2",
     "escape-html": "~1.0.3",
     "express": "4.x",
     "jquery": ">=1.11.1 <3.0.0",
-    "jquery-mockjax": "^2.0.1",
     "jsdom": ">=3.0.0 <8.0.0",
     "qs": ">=2.3.0",
     "request": "^2.60.0",
-    "underscore": "^1.8.3",
-    "xmlhttprequest": "1.7.0"
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "browserify": "^10.2.6",
@@ -55,16 +54,17 @@
   "browser": {
     "./lib/server/AjaxCallsForCurrentRequest.js": false,
     "./lib/server/DomainLocalStorage.js": false,
+    "./lib/server/forwardClientRequestToApi.js": false,
     "./lib/server/Server.js": false,
+    "./lib/server/ServerAjax.js": false,
     "./lib/server/ServerApp.js": false,
-    "./lib/server/ServerConfigure.js": false,
     "./lib/server/ServerDispatcher.js": false,
-    "./lib/server/serverWindow.js": false,
     "./lib/server/ServerRenderer.js": false,
     "./lib/server/ServerRenderingWorkflow.js": false,
     "./lib/server/ServerRequest.js": false,
     "./lib/server/ServerResponse.js": false,
-    "./lib/server/ServerResponseWorkflow.js": false
+    "./lib/server/ServerResponseWorkflow.js": false,
+    "./lib/server/serverWindow.js": false
   },
   "scripts": {
     "benchmarks": "gulp benchmarks",

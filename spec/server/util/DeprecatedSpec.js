@@ -1,20 +1,21 @@
 "use strict";
 
-describe("deprecated", function() {
-    var deprecated = require("lib/util/deprecated");
+describe("Deprecated", function() {
+    var Deprecated = require("../../../lib/util/Deprecated");
 
     beforeEach(function() {
         spyOn(console, "warn");
+        Deprecated.message.and.callThrough();
     });
 
     it("console warns a deprecated message", function() {
-        deprecated("feature is deprecated");
+        Deprecated.message("feature is deprecated");
 
         expect(console.warn).toHaveBeenCalledWith("[DEPRECATED] feature is deprecated");
     });
 
     it("console warns a deprecated message with a help page", function() {
-        deprecated("feature is deprecated", "http://github.com/bloomberg/brisket/issues/11");
+        Deprecated.message("feature is deprecated", "http://github.com/bloomberg/brisket/issues/11");
 
         expect(console.warn).toHaveBeenCalledWith(
             "[DEPRECATED] feature is deprecated. " +

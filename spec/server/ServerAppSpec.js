@@ -1,17 +1,20 @@
 "use strict";
 
-var ServerApp = require("../../lib/server/ServerApp");
-var App = require("../../lib/application/App");
-var ServerDispatcher = require("../../lib/server/ServerDispatcher");
-var Backbone = require("../../lib/application/Backbone");
-
 describe("ServerApp", function() {
+    var ServerApp = require("../../lib/server/ServerApp");
+    var App = require("../../lib/application/App");
+    var ServerDispatcher = require("../../lib/server/ServerDispatcher");
+    var ServerAjax = require("../../lib/server/ServerAjax");
+    var ServerResponse = require("../../lib/server/ServerResponse");
+    var Backbone = require("../../lib/application/Backbone");
 
     var serverApp;
     var fragment;
     var mockRequest;
     var environmentConfig;
     var clientAppRequirePath;
+    var apis;
+    var serverConfig;
 
     beforeEach(function() {
         serverApp = new ServerApp();
@@ -53,6 +56,36 @@ describe("ServerApp", function() {
 
     it("can be extended", function() {
         expect(ServerApp.extend().toString()).toEqual(Backbone.History.extend().toString());
+    });
+
+    describe("when it starts", function() {
+
+        beforeEach(function() {
+            apis = {};
+            serverConfig = {
+                apis: apis
+            };
+            environmentConfig = {
+                appRoot: "/root"
+            };
+
+            spyOn(ServerAjax, "setup");
+            spyOn(ServerResponse, "setAppRoot");
+
+            serverApp.start({
+                serverConfig: serverConfig,
+                environmentConfig: environmentConfig
+            });
+        });
+
+        it("sets up server ajax", function() {
+            expect(ServerAjax.setup).toHaveBeenCalledWith(apis);
+        });
+
+        it("sets app root for server response", function() {
+            expect(ServerResponse.setAppRoot).toHaveBeenCalledWith("/root");
+        });
+
     });
 
 });

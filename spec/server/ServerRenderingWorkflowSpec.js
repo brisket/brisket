@@ -2,7 +2,6 @@
 
 describe("ServerRenderingWorkflow", function() {
     var Backbone = require("../../lib/application/Backbone");
-    var $ = require("../../lib/application/jquery");
     var Promise = require("bluebird");
     var ServerRenderingWorkflow = require("../../lib/server/ServerRenderingWorkflow");
     var ServerRenderer = require("../../lib/server/ServerRenderer");
@@ -22,11 +21,10 @@ describe("ServerRenderingWorkflow", function() {
     var ErrorView;
     var mockServerRequest;
     var mockServerResponse;
+    var mockExpressRequest;
     var error;
 
     beforeEach(function() {
-        Backbone.$ = $;
-
         expectedView = new Backbone.View();
         environmentConfig = {
             "made": "in server rendering spec"
@@ -286,7 +284,7 @@ describe("ServerRenderingWorkflow", function() {
             handlerReturns.lastly(function() {
                 expect(Errors.notify).toHaveBeenCalledWith(
                     error,
-                    mockServerRequest
+                    mockExpressRequest
                 );
                 done();
             });
@@ -573,7 +571,7 @@ describe("ServerRenderingWorkflow", function() {
             callAugmentedRouterHandler().caught(function() {
                 expect(Errors.notify).toHaveBeenCalledWith(
                     error,
-                    mockServerRequest
+                    mockExpressRequest
                 );
 
                 done();
@@ -629,7 +627,7 @@ describe("ServerRenderingWorkflow", function() {
             view,
             environmentConfig,
             "app/ClientApp",
-            ServerRequest.from(mockExpressRequest(), environmentConfig)
+            mockServerRequest
         );
     }
 
@@ -639,7 +637,7 @@ describe("ServerRenderingWorkflow", function() {
             view,
             environmentConfig,
             "app/ClientApp",
-            ServerRequest.from(mockExpressRequest(), environmentConfig)
+            mockServerRequest
         );
     }
 
@@ -650,11 +648,13 @@ describe("ServerRenderingWorkflow", function() {
     function callAugmentedRouterHandlerWith() {
         var params = makeBackboneRouteArguments(arguments);
 
+        mockExpressRequest = makeMockExpressRequest();
+
         return ServerRenderingWorkflow.execute(
             fakeRouter,
             originalHandler,
             params,
-            mockExpressRequest(),
+            mockExpressRequest,
             environmentConfig,
             "app/ClientApp"
         );
@@ -667,7 +667,7 @@ describe("ServerRenderingWorkflow", function() {
         });
     }
 
-    function mockExpressRequest() {
+    function makeMockExpressRequest() {
         return {
             protocol: "http",
             path: "/requested/path",

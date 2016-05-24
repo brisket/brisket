@@ -70,7 +70,11 @@ gulp.task("test-debug-mode", ["bundle-for-debug-mode"], function() {
 
 gulp.task("bundle-for-client", function() {
     return bundle({
-        src: LIB,
+        src: [
+            CONFIGURE_CLIENT_TEST,
+            TEST_HELPERS,
+            CLIENT_TESTS
+        ],
         dest: CLIENT_TEST_BUNDLE,
         alias: {
             "backbone": "./node_modules/backbone/backbone.js",
@@ -83,19 +87,13 @@ gulp.task("bundle-for-client", function() {
             "lib": "./lib",
             "mock": "./spec/mock"
         },
-        ignore: "./lib/server/**/*.js",
         debug: true
     });
 });
 
 gulp.task("test-on-client", ["bundle-for-client"], function() {
     return clientSideJasmine({
-        src: CLIENT_TEST_BUNDLE,
-        specs: [
-            CONFIGURE_CLIENT_TEST,
-            TEST_HELPERS,
-            CLIENT_TESTS
-        ],
+        specs: CLIENT_TEST_BUNDLE,
         vendor: "build_tools/vendor/es5-shim.js"
     });
 });

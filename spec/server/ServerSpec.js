@@ -1,14 +1,12 @@
 "use strict";
 
-var Server = require("../../lib/server/Server");
-var App = require("../../lib/application/App");
-var ServerApp = require("../../lib/server/ServerApp");
-var ServerResponseWorkflow = require("../../lib/server/ServerResponseWorkflow");
-var _ = require("underscore");
-
 describe("Server", function() {
-
-    var API_HOST = "http://localhost:4000";
+    var Server = require("../../lib/server/Server");
+    var App = require("../../lib/application/App");
+    var ServerApp = require("../../lib/server/ServerApp");
+    var ServerResponseWorkflow = require("../../lib/server/ServerResponseWorkflow");
+    var ForwardClientRequest = require("../../lib/server/ForwardClientRequest");
+    var _ = require("underscore");
 
     beforeEach(function() {
         spyOn(ServerApp.prototype, "start");
@@ -31,6 +29,26 @@ describe("Server", function() {
 
             expect(ServerApp.prototype.start).toHaveBeenCalled();
             expect(ServerApp.prototype.start.calls.count()).toBe(1);
+        });
+
+        it("adds a middleware for each api in apis configuration", function() {
+            var apiMiddleware = jasmine.createSpy();
+            var otherApiMiddleware = jasmine.createSpy();
+
+            spyOn(ForwardClientRequest, "toApi").and.callFake(function(apiConfig) {
+                if (apiConfig.host === "http://api.example.com") {
+                    return apiMiddleware;
+                }
+
+                if (apiConfig.host === "http://other-api.example.com") {
+                    return otherApiMiddleware;
+                }
+            });
+
+            var brisketEngine = Server.create(validConfig());
+
+            expectMiddlewareFor(brisketEngine, "api", apiMiddleware);
+            expectMiddlewareFor(brisketEngine, "other-api", otherApiMiddleware);
         });
 
         describe("validating configuration", function() {
@@ -80,16 +98,57 @@ describe("Server", function() {
 
     });
 
-    describe("apiHost", function() {
+    describe("apis", function() {
 
-        it("throws if apiHost is NOT string", function() {
-            function creatingServerWithoutApiHostString() {
+        it("does NOT throw when all apis have host", function() {
+            function creatingServerWithValidApis() {
+                Server.create(validConfig());
+            }
+
+            expect(creatingServerWithValidApis).not.toThrow();
+        });
+
+        it("throws if any api alias does NOT have a valid config", function() {
+            function creatingServerWithApiWithInvalidConfig() {
                 Server.create(validConfigWith({
-                    apiHost: 123
+                    apis: {
+                        "api": "not a valid config"
+                    }
                 }));
             }
 
-            expect(creatingServerWithoutApiHostString).toThrow();
+            expect(creatingServerWithApiWithInvalidConfig).toThrow();
+        });
+
+        it("throws if any api alias does NOT have a valid host", function() {
+            function creatingServerWithApiWithInvalidHost() {
+                Server.create(validConfigWith({
+                    apis: {
+                        "api": {
+                            host: null
+                        }
+                    }
+                }));
+            }
+
+            expect(creatingServerWithApiWithInvalidHost).toThrow();
+        });
+
+    });
+
+    describe("[deprecation] passing apiHost without apis is the same as passing apis.api.host", function() {
+
+        it("throws if apiHost is NOT string", function() {
+            Server.create(validConfigWith({
+                apis: null,
+                apiHost: "http://api.example.com"
+            }));
+
+            expect(objectPassedToServerApp().serverConfig["apis"]).toEqual({
+                "api": {
+                    host: "http://api.example.com"
+                }
+            });
         });
 
     });
@@ -166,8 +225,15 @@ describe("Server", function() {
             expect(objectPassedToServerApp().serverConfig).toHaveKeyValue("some", "data");
         });
 
-        it("exposes apiHost to ServerApp through serverConfig", function() {
-            expect(objectPassedToServerApp().serverConfig).toHaveKeyValue("apiHost", API_HOST);
+        it("exposes apis to ServerApp through serverConfig", function() {
+            expect(objectPassedToServerApp().serverConfig["apis"]).toEqual({
+                "api": {
+                    host: "http://api.example.com"
+                },
+                "other-api": {
+                    host: "http://other-api.example.com"
+                }
+            });
         });
 
     });
@@ -326,7 +392,14 @@ describe("Server", function() {
     function validConfig() {
         return {
             clientAppRequirePath: "app/ClientApp",
-            apiHost: API_HOST,
+            apis: {
+                "api": {
+                    host: "http://api.example.com"
+                },
+                "other-api": {
+                    host: "http://other-api.example.com"
+                }
+            },
             ServerApp: ServerApp,
             environmentConfig: {
                 clientAppUrl: "application.js"
@@ -340,6 +413,31 @@ describe("Server", function() {
 
     function objectPassedToServerApp() {
         return ServerApp.prototype.start.calls.mostRecent().args[0];
+    }
+
+    function expectMiddlewareFor(brisketEngine, api, middleware) {
+        var expressLayers = brisketEngine._router.stack;
+        var matched = {};
+
+        for (var i = expressLayers.length - 1; i !== 0; i--) {
+            var expressLayer = expressLayers[i];
+            var regexp = expressLayer.regexp;
+
+            if (matched[api]) {
+                throw new Error("expected ONLY 1 middleware for " + api + " on brisketEngine");
+            }
+
+            if (
+                regexp.test("/" + api + "/path/to/data") &&
+                !regexp.test("anything else")
+            ) {
+                matched[api] = true;
+                expect(expressLayer.handle).toBe(middleware);
+                return;
+            }
+        }
+
+        throw new Error("expected a middleware for " + api + " on brisketEngine");
     }
 
 });

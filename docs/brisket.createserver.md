@@ -10,17 +10,29 @@ Use Brisket.createServer to create a Brisket express engine that you can use in 
 ## Required Configuration Options
 `createServer` takes parameters so that you can customize your app. Here are the required options:
 
-#### apiHost
-This is the fully qualified path to the api your Brisket app will hit. This value will be prepended to all model and collection urls during server-side requests.
+#### apis
+Use apis configuration to specify the apis that your application will hit:
+
+```js
+apis: {
+    'api': { host: 'http://api.example.com', proxy: 'http://proxy.example.com' }
+    'other-api': { host: 'http://other-api.example.com' }
+}
+```
+
+For each api, you can specify the host and proxy. Brisket automatically adds a middleware (relative to your app's root) for each api to handle client side ajax calls. Your app's `Backbone.Model`s and `Backbone.Collection`s can [fetch data from the apis you specify](modeling.md#fetch-data).
 
 #### clientAppRequirePath
 This option is the path to your ClientApp module. Brisket will use it to find your ClientApp and call start for you on the client.
 
-Here is a valid call to `createServer` with the fewest possible options:
+Here is a valid call to `createServer`:
 
 ```js
 var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000',
+    apis: {
+        'api': { host: 'http://api.example.com', proxy: 'http://proxy.example.com' }
+        'other-api': { host: 'http://other-api.example.com' }
+    },
     clientAppRequirePath: 'app/ClientApp',
     environmentConfig: {
         clientAppUrl: '//www.myapp.com/application.js'
@@ -43,7 +55,9 @@ var ServerApp = Brisket.ServerApp.extend({
 });
 
 var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000',
+    apis: {
+        'api': { host: 'http://api.example.com' }
+    },
     clientAppRequirePath: 'app/ClientApp',
     environmentConfig: {
         clientAppUrl: '//www.myapp.com/application.js'
@@ -68,7 +82,9 @@ var ServerApp = Brisket.ServerApp.extend({
 });
 
 var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000',
+    apis: {
+        'api': { host: 'http://api.example.com' }
+    },
     clientAppRequirePath: 'app/ClientApp',
 
     ServerApp: ServerApp,
@@ -84,7 +100,9 @@ This is the root of your application as far as pushState is concerned. If you de
 
 ```js
 var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000',
+    apis: {
+        'api': { host: 'http://api.example.com' }
+    },
     clientAppRequirePath: 'app/ClientApp',
 
     ServerApp: ServerApp,
@@ -98,7 +116,9 @@ var brisketServer = Brisket.createServer({
 ```js
 // On the server
 var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000',
+    apis: {
+        'api': { host: 'http://api.example.com' }
+    },
     clientAppRequirePath: 'app/ClientApp',
 
     ServerApp: ServerApp,
@@ -114,7 +134,9 @@ var brisketServer = Brisket.createServer({
 
 ```js
 var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000',
+    apis: {
+        'api': { host: 'http://api.example.com' }
+    },
     clientAppRequirePath: 'app/ClientApp',
     environmentConfig: {
         clientAppUrl: '//www.myapp.com/application.js'
@@ -136,7 +158,9 @@ var ServerApp = Brisket.ServerApp.extend({
 });
 
 var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000',
+    apis: {
+        'api': { host: 'http://api.example.com' }
+    },
     clientAppRequirePath: 'app/ClientApp',
 
     ServerApp: ServerApp,
@@ -159,7 +183,9 @@ Set `debug` to true to enable instrumentation with [Backbone Debugger](https://c
 
 ```
 var brisketServer = Brisket.createServer({
-    apiHost: 'http://localhost:4000',
+    apis: {
+        'api': { host: 'http://api.example.com' }
+    },
     clientAppRequirePath: 'app/ClientApp',
     debug: true
 });

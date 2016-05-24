@@ -3,7 +3,7 @@
 describe("StringTemplateAdapter", function() {
     var StringTemplateAdapter = require("../../../lib/templating/StringTemplateAdapter");
     var View = require("../../../lib/viewing/View");
-    var Model = require("../../../lib/modeling/Model");
+    var Model = require("backbone").Model;
 
     var view;
     var ExampleView;
