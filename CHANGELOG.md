@@ -1,6 +1,10 @@
 Changelog
 ==========
 
+### 0.50.0
+- overhaul ajax #287 (thanks @zomaish, @claquesous)
+- release references to view elements from server
+
 ### 0.49.0
 - route handlers can call other functions on the same router
 - faster initial route start on client
