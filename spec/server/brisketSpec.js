@@ -7,24 +7,8 @@ describe("public interface to Brisket", function() {
         expect(Brisket.App).toBe(requireFromLib("application/App"));
     });
 
-    it("exposes Brisket.RouterBrewery", function() {
-        expect(Brisket.RouterBrewery).toBe(requireFromLib("controlling/RouterBrewery"));
-    });
-
     it("exposes Brisket.Router", function() {
         expect(Brisket.Router).toBe(requireFromLib("controlling/Router"));
-    });
-
-    it("exposes Brisket.Controller", function() {
-        expect(Brisket.Controller).toBe(requireFromLib("controlling/Controller"));
-    });
-
-    it("exposes Brisket.Model", function() {
-        expect(Brisket.Model).toBe(requireFromLib("modeling/Model"));
-    });
-
-    it("exposes Brisket.Collection", function() {
-        expect(Brisket.Collection).toBe(requireFromLib("modeling/Collection"));
     });
 
     it("exposes Brisket.View", function() {
