@@ -54,8 +54,6 @@ Now that you have a working app, check out our [Recipes](docs/recipes/README.md)
 * [**Brisket.App**](docs/brisket.app.md): Initialize your application with Brisket.App.
 * [**Brisket.createServer**](docs/brisket.createserver.md): A function that returns an express engine that you can use in your application to run the server.
 * [**Brisket.Router**](docs/brisket.router.md): An implementation of Backbone.Router that routes on client and server.
-* [**Brisket.Model**](docs/brisket.model.md): Our version of a Backbone.Model that knows how to sync on the server and the client.
-* [**Brisket.Collection**](docs/brisket.collection.md): Our version of a Backbone.Collection that knows how to sync on the server and the client.
 * [**Brisket.Events**](docs/brisket.events.md): A proxy to Backbone.Events that exposes a noop on the server to avoid server-side memory leaks.
 * [**Brisket.View**](docs/brisket.view.md): Our version of a Backbone.View that allows support for some of the core features - reattaching views, child view management, memory management, etc.
 * [**Brisket.Layout**](docs/brisket.layout.md): A specialized View that handles meta tags, page title, etc.

@@ -1,7 +1,6 @@
 "use strict";
 
 var Brisket = require("../lib/brisket");
-var RouterBrewery = Brisket.RouterBrewery;
 var ServerDispatcher = require("../lib/server/ServerDispatcher");
 
 Brisket.Testing.setup();
@@ -14,7 +13,7 @@ var Layout = Brisket.Layout.extend({
 
 });
 
-var Router = RouterBrewery.create({
+var Router = Brisket.Router.extend({
 
     layout: Layout,
 
