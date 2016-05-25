@@ -124,7 +124,7 @@ var MustacheTemplateAdapter = TemplateAdapter.extend({
 
 });
 
-var Model = Brisket.Model.extend({
+var Model = Backbone.Model.extend({
     url: '/api/model' // returns { some: "modeldata" }
 });
 
@@ -176,7 +176,7 @@ As you navigate between routes, your route handlers may modify the Layout. Imple
 ```js
 var SomeView = Brisket.View.extend();
 
-var SpecialRouter = Brisket.RouterBrewery.create({
+var SpecialRouter = Brisket.Router.extend({
 
     routes: {
         "special": "handleSpecial"
