@@ -74,6 +74,8 @@ describe("ClientRenderingWorkflow", function() {
         spyOn(ClientRequest, "from").and.callFake(function() {
             mockClientRequest = originalClientRequestFrom.apply(null, arguments);
 
+            spyOn(mockClientRequest, "off").and.callThrough();
+
             return mockClientRequest;
         });
         spyOn(ClientResponse, "from").and.returnValue(mockClientResponse);
@@ -179,6 +181,13 @@ describe("ClientRenderingWorkflow", function() {
             });
         });
 
+        it("unbinds request onComplete handlers", function(done) {
+            whenRouteFinished.lastly(function() {
+                expect(mockClientRequest.off).toHaveBeenCalled();
+                done();
+            });
+        });
+
     });
 
     describe("whenever handler is called", function() {
@@ -251,6 +260,7 @@ describe("ClientRenderingWorkflow", function() {
             });
         });
 
+        itUnbindsRequestOnCompleteHandlers();
         itCleansUpRouter();
     });
 
@@ -324,6 +334,7 @@ describe("ClientRenderingWorkflow", function() {
                 });
         });
 
+        itUnbindsRequestOnCompleteHandlers();
         itCleansUpRouter();
     });
 
@@ -354,6 +365,7 @@ describe("ClientRenderingWorkflow", function() {
                 });
         });
 
+        itUnbindsRequestOnCompleteHandlers();
         itCleansUpRouter();
     });
 
@@ -379,6 +391,7 @@ describe("ClientRenderingWorkflow", function() {
             });
         });
 
+        itUnbindsRequestOnCompleteHandlers();
         itResetsLayout();
         itCleansUpRouter();
         itDoesNotRethrowError();
@@ -414,6 +427,7 @@ describe("ClientRenderingWorkflow", function() {
             });
         });
 
+        itUnbindsRequestOnCompleteHandlers();
         itResetsLayout();
         itCleansUpRouter();
         itDoesNotRethrowError();
@@ -449,6 +463,7 @@ describe("ClientRenderingWorkflow", function() {
             });
         });
 
+        itUnbindsRequestOnCompleteHandlers();
         itResetsLayout();
         itCleansUpRouter();
         itDoesNotRethrowError();
@@ -484,6 +499,7 @@ describe("ClientRenderingWorkflow", function() {
             });
         });
 
+        itUnbindsRequestOnCompleteHandlers();
         itResetsLayout();
         itCleansUpRouter();
         itDoesNotRethrowError();
@@ -518,6 +534,7 @@ describe("ClientRenderingWorkflow", function() {
             });
         });
 
+        itUnbindsRequestOnCompleteHandlers();
         itResetsLayout();
         itCleansUpRouter();
         itDoesNotRethrowError();
@@ -1141,6 +1158,15 @@ describe("ClientRenderingWorkflow", function() {
                     expect(Layout.prototype.close).not.toHaveBeenCalled();
                     done();
                 });
+        });
+    }
+
+    function itUnbindsRequestOnCompleteHandlers() {
+        it("unbinds request.onComplete handlers", function(done) {
+            handlerReturns.lastly(function() {
+                expect(mockClientRequest.off).toHaveBeenCalled();
+                done();
+            });
         });
     }
 
