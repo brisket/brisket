@@ -1,6 +1,10 @@
 Changelog
 ==========
 
+### 0.50.1
+- fix server ajax fails with bluebird 2
+- fix request.onComplete handlers not cleaned up
+
 ### 0.50.0
 - overhaul ajax #287 (thanks @zomaish, @claquesous)
 - release references to view elements from server
