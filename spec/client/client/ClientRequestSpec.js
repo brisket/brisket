@@ -54,6 +54,40 @@ describe("ClientRequest", function() {
             expect(clientRequest.referrer).toEqual("theReferrer");
         });
 
+        describe("when route registers work on complete", function() {
+            var onCompleteHandler1;
+            var onCompleteHandler2;
+
+            beforeEach(function() {
+                onCompleteHandler1 = jasmine.createSpy();
+                onCompleteHandler2 = jasmine.createSpy();
+
+                clientRequest.onComplete(onCompleteHandler1);
+                clientRequest.onComplete(onCompleteHandler2);
+            });
+
+            it("does NOT call handlers more than once", function() {
+                clientRequest.complete();
+
+                expect(onCompleteHandler1.calls.count()).toBe(1);
+                expect(onCompleteHandler2.calls.count()).toBe(1);
+
+                clientRequest.complete();
+
+                expect(onCompleteHandler1.calls.count()).toBe(1);
+                expect(onCompleteHandler2.calls.count()).toBe(1);
+            });
+
+            it("unbinds onComplete handlers", function() {
+                clientRequest.off();
+                clientRequest.complete();
+
+                expect(onCompleteHandler1).not.toHaveBeenCalled();
+                expect(onCompleteHandler2).not.toHaveBeenCalled();
+            });
+
+        });
+
         describe("when it is the first request", function() {
 
             beforeEach(function() {
