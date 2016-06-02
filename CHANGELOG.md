@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.51.0
+- no longer automatically console.error errors
+
 ### 0.50.1
 - fix server ajax fails with bluebird 2
 - fix request.onComplete handlers not cleaned up
