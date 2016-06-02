@@ -54,7 +54,7 @@
   "browser": {
     "./lib/server/AjaxCallsForCurrentRequest.js": false,
     "./lib/server/DomainLocalStorage.js": false,
-    "./lib/server/forwardClientRequestToApi.js": false,
+    "./lib/server/ForwardClientRequest.js": false,
     "./lib/server/Server.js": false,
     "./lib/server/ServerAjax.js": false,
     "./lib/server/ServerApp.js": false,
