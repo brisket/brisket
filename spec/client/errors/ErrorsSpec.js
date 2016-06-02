@@ -8,8 +8,6 @@ describe("Errors", function() {
     var error;
 
     beforeEach(function() {
-        spyOn(console, "error");
-
         eventHandler = jasmine.createSpy("event-handler");
         mockRequest = {};
         Errors.onError(eventHandler);
@@ -19,10 +17,6 @@ describe("Errors", function() {
 
         beforeEach(function() {
             Errors.notify("there was an error", mockRequest);
-        });
-
-        it("console.errors a string", function() {
-            expect(console.error).toHaveBeenCalledWith("there was an error");
         });
 
         it("calls event handler with string", function() {
@@ -40,12 +34,6 @@ describe("Errors", function() {
             Errors.notify({
                 some: "object"
             }, mockRequest);
-        });
-
-        it("console.errors objects", function() {
-            expect(console.error.calls.mostRecent().args[0]).toEqual({
-                some: "object"
-            });
         });
 
         it("calls event handler with object", function() {
@@ -67,10 +55,6 @@ describe("Errors", function() {
                 Errors.notify(error, mockRequest);
             });
 
-            it("console.errors the error's stack trace", function() {
-                expect(console.error).toHaveBeenCalledWith(error.stack);
-            });
-
             it("calls event handler with error", function() {
                 expect(eventHandler).toHaveBeenCalledWith(
                     error,
@@ -85,10 +69,6 @@ describe("Errors", function() {
             beforeEach(function() {
                 error = errorWithoutStack();
                 Errors.notify(error, mockRequest);
-            });
-
-            it("console.errors the error", function() {
-                expect(console.error).toHaveBeenCalledWith(error);
             });
 
             it("calls event handler with error", function() {
