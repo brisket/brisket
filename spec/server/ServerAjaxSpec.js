@@ -33,6 +33,44 @@ describe("ServerAjax", function() {
             });
         });
 
+        describe("apis alias has slashes", function() {
+            beforeEach(function() {
+                ServerAjax.setup({
+                    "api": {
+                        host: "http://api.example.com",
+                        proxy: "http://proxy.example.com"
+                    },
+                    "markets/api": {
+                        host: "http://markets.example.com"
+                    }
+                });
+            });
+
+            it("sends request to the correct api", function() {
+                givenApiRequestWillSucceed();
+
+                Backbone.ajax({
+                    url: "/markets/api/path/to/data"
+                });
+
+                thenRequestMadeWith({
+                    url: "http://markets.example.com/path/to/data",
+                    proxy: null,
+                    method: "GET"
+                });
+
+                Backbone.ajax({
+                    url: "/api/path/to/data"
+                });
+
+                thenRequestMadeWith({
+                    url: "http://api.example.com/path/to/data",
+                    proxy: "http://proxy.example.com",
+                    method: "GET"
+                });
+            });
+        });
+
         it("sends request to the correct api", function() {
             givenApiRequestWillSucceed();
 
