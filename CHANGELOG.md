@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.51.1
+- Support API Aliases with slashes
+
 ### 0.51.0
 - no longer automatically console.error errors
 
