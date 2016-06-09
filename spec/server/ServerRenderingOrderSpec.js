@@ -30,7 +30,7 @@ describe("Server side rendering order", function() {
     });
 
     it("maintains a predictable rendering lifecycle for layout AND view on first request", function(done) {
-        runRequest().lastly(function() {
+        runRequest().finally(function() {
             expect(renderingOrder).toEqual([
                 "layout fetches data",
                 "route handler runs",

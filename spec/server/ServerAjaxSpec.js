@@ -240,21 +240,21 @@ describe("ServerAjax", function() {
     });
 
     function givenApiRequestWillSucceed() {
-        spyOn(Testable, "requestPromise").and.returnValue(Promise.resolve([{
+        spyOn(Testable, "requestPromise").and.returnValue(Promise.resolve({
             statusCode: 200,
             body: JSON.stringify({
                 some: "data"
             })
-        }]));
+        }));
     }
 
     function givenApiRequestWillFail() {
-        spyOn(Testable, "requestPromise").and.returnValue(Promise.resolve([{
+        spyOn(Testable, "requestPromise").and.returnValue(Promise.resolve({
             statusCode: 500,
             body: JSON.stringify({
                 error: "reason"
             })
-        }]));
+        }));
     }
 
     function thenAjaxCallIsRecorded(originalUrl, queryParams, data) {
