@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.51.2
+- Update to allow HTML in addition to JSON response
+
 ### 0.51.1
 - Support API Aliases with slashes
 
