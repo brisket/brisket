@@ -608,20 +608,6 @@ describe("RenderableView", function() {
 
         });
 
-        describe("when close event is triggered and enterDOM is called again", function() {
-
-            beforeEach(function() {
-                view.enterDOM();
-                view.trigger("close");
-                view.enterDOM();
-            });
-
-            it("invokes onDOM twice", function() {
-                expect(view.onDOM.calls.count()).toBe(2);
-            });
-
-        });
-
     });
 
     var WithLogic = {
