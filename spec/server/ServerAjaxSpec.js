@@ -176,6 +176,22 @@ describe("ServerAjax", function() {
                 .finally(done);
         });
 
+        it("calls success callback with returned non-JSON data when api request succeeds", function(done) {
+            givenApiRequestWillSucceedNonJSON();
+
+            Backbone.ajax({
+                    url: "/api/path/to/data",
+                    success: successCallback,
+                    error: errorCallback,
+                })
+                .then(function() {
+                    expect(successCallback).toHaveBeenCalledWith("data");
+                    expect(errorCallback).not.toHaveBeenCalled();
+                    thenAjaxCallIsRecorded("/api/path/to/data", undefined, "data");
+                })
+                .finally(done);
+        });
+
         it("calls error callback with returned data when api request succceeds", function(done) {
             givenApiRequestWillFail();
 
@@ -239,9 +255,22 @@ describe("ServerAjax", function() {
 
     });
 
+    function givenApiRequestWillSucceedNonJSON() {
+        spyOn(Testable, "requestPromise").and.returnValue(Promise.resolve([{
+            statusCode: 200,
+            headers: {
+                "content-type": "text/html"
+            },
+            body: "data"
+        }]));
+    }
+
     function givenApiRequestWillSucceed() {
         spyOn(Testable, "requestPromise").and.returnValue(Promise.resolve([{
             statusCode: 200,
+            headers: {
+                "content-type": "application/json"
+            },
             body: JSON.stringify({
                 some: "data"
             })
@@ -251,6 +280,9 @@ describe("ServerAjax", function() {
     function givenApiRequestWillFail() {
         spyOn(Testable, "requestPromise").and.returnValue(Promise.resolve([{
             statusCode: 500,
+            headers: {
+                "content-type": "application/json"
+            },
             body: JSON.stringify({
                 error: "reason"
             })
