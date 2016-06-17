@@ -43,7 +43,7 @@ describe("Client side rendering order", function() {
     });
 
     it("maintains a predictable rendering lifecycle for layout AND view on first request", function(done) {
-        runFirstRequest().lastly(function() {
+        runFirstRequest().finally(function() {
             expect(renderingOrder).toEqual([
                 "layout fetches data",
                 "route handler runs",
@@ -62,7 +62,7 @@ describe("Client side rendering order", function() {
     it("maintains a predictable rendering lifecycle for layout " +
         "AND view on all other requests when layout does NOT change",
         function(done) {
-            runAnotherRequestWhereLayoutDoesntChange().lastly(function() {
+            runAnotherRequestWhereLayoutDoesntChange().finally(function() {
                 expect(renderingOrder).toEqual([
                     "route handler runs",
                     "layout back to normal",
@@ -78,7 +78,7 @@ describe("Client side rendering order", function() {
     it("maintains a predictable rendering lifecycle for layout " +
         "AND view on all other requests when layout changes",
         function(done) {
-            runAnotherRequestWhereLayoutChanges().lastly(function() {
+            runAnotherRequestWhereLayoutChanges().finally(function() {
                 expect(renderingOrder).toEqual([
                     "layout fetches data",
                     "route handler runs",

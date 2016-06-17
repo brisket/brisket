@@ -213,7 +213,7 @@ describe("ServerResponseWorkflow", function() {
         });
 
         return sendResponse()
-            .lastly(expectThings);
+            .finally(expectThings);
     }
 
     function whenAppHandlesError(expectThings) {
@@ -223,7 +223,7 @@ describe("ServerResponseWorkflow", function() {
         });
 
         return sendResponse()
-            .lastly(expectThings);
+            .finally(expectThings);
     }
 
     function whenAppCannotHandleError(expectThings) {
@@ -231,7 +231,7 @@ describe("ServerResponseWorkflow", function() {
         whenContentIsReturned = Promise.reject(error);
 
         return sendResponse()
-            .lastly(expectThings);
+            .finally(expectThings);
     }
 
     function redirectWithStatus(status, destination) {

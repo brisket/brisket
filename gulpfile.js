@@ -79,6 +79,7 @@ gulp.task("bundle-for-client", function() {
         alias: {
             "backbone": "./node_modules/backbone/backbone.js",
             "underscore": "./node_modules/underscore/underscore.js",
+            "promise": "./node_modules/promise/index.js",
             "bluebird": "./node_modules/bluebird/js/release/bluebird.js",
             "jquery": "./node_modules/jquery/dist/jquery.js",
             "cookie": "./node_modules/cookie/index.js"

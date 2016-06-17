@@ -266,7 +266,7 @@ describe("ServerAjax", function() {
     }
 
     function givenApiRequestWillSucceed() {
-        spyOn(Testable, "requestPromise").and.returnValue(Promise.resolve([{
+        spyOn(Testable, "requestPromise").and.returnValue(Promise.resolve({
             statusCode: 200,
             headers: {
                 "content-type": "application/json"
@@ -274,11 +274,11 @@ describe("ServerAjax", function() {
             body: JSON.stringify({
                 some: "data"
             })
-        }]));
+        }));
     }
 
     function givenApiRequestWillFail() {
-        spyOn(Testable, "requestPromise").and.returnValue(Promise.resolve([{
+        spyOn(Testable, "requestPromise").and.returnValue(Promise.resolve({
             statusCode: 500,
             headers: {
                 "content-type": "application/json"
@@ -286,7 +286,7 @@ describe("ServerAjax", function() {
             body: JSON.stringify({
                 error: "reason"
             })
-        }]));
+        }));
     }
 
     function thenAjaxCallIsRecorded(originalUrl, queryParams, data) {
