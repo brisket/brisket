@@ -1,9 +1,10 @@
 "use strict";
 
-var View = require("lib/viewing/View");
-var Backbone = require("lib/application/Backbone");
-
 describe("View", function() {
+    var View = require("lib/viewing/View");
+    var Backbone = require("lib/application/Backbone");
+
+    var view;
 
     it("is an extension of Backbone.View", function() {
         expect(View.prototype instanceof Backbone.View).toBe(true);
@@ -15,6 +16,24 @@ describe("View", function() {
 
     it("exposes undelegateEvents from Backbone.View", function() {
         expect(View.prototype.undelegateEvents).toBe(Backbone.View.prototype.undelegateEvents);
+    });
+
+    describe("when it closes, then enterDOM is called again", function() {
+
+        beforeEach(function() {
+            view = new View();
+
+            spyOn(view, "onDOM");
+
+            view.enterDOM();
+            view.close();
+            view.enterDOM();
+        });
+
+        it("invokes onDOM twice", function() {
+            expect(view.onDOM.calls.count()).toBe(2);
+        });
+
     });
 
 });
