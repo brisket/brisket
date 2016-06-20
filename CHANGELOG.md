@@ -1,6 +1,10 @@
 Changelog
 ==========
 
+### 0.52.0
+- use promise instead of bluebird
+- works with jquery 3.x
+
 ### 0.51.2
 - Update to allow HTML in addition to JSON response
 
