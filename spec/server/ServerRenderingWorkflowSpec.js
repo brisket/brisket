@@ -53,7 +53,8 @@ describe("ServerRenderingWorkflow", function() {
         spyOn(ServerRenderer, "render").and.returnValue("page was rendered");
 
         mockServerRequest = {
-            id: "mockServerRequest"
+            id: "mockServerRequest",
+            host: "mockHost"
         };
 
         mockServerResponse = new ServerResponse();
@@ -73,6 +74,17 @@ describe("ServerRenderingWorkflow", function() {
                 done();
             }
 
+        });
+
+        handlerReturns = callAugmentedRouterHandler();
+    });
+
+    it("passes request as option to layout", function(done) {
+        fakeRouter.layout = Layout.extend({
+            initialize: function(options) {
+                expect(options.request.host).toEqual("mockHost");
+                done();
+            }
         });
 
         handlerReturns = callAugmentedRouterHandler();
