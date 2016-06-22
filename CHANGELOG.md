@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.52.1
+- Pass options to layout in rendering workflow
+
 ### 0.52.0
 - use promise instead of bluebird
 - works with jquery 3.x
