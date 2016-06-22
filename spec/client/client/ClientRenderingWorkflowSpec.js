@@ -144,6 +144,17 @@ describe("ClientRenderingWorkflow", function() {
 
     });
 
+    it("passes request as option to layout", function(done) {
+        fakeRouter.layout = Layout.extend({
+            initialize: function(options) {
+                expect(options.request.host).toEqual("localhost:8000");
+                done();
+            }
+        });
+
+        handlerReturns = callAugmentedRouterHandler();
+    });
+
     describe("when route has finished", function() {
         var layoutCommandWasExecuted;
         var whenRouteFinished;
