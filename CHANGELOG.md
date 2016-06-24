@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 0.52.2
+- Revert "works with jquery 3.x"
+
 ### 0.52.1
 - Pass options to layout in rendering workflow
 
