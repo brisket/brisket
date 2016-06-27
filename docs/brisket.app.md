@@ -105,7 +105,9 @@ import { createServer } from 'brisket';
 require("./initialize");
 
 const brisketServer = createServer({
-    apiHost: 'http://localhost:4000',
+    apis: {
+        host: 'http://api.example.com'
+    },
 
     environmentConfig: {
         data: 'data'
