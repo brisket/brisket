@@ -1,8 +1,8 @@
-Brisket
+Brisket 0.x branch
 =====
-[![Build Status](https://travis-ci.org/bloomberg/brisket.svg?branch=master)](https://travis-ci.org/bloomberg/brisket) [![Code Climate](https://codeclimate.com/github/bloomberg/brisket/badges/gpa.svg)](https://codeclimate.com/github/bloomberg/brisket)
+**The Brisket 0.x series is no longer the current major version. Check out [Releases](https://github.com/bloomberg/brisket/releases) to find the latest version of Brisket.**
 
-For changes see the [Changelog](CHANGELOG.md)
+For 0.x changes see the [Changelog](CHANGELOG.md)
 
 ## About Brisket
 Brisket is a framework for building single page web apps using isomorphic JavaScript. A Brisket app is both a traditional web site AND a single page web application at the same time. Brisket provides the tools that you need to spend your time focusing on your application's logic rather than on "what environment is my code running in?".
@@ -19,7 +19,7 @@ npm install -g yo
 To install generator-brisket from npm, run:
 
 ```bash
-npm install -g generator-brisket
+npm install -g generator-brisket@0
 ```
 
 Create a directory for your app:
