@@ -638,7 +638,6 @@ describe("ServerRenderingWorkflow", function() {
             layout,
             view,
             environmentConfig,
-            "app/ClientApp",
             mockServerRequest
         );
     }
@@ -648,7 +647,6 @@ describe("ServerRenderingWorkflow", function() {
             layout,
             view,
             environmentConfig,
-            "app/ClientApp",
             mockServerRequest
         );
     }
@@ -667,8 +665,7 @@ describe("ServerRenderingWorkflow", function() {
             originalHandler,
             params,
             mockExpressRequest,
-            environmentConfig,
-            "app/ClientApp"
+            environmentConfig
         );
     }
 

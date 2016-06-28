@@ -22,48 +22,22 @@ apis: {
 
 For each api, you can specify the host and proxy. Brisket automatically adds a middleware (relative to your app's root) for each api to handle client side ajax calls. Your app's `Backbone.Model`s and `Backbone.Collection`s can [fetch data from the apis you specify](modeling.md#fetch-data).
 
-#### clientAppRequirePath
-This option is the path to your ClientApp module. Brisket will use it to find your ClientApp and call start for you on the client.
-
-Here is a valid call to `createServer`:
-
-```js
-var brisketServer = Brisket.createServer({
-    apis: {
-        'api': { host: 'http://api.example.com', proxy: 'http://proxy.example.com' }
-        'other-api': { host: 'http://other-api.example.com' }
-    },
-    clientAppRequirePath: 'app/ClientApp',
-    environmentConfig: {
-        clientAppUrl: '//www.myapp.com/application.js'
-    }
-});
-```
-
 ## Optional Configuration Options
 
 #### ServerApp
 Use this setting to tell your Brisket server which ServerApp to use:
 
 ```js
-var ServerApp = Brisket.ServerApp.extend({
+var App = Brisket.App;
 
-    start: function(options) {
-        var environmentConfig = options.environmentConfig;
-    }
-
+App.addServerInitializer(function(options) {
+    var environmentConfig = options.environmentConfig;
 });
 
 var brisketServer = Brisket.createServer({
     apis: {
         'api': { host: 'http://api.example.com' }
-    },
-    clientAppRequirePath: 'app/ClientApp',
-    environmentConfig: {
-        clientAppUrl: '//www.myapp.com/application.js'
     }
-
-    ServerApp: ServerApp
 });
 ```
 
@@ -73,24 +47,19 @@ If you do not pass in a ServerApp, Brisket.ServerApp will be used.
 `environmentConfig` is a hash of key/values that will be available to both your ClientApp and ServerApp via the start method. In both Apps, `environmentConfig` will be available as `options.environmentConfig`:
 
 ```js
-var ServerApp = Brisket.ServerApp.extend({
+var App = Brisket.App;
 
-    start: function(options) {
-        var environmentConfig = options.environmentConfig;
-    }
-
+App.addServerInitializer(function(options) {
+    var environmentConfig = options.environmentConfig;
 });
 
 var brisketServer = Brisket.createServer({
     apis: {
         'api': { host: 'http://api.example.com' }
     },
-    clientAppRequirePath: 'app/ClientApp',
 
-    ServerApp: ServerApp,
     environmentConfig: {
         some: 'data',
-        clientAppUrl: '//www.myapp.com/application.js'
     }
 });
 ```
@@ -103,76 +72,31 @@ var brisketServer = Brisket.createServer({
     apis: {
         'api': { host: 'http://api.example.com' }
     },
-    clientAppRequirePath: 'app/ClientApp',
 
-    ServerApp: ServerApp,
     environmentConfig: { appRoot: '/path/to/app/' }
 });
 ```
-
-#### environmentConfig.clientAppUrl
-`environmentConfig.clientAppUrl` is the location of your bundled javascript which Brisket will bootstrap in the browser. Note that this is a required field.
-
-```js
-// On the server
-var brisketServer = Brisket.createServer({
-    apis: {
-        'api': { host: 'http://api.example.com' }
-    },
-    clientAppRequirePath: 'app/ClientApp',
-
-    ServerApp: ServerApp,
-    environmentConfig: {
-        appRoot: '/path/to/app/',
-        clientAppUrl: '//www.myapp.com/application.js'
-    }
-});
-```
-
-#### environmentConfig.startClientAppAsync
-`environmentConfig.startClientAppAsync` if set to a true will bootstrap the client application in the browser asynchronously. The default is synchronous
-
-```js
-var brisketServer = Brisket.createServer({
-    apis: {
-        'api': { host: 'http://api.example.com' }
-    },
-    clientAppRequirePath: 'app/ClientApp',
-    environmentConfig: {
-        clientAppUrl: '//www.myapp.com/application.js'
-    }
-});
-```
-
 
 #### serverConfig
 `serverConfig` is a hash of key/values that will **ONLY** be available to your ServerApp via the start method. In the ServerApp, `serverConfig` will be available as `options.serverConfig`:
 
 ```js
-var ServerApp = Brisket.ServerApp.extend({
+var App = Brisket.App;
 
-    start: function(options) {
-        var environmentConfig = options.environmentConfig;
-    }
-
+App.addServerInitializer(function(options) {
+    var environmentConfig = options.environmentConfig;
 });
 
 var brisketServer = Brisket.createServer({
     apis: {
         'api': { host: 'http://api.example.com' }
     },
-    clientAppRequirePath: 'app/ClientApp',
 
-    ServerApp: ServerApp,
     serverConfig: { some: 'data' }
 });
 
-var ClientApp = Brisket.ClientApp.extend({
-
-    start: function(options) {
-        console.log(options.serverConfig); // undefined
-    }
-
+App.addClientInitializer(function(options) {
+    console.log(options.serverConfig); // undefined
 });
 ```
 
@@ -186,7 +110,6 @@ var brisketServer = Brisket.createServer({
     apis: {
         'api': { host: 'http://api.example.com' }
     },
-    clientAppRequirePath: 'app/ClientApp',
     debug: true
 });
 ```

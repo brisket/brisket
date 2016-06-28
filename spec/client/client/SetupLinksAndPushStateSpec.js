@@ -2,7 +2,7 @@
 
 describe("SetupLinksAndPushState", function() {
     var SetupLinksAndPushState = require("lib/client/SetupLinksAndPushState");
-    var Url = require("lib/util/Url");
+    var Browser = require("lib/client/Browser");
     var ClientRequest = require("lib/client/ClientRequest");
     var Backbone = require("lib/application/Backbone");
     var $ = require("lib/application/jquery");
@@ -12,7 +12,7 @@ describe("SetupLinksAndPushState", function() {
     var clickEvent;
 
     beforeEach(function() {
-        spyOn(Url, "location").and.returnValue({
+        spyOn(Browser, "location").and.returnValue({
             href: "http://www.bloombergview.com/aRoute",
             pathname: "/aRoute"
         });

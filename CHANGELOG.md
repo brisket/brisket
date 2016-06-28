@@ -1,6 +1,20 @@
 Changelog
 ==========
 
+### 1.0.0
+- replace ServerApp, ClientApp with initializers
+
+**Breaking Changes**
+- Replaced Brisket.ServerApp, Brisket.ClientApp with Brisket.App
+- Removed Brisket.Model (use Backbone.Model)
+- Removed Brisket.Collection (use Backbone.Collection)
+- Removed Brisket.Controller
+- Replaced Brisket.RouterBrewery with Brisket.Router
+- Replaced Brisket.Routers with App.useRouters
+- Removed environmentConfig.clientAppUrl parameter to Brisket.createServer (specify your application bundle in your layout html)
+- Removed apiHost parameter to Brisket.createServer (use apis parameter instead)
+- Removed clientAppRequirePath parameter to Brisket.createServer
+
 ### 0.52.2
 - Revert "works with jquery 3.x"
 
