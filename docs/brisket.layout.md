@@ -30,7 +30,7 @@ var Layout = Brisket.Layout.extend({
     template: '<!DOCTYPE html> \
         <html> \
         <head> \
-            <title>My first Brisket app</title>
+            <title>My first Brisket app</title> \
         </head> \
         <body> \
             <main class="main-content"><!-- Views go here --></main> \
@@ -53,7 +53,7 @@ var Layout = Brisket.Layout.extend({
     template: '<!DOCTYPE html> \
         <html> \
         <head> \
-            <title>My first Brisket app</title>
+            <title>My first Brisket app</title> \
         </head> \
         <body> \
             <main class="main-content"><!-- Views go here --></main> \
@@ -89,7 +89,7 @@ var Layout = Brisket.Layout.extend({
     template: '<!DOCTYPE html> \
         <html> \
         <head> \
-            <title>My first Brisket app</title>
+            <title>My first Brisket app</title> \
         </head> \
         <body> \
             <main class="main-content"><!-- Views go here --></main> \
@@ -135,7 +135,7 @@ var Layout = Brisket.Layout.extend({
     template: '<!DOCTYPE html> \
         <html> \
         <head> \
-            <title>My first Brisket app</title>
+            <title>My first Brisket app</title> \
         </head> \
         <body> \
             <main class="main-content"><!-- Views go here --></main> \
@@ -195,7 +195,7 @@ var Layout = Brisket.Layout.extend({
     template: '<!DOCTYPE html> \
         <html> \
         <head> \
-            <title>My first Brisket app</title>
+            <title>My first Brisket app</title> \
         </head> \
         <body> \
             <main class="main-content"><!-- Views go here --></main> \
