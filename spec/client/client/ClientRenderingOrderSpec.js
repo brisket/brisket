@@ -9,6 +9,7 @@ describe("Client side rendering order", function() {
 
     var renderingOrder;
     var expectedView;
+    var previousContentView;
     var originalHandler;
     var mockRouter;
     var mockRouterWithDifferentLayout;
@@ -17,6 +18,7 @@ describe("Client side rendering order", function() {
         ClientRenderingWorkflow.reset();
 
         expectedView = newExpectedView();
+        previousContentView = new View();
         renderingOrder = [];
 
         mockRouter = MockRouter.create();
@@ -100,6 +102,7 @@ describe("Client side rendering order", function() {
     }
 
     function runFirstRequest() {
+        expectedView.isAttached = true;
         return runRequest(mockRouter);
     }
 

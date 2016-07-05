@@ -70,6 +70,7 @@
   "scripts": {
     "benchmarks": "gulp benchmarks",
     "client-tests": "gulp test-on-client",
+    "server-tests": "gulp test-on-server",
     "preinstall": "./bin/setup-jsdom-version.sh",
     "test": "gulp"
   },

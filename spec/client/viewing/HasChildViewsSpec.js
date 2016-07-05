@@ -1,9 +1,8 @@
 "use strict";
 
 describe("HasChildViews", function() {
-    var HasChildViews = require("lib/viewing/HasChildViews");
-    var _ = require("underscore");
     var Backbone = require("lib/application/Backbone");
+    var BrisketView = require("lib/viewing/View");
 
     var ParentView;
     var parentView;
@@ -14,9 +13,9 @@ describe("HasChildViews", function() {
     var childViewWithIdentifier;
 
     beforeEach(function() {
-        ParentView = Backbone.View.extend(_.extend({}, HasChildViews, {
+        ParentView = BrisketView.extend({
             template: "<div class='first'></div>" + "<div class='descendant'></div>" + "<div class='last'></div>"
-        }));
+        });
 
         parentView = new ParentView();
 
@@ -130,6 +129,74 @@ describe("HasChildViews", function() {
 
                 expectParentChildCountToBe(1);
                 expect(parentView.childViews["identifier"].childView).toBe(anotherChildView);
+            });
+
+        });
+
+    });
+
+    describe("when replacing a child view in the DOM with another view", function() {
+
+        beforeEach(function() {
+            document.body.appendChild(parentView.render().el);
+            parentView.enterDOM();
+        });
+
+        afterEach(function() {
+            parentView.close();
+        });
+
+        describe("when a Brisket.View with the same identifier already exists", function() {
+
+            beforeEach(function() {
+                childView = new BrisketView();
+                viewRelationship = parentView.createChildView("identifier", childView).andAppendIt();
+            });
+
+            it("closes the view that was there without removing from DOM", function() {
+                spyOn(viewRelationship, "closeAsChild");
+                parentView.replaceChildViewWith("identifier", ChildView);
+
+                expect(viewRelationship.closeAsChild).toHaveBeenCalled();
+            });
+
+            it("replaces the old child view with the new one", function() {
+                parentView.replaceChildViewWith("identifier", anotherChildView);
+
+                expectParentChildCountToBe(1);
+                expect(parentView.childViews["identifier"].childView).toBe(anotherChildView);
+            });
+
+        });
+
+        describe("when a Backbone.View with the same identifier already exists", function() {
+
+            beforeEach(function() {
+                viewRelationship = parentView.createChildView("identifier", childView).andAppendIt();
+            });
+
+            it("closes the view that was there without removing from DOM", function() {
+                spyOn(viewRelationship, "closeAsChild");
+                parentView.replaceChildViewWith("identifier", ChildView);
+
+                expect(viewRelationship.closeAsChild).toHaveBeenCalled();
+            });
+
+            it("replaces the old child view with the new one", function() {
+                parentView.replaceChildViewWith("identifier", anotherChildView);
+
+                expectParentChildCountToBe(1);
+                expect(parentView.childViews["identifier"].childView).toBe(anotherChildView);
+            });
+
+        });
+
+        describe("when a child view with the same identifier does NOT exist", function() {
+
+            it("creates a child view by identifier", function() {
+                parentView.replaceChildViewWith("identifier", anotherChildView);
+
+                expectParentChildCountToBe(0);
             });
 
         });

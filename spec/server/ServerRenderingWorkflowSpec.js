@@ -11,6 +11,7 @@ describe("ServerRenderingWorkflow", function() {
     var LayoutDelegate = require("../../lib/controlling/LayoutDelegate");
     var ErrorViewMapping = require("../../lib/errors/ErrorViewMapping");
     var Errors = require("../../lib/errors/Errors");
+    var View = require("../../lib/viewing/View");
 
     var originalHandler;
     var expectedView;
@@ -106,6 +107,38 @@ describe("ServerRenderingWorkflow", function() {
                     .toHaveBeenCalledWith("param1", "param2", jasmine.any(LayoutDelegate), mockServerRequest, mockServerResponse);
                 done();
             });
+        });
+
+        describe("when view is NOT Brisket.View", function() {
+
+            it("does NOT error", function(done) {
+                handlerReturns = callAugmentedRouterHandlerWith("param1", "param2");
+
+                handlerReturns.then(function() {
+                    expect(originalHandler)
+                        .toHaveBeenCalledWith("param1", "param2", jasmine.any(LayoutDelegate), mockServerRequest, mockServerResponse);
+                    done();
+                });
+            });
+
+        });
+
+        describe("when view is Brisket.View", function() {
+
+            beforeEach(function() {
+                expectedView = new View();
+                spyOn(expectedView, "setUid");
+            });
+
+            it("sets uid to reflect initial request and it's creation order", function(done) {
+                handlerReturns = callAugmentedRouterHandlerWith("param1", "param2");
+
+                handlerReturns.finally(function() {
+                    expect(expectedView.setUid).toHaveBeenCalledWith("1|0_1");
+                    done();
+                });
+            });
+
         });
 
     });
