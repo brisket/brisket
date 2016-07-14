@@ -3,7 +3,6 @@
 describe("ServerRenderer", function() {
     var Backbone = require("../../lib/application/Backbone");
     var ServerRenderer = require("../../lib/server/ServerRenderer");
-    var View = require("../../lib/viewing/View");
     var Layout = require("../../lib/viewing/Layout");
     var Environment = require("../../lib/environment/Environment");
     var HasPageLevelData = require("../../lib/traits/HasPageLevelData");
@@ -27,7 +26,6 @@ describe("ServerRenderer", function() {
 
         layout = new Layout();
         layout.el.innerHTML = "<html><head><title></title></head><body></body></html>";
-        spyOn(layout, "setContent");
         spyOn(layout, "setEnvironmentConfig");
         spyOn(layout, "close");
 
@@ -199,32 +197,6 @@ describe("ServerRenderer", function() {
 
     });
 
-    describe("when view is Brisket.View", function() {
-
-        beforeEach(function() {
-            view = new View();
-            spyOn(view, "setUid");
-            ServerRenderer.render(layout, view, null, mockServerRequest);
-        });
-
-        it("sets uid to reflect initial request and it's creation order", function() {
-            expect(view.setUid).toHaveBeenCalledWith("1|0_1");
-        });
-
-    });
-
-    describe("when view is NOT Brisket.View", function() {
-
-        it("does NOT throw", function() {
-            function renderingBackboneView() {
-                ServerRenderer.render(layout, view, null, mockServerRequest);
-            }
-
-            expect(renderingBackboneView).not.toThrow();
-        });
-
-    });
-
     describe("when view has a page level data", function() {
 
         beforeEach(function() {
@@ -243,10 +215,6 @@ describe("ServerRenderer", function() {
             expect(html).toMatch(/<meta name="description" content="description"/);
         });
 
-        it("sets the layout content", function() {
-            expect(layout.setContent).toHaveBeenCalledWith(view);
-        });
-
     });
 
     describe("when view does NOT have page level data", function() {
@@ -257,10 +225,6 @@ describe("ServerRenderer", function() {
 
         it("it does NOT render layout metatags", function() {
             expect(html).not.toMatch(/<meta/);
-        });
-
-        it("sets the layout content", function() {
-            expect(layout.setContent).toHaveBeenCalledWith(view);
         });
 
     });

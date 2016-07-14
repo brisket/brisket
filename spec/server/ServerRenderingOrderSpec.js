@@ -35,8 +35,8 @@ describe("Server side rendering order", function() {
                 "layout fetches data",
                 "route handler runs",
                 "layout renders",
+                "view for route renders",
                 "layout instructions from route handler run",
-                "view for route renders"
             ]);
 
             done();

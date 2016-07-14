@@ -19,16 +19,11 @@ describe("ClientRenderer", function() {
         layout = new Layout();
         spyOn(layout, "reattach");
         spyOn(layout, "render");
-        spyOn(layout, "enterDOM");
-        spyOn(layout, "backToNormal");
-        spyOn(layout, "setContentToAttachedView");
-        spyOn(layout, "setContent");
+        spyOn(layout, "replaceChildViewWith");
 
         view = new View();
         spyOn(view, "render");
         spyOn(view, "reattach");
-        spyOn(view, "enterDOM");
-        spyOn(view, "setUid");
 
         ViewWithPageLevelData = View.extend(HasPageLevelData);
 
@@ -67,11 +62,11 @@ describe("ClientRenderer", function() {
         });
 
         it("sets the layout's content as the attached view", function() {
-            expect(layout.setContentToAttachedView).toHaveBeenCalledWith(view);
+            expect(view.render).toHaveBeenCalled();
         });
 
         it("does NOT directly set layout's content", function() {
-            expect(layout.setContent).not.toHaveBeenCalled();
+            expect(layout.replaceChildViewWith).not.toHaveBeenCalled();
         });
 
     });
@@ -87,24 +82,8 @@ describe("ClientRenderer", function() {
             expect(view.render).not.toHaveBeenCalled();
         });
 
-        it("does NOT set the layout's content as the attached view", function() {
-            expect(layout.setContentToAttachedView).not.toHaveBeenCalledWith(view);
-        });
-
         it("sets the layout's content", function() {
-            expect(layout.setContent).toHaveBeenCalled();
-        });
-
-    });
-
-    describe("when view is Brisket.View", function() {
-
-        beforeEach(function() {
-            whenClientRenders(1);
-        });
-
-        it("sets uid to reflect current request and it's creation order", function() {
-            expect(view.setUid).toHaveBeenCalledWith("1|0_1");
+            expect(layout.replaceChildViewWith).toHaveBeenCalledWith("content", view);
         });
 
     });

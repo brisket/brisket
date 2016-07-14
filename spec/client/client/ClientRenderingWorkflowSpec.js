@@ -74,6 +74,10 @@ describe("ClientRenderingWorkflow", function() {
         spyOn(ClientRequest, "from").and.callFake(function() {
             mockClientRequest = originalClientRequestFrom.apply(null, arguments);
 
+            // wawjr3d - for consistency regardless of where test suite runs
+            mockClientRequest.host = "http://www.example.com:80";
+            mockClientRequest.hostname = "http://www.example.com";
+
             spyOn(mockClientRequest, "off").and.callThrough();
 
             return mockClientRequest;
@@ -82,6 +86,7 @@ describe("ClientRenderingWorkflow", function() {
 
         spyOn(Layout.prototype, "close");
         spyOn(Layout.prototype, "backToNormal");
+        spyOn(Layout.prototype, "createChildView").and.callThrough();
     });
 
     afterEach(function() {
@@ -147,7 +152,7 @@ describe("ClientRenderingWorkflow", function() {
     it("passes request as option to layout", function(done) {
         fakeRouter.layout = Layout.extend({
             initialize: function(options) {
-                expect(options.request.host).toEqual("localhost:8000");
+                expect(options.request.host).toEqual("http://www.example.com:80");
                 done();
             }
         });
@@ -204,7 +209,9 @@ describe("ClientRenderingWorkflow", function() {
     describe("whenever handler is called", function() {
 
         beforeEach(function() {
-            originalHandler = jasmine.createSpy();
+            originalHandler = jasmine.createSpy().and.callFake(function() {
+                return expectedView;
+            });
         });
 
         it("calls original handler with params, layout, brisketRequest, and brisketResponse", function(done) {
@@ -220,6 +227,23 @@ describe("ClientRenderingWorkflow", function() {
 
                     done();
                 });
+        });
+
+        describe("when view is Brisket.View", function() {
+
+            beforeEach(function() {
+                spyOn(expectedView, "setUid");
+            });
+
+            it("sets uid to reflect current request and it's creation order", function(done) {
+                callAugmentedRouterHandlerWith(originalHandler, "param1", "param2")
+                    .then(function() {
+                        expect(expectedView.setUid).toHaveBeenCalledWith("1|0_1");
+
+                        done();
+                    });
+            });
+
         });
 
     });
@@ -570,14 +594,23 @@ describe("ClientRenderingWorkflow", function() {
                 });
         });
 
+        it("sets view from route handler as content child view", function(done) {
+            handlerReturns
+                .then(function() {
+                    expect(Layout.prototype.createChildView).toHaveBeenCalledWith(
+                        "content",
+                        expectedView
+                    );
+                    done();
+                });
+        });
+
         itCleansUpRouter();
     });
 
     describe("all client side renders except for the first", function() {
-
         var firstHandlerReturns;
         var CurrentLayout;
-        var NewLayout;
 
         beforeEach(function() {
             originalHandler = jasmine.createSpy();
@@ -588,36 +621,6 @@ describe("ClientRenderingWorkflow", function() {
 
             fakeRouter.layout = CurrentLayout;
             firstHandlerReturns = callAugmentedRouterHandler();
-        });
-
-        describe("when new layout is different from the current layout that has been rendered", function() {
-
-            beforeEach(function() {
-                NewLayout = Layout.extend({
-                    name: "anotherLayout"
-                });
-                spyOn(NewLayout.prototype, "fetchData");
-
-                fakeRouter.layout = NewLayout;
-                expectedView2 = new View();
-                handlerReturns = callAugmentedRouterHandler(function() {
-                    return expectedView2;
-                });
-
-                bothReturn = Promise.all([firstHandlerReturns, handlerReturns]);
-            });
-
-            it("fetches layout data for new layout", function(done) {
-                bothReturn
-                    .then(function() {
-                        expect(NewLayout.prototype.fetchData.calls.count()).toBe(1);
-                        done();
-                    });
-            });
-
-            itCleansUpLayout();
-
-            itCleansUpBothRouters();
         });
 
         describe("when second request wants to render with current layout that was used in first request", function() {
@@ -635,6 +638,14 @@ describe("ClientRenderingWorkflow", function() {
 
             it("does NOT fetch layout data for second request", function(done) {
                 expectCurrentLayoutToNotBeFetchedAgainOnSecondRequest(done);
+            });
+
+            it("doesn't set view from route handler as content child view again", function(done) {
+                bothReturn
+                    .then(function() {
+                        expect(Layout.prototype.createChildView.calls.count()).toEqual(1);
+                        done();
+                    });
             });
 
             var expectCurrentLayoutToBeFetchedOnFirstRequest = function() {
@@ -1179,18 +1190,6 @@ describe("ClientRenderingWorkflow", function() {
                 done();
             });
         });
-    }
-
-    function itCleansUpLayout() {
-
-        it("cleans up layout", function(done) {
-            handlerReturns
-                .then(function() {
-                    expect(Layout.prototype.close).toHaveBeenCalled();
-                    done();
-                });
-        });
-
     }
 
     function itResetsLayout() {
