@@ -93,53 +93,6 @@ describe("Layout", function() {
 
     });
 
-    describe("#isSameAs", function() {
-
-        var Layout1;
-        var Layout2;
-        var layout1;
-        var layout2;
-
-        beforeEach(function() {
-            Layout1 = Layout.extend();
-            Layout2 = Layout.extend();
-        });
-
-        it("is NOT considered the same as an instance of it's base type", function() {
-            layout1 = new Layout1();
-            layout2 = new Layout();
-
-            expect(layout1.isSameAs(layout2)).toBe(false);
-        });
-
-        describe("when one layout instance is the same type as another", function() {
-
-            beforeEach(function() {
-                layout1 = new Layout1();
-                layout2 = new Layout1();
-            });
-
-            it("returns true", function() {
-                expect(layout1.isSameAs(layout2)).toBe(true);
-            });
-
-        });
-
-        describe("when one layout instance is NOT the same type as another", function() {
-
-            beforeEach(function() {
-                layout1 = new Layout1();
-                layout2 = new Layout2();
-            });
-
-            it("returns false", function() {
-                expect(layout1.isSameAs(layout2)).toBe(false);
-            });
-
-        });
-
-    });
-
     describe("#isSameTypeAs", function() {
 
         var Layout1;

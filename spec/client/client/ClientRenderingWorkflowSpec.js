@@ -574,10 +574,8 @@ describe("ClientRenderingWorkflow", function() {
     });
 
     describe("all client side renders except for the first", function() {
-
         var firstHandlerReturns;
         var CurrentLayout;
-        var NewLayout;
 
         beforeEach(function() {
             originalHandler = jasmine.createSpy();
@@ -588,36 +586,6 @@ describe("ClientRenderingWorkflow", function() {
 
             fakeRouter.layout = CurrentLayout;
             firstHandlerReturns = callAugmentedRouterHandler();
-        });
-
-        describe("when new layout is different from the current layout that has been rendered", function() {
-
-            beforeEach(function() {
-                NewLayout = Layout.extend({
-                    name: "anotherLayout"
-                });
-                spyOn(NewLayout.prototype, "fetchData");
-
-                fakeRouter.layout = NewLayout;
-                expectedView2 = new View();
-                handlerReturns = callAugmentedRouterHandler(function() {
-                    return expectedView2;
-                });
-
-                bothReturn = Promise.all([firstHandlerReturns, handlerReturns]);
-            });
-
-            it("fetches layout data for new layout", function(done) {
-                bothReturn
-                    .then(function() {
-                        expect(NewLayout.prototype.fetchData.calls.count()).toBe(1);
-                        done();
-                    });
-            });
-
-            itCleansUpLayout();
-
-            itCleansUpBothRouters();
         });
 
         describe("when second request wants to render with current layout that was used in first request", function() {
@@ -1179,18 +1147,6 @@ describe("ClientRenderingWorkflow", function() {
                 done();
             });
         });
-    }
-
-    function itCleansUpLayout() {
-
-        it("cleans up layout", function(done) {
-            handlerReturns
-                .then(function() {
-                    expect(Layout.prototype.close).toHaveBeenCalled();
-                    done();
-                });
-        });
-
     }
 
     function itResetsLayout() {

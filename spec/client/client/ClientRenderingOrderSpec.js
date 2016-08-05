@@ -4,14 +4,11 @@ describe("Client side rendering order", function() {
     var ClientRenderingWorkflow = require("lib/client/ClientRenderingWorkflow");
     var View = require("lib/viewing/View");
     var MockRouter = require("mock/MockRouter");
-    var Layout = require("lib/viewing/Layout");
-    var noop = require("lib/util/noop");
 
     var renderingOrder;
     var expectedView;
     var originalHandler;
     var mockRouter;
-    var mockRouterWithDifferentLayout;
 
     beforeEach(function() {
         ClientRenderingWorkflow.reset();
@@ -20,13 +17,8 @@ describe("Client side rendering order", function() {
         renderingOrder = [];
 
         mockRouter = MockRouter.create();
-        mockRouterWithDifferentLayout = MockRouter.create({
-            layout: Layout.extend({
-                customMethod: noop
-            })
-        });
 
-        [mockRouter, mockRouterWithDifferentLayout].forEach(spyRenderingFor);
+        spyRenderingFor(mockRouter);
 
         originalHandler = function(layout) {
             renderingOrder.push("route handler runs");
@@ -62,32 +54,12 @@ describe("Client side rendering order", function() {
     it("maintains a predictable rendering lifecycle for layout " +
         "AND view on all other requests when layout does NOT change",
         function(done) {
-            runAnotherRequestWhereLayoutDoesntChange().finally(function() {
+            runAnotherRequest().finally(function() {
                 expect(renderingOrder).toEqual([
                     "route handler runs",
                     "layout back to normal",
                     "layout instructions from route handler run",
                     "view for route renders",
-                    "view for route enters DOM"
-                ]);
-
-                done();
-            });
-        });
-
-    it("maintains a predictable rendering lifecycle for layout " +
-        "AND view on all other requests when layout changes",
-        function(done) {
-            runAnotherRequestWhereLayoutChanges().finally(function() {
-                expect(renderingOrder).toEqual([
-                    "layout fetches data",
-                    "route handler runs",
-                    "layout reattaches",
-                    "layout renders",
-                    "layout back to normal",
-                    "layout instructions from route handler run",
-                    "view for route renders",
-                    "layout enters DOM",
                     "view for route enters DOM"
                 ]);
 
@@ -103,21 +75,12 @@ describe("Client side rendering order", function() {
         return runRequest(mockRouter);
     }
 
-    function runAnotherRequestWhereLayoutDoesntChange() {
+    function runAnotherRequest() {
         return runRequest(mockRouter).then(function() {
             renderingOrder = [];
             expectedView = newExpectedView();
 
             return runRequest(mockRouter);
-        });
-    }
-
-    function runAnotherRequestWhereLayoutChanges() {
-        return runRequest(mockRouter).then(function() {
-            renderingOrder = [];
-            expectedView = newExpectedView();
-
-            return runRequest(mockRouterWithDifferentLayout);
         });
     }
 
