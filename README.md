@@ -61,7 +61,7 @@ Now that you have a working app, check out our [Recipes](docs/recipes/README.md)
 * [**Brisket.Templating.TemplateAdapter**](docs/brisket.templating.templateadapter.md): Inherit from this to tell Brisket how to render templates.
 * [**Brisket.Templating.StringTemplateAdapter**](docs/brisket.templating.stringtemplateadapter.md): The default template adapter. Set a View's template key to be a string template to get started.
 * [**Brisket.ErrorViewMapping**](docs/brisket.errorviewmapping.md): Creates errorViewMappings for your routers (e.g. 404 should show Page Not Found).
-* Brisket.version: The version of Brisket. On the client, the version can be accessed by `window.Brisket.version` after the ClientApp has started.
+* Brisket.version: The version of Brisket. On the client, the version can be accessed by `window.Brisket.version`.
 * [**Brisket.onError**](docs/brisket.onerror.md): Registers error callback.
 
 ## Using Brisket in your project

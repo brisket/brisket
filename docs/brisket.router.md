@@ -17,7 +17,7 @@ Brisket.Router are a little different from a standard Backbone.Router. The diffe
 One of the biggest differences between a Backbone.Router and a Brisket Router is that Brisket Router route handlers return Views. In a typical Backbone app, you would run code to modify the DOM right in the route handlers. In a Brisket app, route handlers should not modify the DOM. Instead they should return a View that should represent the route. Here is an example:
 
 ```js
-var Book = Brisket.Model.extend({
+var Book = Backbone.Model.extend({
   urlRoot: "/api/book"
 });
 
@@ -44,7 +44,7 @@ var BookRouter = Brisket.Router.extend({
 ```
 
 ### Handling Errors
-When there is an error in a Brisket route handler preparing a View, Brisket will fall back to the Router's errorViewMapping. Thrown code errors will show the 500 ErrorView. The Router's errorViewMapping can be set in your [custom RouterBrewery](brisket.routerbrewery.md#creating-your-own-routerbrewery) and also directly in the Router.
+When there is an error in a Brisket route handler preparing a View, Brisket will fall back to the Router's errorViewMapping. Thrown code errors will show the 500 ErrorView. The Router's errorViewMapping can be shared with many Routers by using a BaseRouter.
 
 ```js
 var ErrorView = Brisket.View.extend();
@@ -53,9 +53,13 @@ var ErrorViewMapping = Brisket.ErrorViewMapping.create({
   500: ErrorView
 });
 
-var BookRouter = Brisket.Router.extend({
+var BaseRouter = Brisket.Router.extend({
 
-  errorViewMapping: ErrorViewMapping,
+  errorViewMapping: ErrorViewMapping
+
+});
+
+var BookRouter = BaseRouter.extend({
 
   routes: {
     "books/:id": "book"
@@ -88,9 +92,13 @@ var ErrorViewMapping = Brisket.ErrorViewMapping.create({
   500: ErrorView
 });
 
-var BookRouter = Brisket.Router.extend({
+var BaseRouter = Brisket.Router.extend({
 
-  errorViewMapping: ErrorViewMapping,
+  errorViewMapping: ErrorViewMapping
+
+});
+
+var BookRouter = BaseRouter.extend({
 
   routes: {
     "books/:id": "book"
@@ -121,9 +129,13 @@ var ErrorViewMapping = Brisket.ErrorViewMapping.create({
   500: ErrorView
 });
 
-var BookRouter = Brisket.Router.extend({
+var BaseRouter = Brisket.Router.extend({
 
-  errorViewMapping: ErrorViewMapping,
+  errorViewMapping: ErrorViewMapping
+
+});
+
+var BookRouter = BaseRouter.extend({
 
   routes: {
     "books/:id": "book"
