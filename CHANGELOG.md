@@ -1,6 +1,10 @@
 Changelog
 ==========
 
+### 1.1.0
+- cleanup old objects from docs and code
+- remove code for layout to change on client side
+
 ### 1.0.0
 - replace ServerApp, ClientApp with initializers
 
