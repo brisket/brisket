@@ -24,27 +24,8 @@ For each api, you can specify the host and proxy. Brisket automatically adds a m
 
 ## Optional Configuration Options
 
-#### ServerApp
-Use this setting to tell your Brisket server which ServerApp to use:
-
-```js
-var App = Brisket.App;
-
-App.addServerInitializer(function(options) {
-    var environmentConfig = options.environmentConfig;
-});
-
-var brisketServer = Brisket.createServer({
-    apis: {
-        'api': { host: 'http://api.example.com' }
-    }
-});
-```
-
-If you do not pass in a ServerApp, Brisket.ServerApp will be used.
-
 #### environmentConfig
-`environmentConfig` is a hash of key/values that will be available to both your ClientApp and ServerApp via the start method. In both Apps, `environmentConfig` will be available as `options.environmentConfig`:
+`environmentConfig` is a hash of key/values that will be available to all application initializers. `environmentConfig` will be available as `options.environmentConfig`:
 
 ```js
 var App = Brisket.App;
@@ -78,7 +59,7 @@ var brisketServer = Brisket.createServer({
 ```
 
 #### serverConfig
-`serverConfig` is a hash of key/values that will **ONLY** be available to your ServerApp via the start method. In the ServerApp, `serverConfig` will be available as `options.serverConfig`:
+`serverConfig` is a hash of key/values that will **ONLY** be available to your App's server initializers. In the server initializers, `serverConfig` will be available as `options.serverConfig`:
 
 ```js
 var App = Brisket.App;

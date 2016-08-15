@@ -74,7 +74,7 @@ module.exports = {
         "with simple View": {
             defer: true,
             fn: function(deferred) {
-                ServerDispatcher.dispatch("path", mockRequest, {}, "app/ClientApp")
+                ServerDispatcher.dispatch("path", mockRequest, {})
                     .content
                     .then(function(renderedHtml) {
                         html = renderedHtml;

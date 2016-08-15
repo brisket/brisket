@@ -13,7 +13,7 @@ The second to last parameter of every route handler is a Brisket request object 
 ### Second to last parameter of a route handler
 
 ```js
-var BookRouter = Brisket.RouterBrewery.create({
+var BookRouter = Brisket.Router.extend({
 
   routes: {
     'books': 'books',
@@ -43,7 +43,7 @@ var BookRouter = Brisket.RouterBrewery.create({
 ### Second parameter of router callbacks
 
 ```js
-var RouterBrewery = Brisket.RouterBrewery.makeBreweryWithDefaults({
+var Router = Brisket.Router.extend({
 
   onRouteStart: function(layout, request, response) {
     console.log(request.isFirstRequest); // true/false

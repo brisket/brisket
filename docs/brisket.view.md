@@ -115,7 +115,7 @@ var MustacheTemplateAdapter = TemplateAdapter.extend({
 
 });
 
-var Model = Brisket.Model.extend();
+var Model = Backbone.Model.extend();
 
 var View = Brisket.View.extend({
 
@@ -149,7 +149,7 @@ var MustacheTemplateAdapter = TemplateAdapter.extend({
 
 });
 
-var Model = Brisket.Model.extend();
+var Model = Backbone.Model.extend();
 
 var View = Brisket.View.extend({
 
@@ -190,7 +190,7 @@ var MustacheTemplateAdapter = TemplateAdapter.extend({
 
 });
 
-var Model = Brisket.Model.extend();
+var Model = Backbone.Model.extend();
 
 var View = Brisket.View.extend({
 

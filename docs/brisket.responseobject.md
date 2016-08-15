@@ -13,7 +13,7 @@ The last parameter of every route handler is a Brisket response object - an envi
 ### Last parameter of a route handler
 
 ```js
-var BookRouter = Brisket.RouterBrewery.create({
+var BookRouter = Brisket.Router.extend({
 
   routes: {
     'books': 'books',
@@ -43,7 +43,7 @@ var BookRouter = Brisket.RouterBrewery.create({
 ### Third parameter of onRouteStart callback
 
 ```js
-var RouterBrewery = Brisket.RouterBrewery.makeBreweryWithDefaults({
+var Router = Brisket.Router.extend({
 
   onRouteStart: function(layout, request, response) {
     response.status(202); // current history will be replaced with 'another/route'
