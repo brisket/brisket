@@ -490,19 +490,62 @@ describe("RenderableView", function() {
 
         describe("when view has a valid template AND templateAdapter", function() {
 
-            beforeEach(function() {
+            it("sets view's el.innerHTML to be templateAdapter.templateToHTML", function() {
                 ViewThatRenders = BaseRenderableView.extend({
                     template: "some template",
                     templateAdapter: TemplateAdapter.extend({
-                        templateToHTML: jasmine.createSpy().and.returnValue("expected html")
+                        templateToHTML: function() {
+                            return "expected html";
+                        }
                     })
                 });
                 view = new ViewThatRenders();
                 view.renderTemplate();
+
+                expect(view.el.innerHTML).toBe("expected html");
             });
 
-            it("sets view's el.innerHTML to be templateAdapter.templateToHTML", function() {
-                expect(view.el.innerHTML).toBe("expected html");
+            it("calls template in scope of owning view", function() {
+                ViewThatRenders = BaseRenderableView.extend({
+                    expectedData: "from view",
+                    template: function() {
+                        return "some template " + this.expectedData;
+                    },
+                    templateAdapter: TemplateAdapter.extend({
+                        templateToHTML: function(template) {
+                            return template();
+                        }
+                    })
+                });
+                view = new ViewThatRenders();
+                view.renderTemplate();
+
+                expect(view.el.innerHTML).toBe("some template from view");
+            });
+
+            it("calls template in scope of owning view when template changes before render", function() {
+                ViewThatRenders = BaseRenderableView.extend({
+                    otherExpectedData: "also from view",
+                    expectedData: "from view",
+                    template: function() {
+                        return "some template " + this.expectedData;
+                    },
+                    templateAdapter: TemplateAdapter.extend({
+                        templateToHTML: function(template) {
+                            return template();
+                        }
+                    }),
+                    beforeRender: function() {
+                        this.template = function() {
+                            return "some template " + this.otherExpectedData;
+                        };
+                    }
+                });
+                view = new ViewThatRenders();
+                view.beforeRender();
+                view.renderTemplate();
+
+                expect(view.el.innerHTML).toBe("some template also from view");
             });
 
         });
