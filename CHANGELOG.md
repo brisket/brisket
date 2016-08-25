@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 1.2.0
+- template function executes in the scope of it's owning View
+
 ### 1.1.0
 - cleanup old objects from docs and code
 - remove code for layout to change on client side
