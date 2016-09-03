@@ -1,9 +1,10 @@
 "use strict";
 
 var Brisket = require("../lib/brisket");
+var BrisketTesting = require("../testing");
 var ServerDispatcher = require("../lib/server/ServerDispatcher");
 
-Brisket.Testing.setup();
+BrisketTesting.setup();
 
 var Layout = Brisket.Layout.extend({
 
