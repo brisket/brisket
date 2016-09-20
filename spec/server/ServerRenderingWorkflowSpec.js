@@ -9,7 +9,6 @@ describe("ServerRenderingWorkflow", function() {
     var ServerResponse = require("../../lib/server/ServerResponse");
     var Layout = require("../../lib/viewing/Layout");
     var LayoutDelegate = require("../../lib/controlling/LayoutDelegate");
-    var ErrorViewMapping = require("../../lib/errors/ErrorViewMapping");
     var Errors = require("../../lib/errors/Errors");
 
     var originalHandler;
@@ -578,6 +577,22 @@ describe("ServerRenderingWorkflow", function() {
         itRethrowsError();
     });
 
+    describe("when router doesn't have errorViewMapping and there is an error", function() {
+
+        beforeEach(function() {
+            fakeRouter.errorViewMapping = null;
+
+            originalHandler = function() {
+                return Promise.reject(error);
+            };
+
+            handlerReturns = callAugmentedRouterHandler();
+        });
+
+        itNotifiesAboutError();
+        itRethrowsError();
+    });
+
     function itNotifiesAboutError() {
         it("notifies about error", function(done) {
             callAugmentedRouterHandler().catch(function() {
@@ -670,10 +685,10 @@ describe("ServerRenderingWorkflow", function() {
     }
 
     function errorViewMapping() {
-        return ErrorViewMapping.create({
+        return {
             404: PageNotFoundView,
             500: ErrorView
-        });
+        };
     }
 
     function makeMockExpressRequest() {

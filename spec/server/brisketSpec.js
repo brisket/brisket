@@ -15,8 +15,8 @@ describe("public interface to Brisket", function() {
         expect(Brisket.View).toBe(requireFromLib("viewing/View"));
     });
 
-    it("exposes Brisket.ErrorViewMapping", function() {
-        expect(Brisket.ErrorViewMapping).toBe(requireFromLib("errors/ErrorViewMapping"));
+    it("exposes deprecated Brisket.ErrorViewMapping", function() {
+        expect(Brisket.ErrorViewMapping.create).toBe(requireFromLib("errors/ErrorPage").create);
     });
 
     it("exposes Brisket.Events", function() {

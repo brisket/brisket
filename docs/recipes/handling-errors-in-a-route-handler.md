@@ -6,13 +6,11 @@ The documentation for Brisket.Router talks about [how to handle errors generally
 ```js
 const ErrorView = Brisket.View.extend();
 
-const ErrorViewMapping = Brisket.ErrorViewMapping.create({
-  500: ErrorView
-});
-
 const BookRouter = Brisket.Router.extend({
 
-  errorViewMapping: ErrorViewMapping
+  errorViewMapping: {
+    500: ErrorView
+  },
 
   routes: {
     "books/:id": "book",
@@ -60,13 +58,11 @@ When we catch the error in the `library` route, we can set the response status a
 ```js
 const ErrorView = Brisket.View.extend();
 
-const ErrorViewMapping = Brisket.ErrorViewMapping.create({
-  500: ErrorView
-});
-
 const BookRouter = Brisket.Router.extend({
 
-  errorViewMapping: ErrorViewMapping
+  errorViewMapping: {
+    500: ErrorView
+  },
 
   routes: {
     "library": "library"

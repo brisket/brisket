@@ -2,7 +2,6 @@
 
 var View = require("../../lib/viewing/View");
 var Layout = require("../../lib/viewing/Layout");
-var ErrorViewMapping = require("../../lib/errors/ErrorViewMapping");
 var noop = require("../../lib/util/noop");
 var _ = require("underscore");
 
@@ -26,10 +25,10 @@ var MockRouter = {
     create: function(options) {
         return _.extend({
             layout: ExampleLayout,
-            errorViewMapping: ErrorViewMapping.create({
+            errorViewMapping: {
                 404: PageNotFoundView,
                 500: ErrorView
-            }),
+            },
             onRouteStart: jasmine.createSpy(),
             onRouteComplete: jasmine.createSpy(),
             close: jasmine.createSpy()
