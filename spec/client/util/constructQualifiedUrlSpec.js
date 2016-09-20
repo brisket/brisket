@@ -1,8 +1,7 @@
 "use strict";
 
-var constructQualifiedUrl = require("lib/util/constructQualifiedUrl");
-
 describe("constructQualifiedUrl", function() {
+    var constructQualifiedUrl = require("lib/util/constructQualifiedUrl");
 
     describe("parameters", function() {
 
@@ -32,34 +31,34 @@ describe("constructQualifiedUrl", function() {
 
     });
 
+    function callWithoutProtocol() {
+        return constructQualifiedUrl({
+            host: "host"
+        });
+    }
+
+    function callWithoutHost() {
+        return constructQualifiedUrl({
+            protocol: "protocol"
+        });
+    }
+
+    function callWithoutPath() {
+        return constructQualifiedUrl({
+            protocol: "protocol",
+            host: "host"
+        });
+    }
+
+    function callWithAllArguments() {
+        return constructQualifiedUrl({
+            protocol: "protocol",
+            host: "host",
+            path: "/path"
+        });
+    }
+
 });
-
-function callWithoutProtocol() {
-    return constructQualifiedUrl({
-        host: "host"
-    });
-}
-
-function callWithoutHost() {
-    return constructQualifiedUrl({
-        protocol: "protocol"
-    });
-}
-
-function callWithoutPath() {
-    return constructQualifiedUrl({
-        protocol: "protocol",
-        host: "host"
-    });
-}
-
-function callWithAllArguments() {
-    return constructQualifiedUrl({
-        protocol: "protocol",
-        host: "host",
-        path: "/path"
-    });
-}
 
 // ----------------------------------------------------------------------------
 // Copyright (C) 2016 Bloomberg Finance L.P.
