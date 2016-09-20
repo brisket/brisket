@@ -217,7 +217,7 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("returns 500 status", function(done) {
-            handlerReturns.catch(function(responseForRoute) {
+            handlerReturns.then(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(500);
                 done();
             });
@@ -335,7 +335,7 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("returns status of 404", function(done) {
-            handlerReturns.catch(function(responseForRoute) {
+            handlerReturns.then(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(404);
                 done();
             });
@@ -374,7 +374,7 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("returns status of 500", function(done) {
-            handlerReturns.catch(function(responseForRoute) {
+            handlerReturns.then(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(500);
                 done();
             });
@@ -413,7 +413,7 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("returns status of 500", function(done) {
-            handlerReturns.catch(function(responseForRoute) {
+            handlerReturns.then(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(500);
                 done();
             });
@@ -457,7 +457,7 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("returns status from view failure", function(done) {
-            handlerReturns.catch(function(responseForRoute) {
+            handlerReturns.then(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(404);
                 done();
             });
@@ -503,7 +503,7 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("returns status from layout failure", function(done) {
-            handlerReturns.catch(function(responseForRoute) {
+            handlerReturns.then(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(404);
                 done();
             });
@@ -540,7 +540,7 @@ describe("ServerRenderingWorkflow", function() {
         });
 
         it("returns status of 500", function(done) {
-            handlerReturns.catch(function(responseForRoute) {
+            handlerReturns.then(function(responseForRoute) {
                 expect(responseForRoute.serverResponse.statusCode).toBe(500);
                 done();
             });
@@ -593,7 +593,7 @@ describe("ServerRenderingWorkflow", function() {
 
     function itDoesNotRethrowError() {
         it("does NOT rethrow error", function(done) {
-            handlerReturns.catch(function(e) {
+            handlerReturns.then(function(e) {
                 expect(e).not.toBe(error);
                 done();
             });
