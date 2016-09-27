@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 1.3.0
+- expose require('brisket/testing')
+
 ### 1.2.0
 - template function executes in the scope of it's owning View
 
