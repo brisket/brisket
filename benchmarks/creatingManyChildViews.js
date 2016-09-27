@@ -1,12 +1,13 @@
 "use strict";
 
 var Brisket = require("../lib/brisket");
+var BrisketTesting = require("../testing");
 var View = require("../lib/viewing/View");
 
 var ParentView = View.extend();
 var ChildView = View.extend();
 
-Brisket.Testing.setup();
+BrisketTesting.setup();
 
 var parentView = new ParentView();
 

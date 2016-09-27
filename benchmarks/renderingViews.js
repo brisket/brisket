@@ -1,6 +1,7 @@
 "use strict";
 
 var Brisket = require("../lib/brisket");
+var BrisketTesting = require("../testing");
 var View = require("../lib/viewing/View");
 
 var EmptyView = View.extend();
@@ -26,8 +27,7 @@ var ViewWithALotOfMarkup = View.extend({
 
 });
 
-Brisket.Testing.setup();
-
+BrisketTesting.setup();
 
 module.exports = {
     name: "Rendering views",

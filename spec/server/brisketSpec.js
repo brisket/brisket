@@ -35,7 +35,7 @@ describe("public interface to Brisket", function() {
         expect(Brisket.Templating.StringTemplateAdapter).toBe(requireFromLib("templating/StringTemplateAdapter"));
     });
 
-    it("exposes Brisket.Testing", function() {
+    it("exposes Brisket.Testing (deprecated)", function() {
         expect(Brisket.Testing).toBe(requireFromLib("testing/Testing"));
     });
 

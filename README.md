@@ -49,6 +49,7 @@ Now that you have a working app, check out our [Recipes](docs/recipes/README.md)
 * [**Brisket Response Object**](docs/brisket.responseobject.md): The Brisket response object normalizes modifying the current response.
 * [**Child Views**](docs/brisket.childviews.md): Brisket provides a system to help you manage a View's child views.
 * [**Navigating with Brisket**](docs/brisket.navigating.md): Brisket provides methods to navigate the app in the browser.
+* [**Testing with Brisket**](docs/brisket.testing.md): Brisket provides tools to use in your test suite.
 
 ### Brisket's Parts
 * [**Brisket.App**](docs/brisket.app.md): Initialize your application with Brisket.App.
