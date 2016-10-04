@@ -2,6 +2,7 @@
 
 describe("ClientResponse", function() {
     var ClientResponse = require("lib/client/ClientResponse");
+    var Response = require("lib/controlling/Response");
     var mockWindow = require("mock/mockWindow");
 
     var clientResponse;
@@ -11,6 +12,8 @@ describe("ClientResponse", function() {
         windough = mockWindow();
         clientResponse = ClientResponse.from(windough);
     });
+
+    afterEach(unsetAppRoot);
 
     describe("#status", function() {
 
@@ -78,7 +81,7 @@ describe("ClientResponse", function() {
     }
 
     function givenAppRootSet() {
-        ClientResponse.setAppRoot("/appRoot");
+        Response.setAppRoot("/appRoot");
         clientResponse = new ClientResponse(windough);
     }
 
@@ -108,6 +111,10 @@ describe("ClientResponse", function() {
         try {
             clientResponse.redirect(status, destination);
         } catch (e) {}
+    }
+
+    function unsetAppRoot() {
+        Response.setAppRoot("");
     }
 
 });

@@ -3,6 +3,7 @@
 describe("ServerResponseWorkflow", function() {
     var ServerResponseWorkflow = require("../../lib/server/ServerResponseWorkflow");
     var ServerResponse = require("../../lib/server/ServerResponse");
+    var Response = require("../../lib/controlling/Response");
     var Promise = require("bluebird");
 
     var mockExpressResponse;
@@ -25,6 +26,8 @@ describe("ServerResponseWorkflow", function() {
 
         mockNext = jasmine.createSpy();
     });
+
+    afterEach(unsetAppRoot);
 
     describe("when content is returned from server app successfully", function() {
 
@@ -267,8 +270,12 @@ describe("ServerResponseWorkflow", function() {
     }
 
     function givenAppRootSet() {
-        ServerResponse.setAppRoot("/appRoot");
+        Response.setAppRoot("/appRoot");
         serverResponse = new ServerResponse();
+    }
+
+    function unsetAppRoot() {
+        Response.setAppRoot("");
     }
 
 });

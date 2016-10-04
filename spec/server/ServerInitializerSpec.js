@@ -2,13 +2,13 @@
 
 describe("ServerInitializer", function() {
     var ServerInitializer = require("../../lib/server/ServerInitializer");
-    var ServerResponse = require("../../lib/server/ServerResponse");
+    var Response = require("../../lib/controlling/Response");
     var ServerAjax = require("../../lib/server/ServerAjax");
 
     var apis;
 
     beforeEach(function() {
-        spyOn(ServerResponse, "setAppRoot");
+        spyOn(Response, "setAppRoot");
         spyOn(ServerAjax, "setup");
 
         apis = {};
@@ -24,7 +24,7 @@ describe("ServerInitializer", function() {
     });
 
     it("sets server response approot", function() {
-        expect(ServerResponse.setAppRoot).toHaveBeenCalledWith("/root");
+        expect(Response.setAppRoot).toHaveBeenCalledWith("/root");
     });
 
     it("sets up server ajax", function() {
