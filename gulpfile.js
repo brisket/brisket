@@ -95,7 +95,8 @@ gulp.task("bundle-for-client", function() {
 gulp.task("test-on-client", ["bundle-for-client"], function() {
     return clientSideJasmine({
         specs: CLIENT_TEST_BUNDLE,
-        vendor: "build_tools/vendor/es5-shim.js"
+        vendor: "build_tools/vendor/es5-shim.js",
+        debug: process.env.DEBUG === "true"
     });
 });
 

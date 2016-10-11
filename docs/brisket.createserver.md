@@ -83,6 +83,18 @@ App.addClientInitializer(function(options) {
 
 `serverConfig` is a good place to put any values that your end-users should not see but are necessary to run the server.
 
+#### redirectOnNewLayout
+Set `redirectOnNewLayout` to true to force Brisket to do a redirect on the client side when the next route uses a different Layout. When `redirectOnNewLayout` is false, Brisket will throw an error when navigating to a route with a different Layout.
+
+```
+var brisketServer = Brisket.createServer({
+    apis: {
+        'api': { host: 'http://api.example.com' }
+    },
+    redirectOnNewLayout: true
+});
+```
+
 #### debug
 Set `debug` to true to enable instrumentation with [Backbone Debugger](https://chrome.google.com/webstore/detail/backbone-debugger/bhljhndlimiafopmmhjlgfpnnchjjbhd?hl=en):
 
