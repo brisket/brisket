@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 1.4.0
+- client redirect when route uses different layout
+
 ### 1.3.0
 - expose require('brisket/testing')
 
