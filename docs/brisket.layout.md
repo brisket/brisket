@@ -10,13 +10,14 @@ A specialized Brisket.View that houses the shared content of every page (e.g. he
 * [Setting a Default Page Title](#setting-a-default-page-title)
 * [Using Environment Config In Template](#using-environment-config-in-template)
 * [Fetching Data for Your Layout](#fetching-data-for-your-layout)
-* [Getting Back to Normal](#getting-back-to-normal)
+* [Setting Layout State From a Route](#setting-layout-state-from-a-route)
+* [Changing Layout Data Between Routes](#changing-layout-data-between-routes)
 
 ## Basic Usage
 To create a Layout, extend Brisket.Layout:
 
 ```js
-var Layout = Brisket.Layout.extend();
+const Layout = Brisket.Layout.extend();
 ```
 
 This layout will not actually create a very useful page - it will be a blank screen for the user. Let's add a template.
@@ -25,17 +26,19 @@ This layout will not actually create a very useful page - it will be a blank scr
 A Layout is an implementation of [Brisket.View](brisket.view.md). Therefore, specifying a template for a layout is the same as for a view - [set up a templating engine](brisket.view.md#setting-a-templating-engine) and add a template. For this example, we'll use the built in [StringTemplateAdapter](brisket.templating.stringtemplateadapter.md):
 
 ```js
-var Layout = Brisket.Layout.extend({
+const Layout = Brisket.Layout.extend({
 
-    template: '<!DOCTYPE html> \
-        <html> \
-        <head> \
-            <title>My first Brisket app</title> \
-        </head> \
-        <body> \
-            <main class="main-content"><!-- Views go here --></main> \
-        </body> \
-        </html>',
+    template: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>My first Brisket app</title>
+        </head>
+        <body>
+            <main class='main-content'><!-- Views go here --></main>
+        </body>
+        </html>
+    `,
 
     content: '.main-content'
 
@@ -48,17 +51,19 @@ The Layout's template should be the full html for your pages i.e. it should incl
 To set a default page title for all pages, set the `defaultTitle` property on your Layout:
 
 ```js
-var Layout = Brisket.Layout.extend({
+const Layout = Brisket.Layout.extend({
 
-    template: '<!DOCTYPE html> \
-        <html> \
-        <head> \
-            <title>My first Brisket app</title> \
-        </head> \
-        <body> \
-            <main class="main-content"><!-- Views go here --></main> \
-        </body> \
-        </html>',
+    template: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>My first Brisket app</title>
+        </head>
+        <body>
+            <main class='main-content'><!-- Views go here --></main>
+        </body>
+        </html>
+    `,
 
     content: '.main-content',
 
@@ -74,7 +79,7 @@ You will likely want to expose some data from your [environmentConfig](brisket.c
 
 ```js
 
-var MustacheTemplateAdapter = TemplateAdapter.extend({
+const MustacheTemplateAdapter = TemplateAdapter.extend({
 
     templateToHTML: function(template, data, partials) {
         return Mustache.render(template, data, partials);
@@ -82,22 +87,26 @@ var MustacheTemplateAdapter = TemplateAdapter.extend({
 
 });
 
-var Layout = Brisket.Layout.extend({
+const Layout = Brisket.Layout.extend({
 
     templateAdapter: MustacheTemplateAdapter,
 
-    template: '<!DOCTYPE html> \
-        <html> \
-        <head> \
-            <title>My first Brisket app</title> \
-        </head> \
-        <body> \
-            <main class="main-content"><!-- Views go here --></main> \
-            <div class="environment-some-data"> \
-                {{environmentConfig.some}} \
-            </div> \
-        </body> \
-        </html>',
+    template({ environmentConfig }) {
+        return `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>My first Brisket app</title>
+            </head>
+            <body>
+                <main class='main-content'><!-- Views go here --></main>
+                <div class='environment-some-data'>
+                    ${ environmentConfig.some }
+                </div>
+            </body>
+            </html>
+        `;
+    },
 
     content: '.main-content',
 
@@ -110,13 +119,13 @@ var Layout = Brisket.Layout.extend({
 });
 ```
 
-The template will display the value "data" if environmentConfig is `{ "some": "data" }`.
+The template will display the value 'data' if environmentConfig is `{ 'some': 'data' }`.
 
 ## Fetching Data for Your Layout
 If your layout's display depends on data fetched from an API, implement the `fetchData` method. The return value of your implementation should be a promise. Here's an example:
 
 ```js
-var MustacheTemplateAdapter = TemplateAdapter.extend({
+const MustacheTemplateAdapter = TemplateAdapter.extend({
 
     templateToHTML: function(template, data, partials) {
         return Mustache.render(template, data, partials);
@@ -124,101 +133,144 @@ var MustacheTemplateAdapter = TemplateAdapter.extend({
 
 });
 
-var Model = Backbone.Model.extend({
-    url: '/api/model' // returns { some: "modeldata" }
+const Model = Backbone.Model.extend({
+    url: '/api/model' // returns { some: 'modeldata' }
 });
 
-var Layout = Brisket.Layout.extend({
+const Layout = Brisket.Layout.extend({
 
     templateAdapter: MustacheTemplateAdapter,
 
-    template: '<!DOCTYPE html> \
-        <html> \
-        <head> \
-            <title>My first Brisket app</title> \
-        </head> \
-        <body> \
-            <main class="main-content"><!-- Views go here --></main> \
-            <div class="environment-some-data"> \
-                {{model.some}} \
-            </div> \
-        </body> \
-        </html>',
+    template({ navModel }) {
+        return `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>My first Brisket app</title>
+            </head>
+            <body>
+                <main class='main-content'><!-- Views go here --></main>
+                <div class='environment-some-data'>
+                    ${ navModel.some }
+                </div>
+            </body>
+            </html>
+        `;
+    },
 
     content: '.main-content',
 
     defaultTitle: 'My first Brisket app',
 
-    model: null,
-
     fetchData: function() {
-        this.model = new Model();
+        this.navModel = new Model();
 
         return q.allSettled([
-            model.fetch()
+            navModel.fetch()
         ]);
     },
 
     logic: function() {
         return {
-            model: this.model.toJSON()
+            navModel: this.navModel.toJSON()
         };
     };
 
 });
 ```
 
-`fetchData` will be called before the Layout is rendered so the data in `this.model` will be ready for the Layout's template. **Note:** If the promise returned by `fetchData` is rejected, the page will show an error even if the current route executes successfully. Always return a resolved promise to avoid the Layout causing your pages to display errors.
+`fetchData` will be called before the Layout is rendered so the data in `this.navModel` will be ready for the Layout's template. **Note:** If the promise returned by `fetchData` is rejected, the page will show an error even if the current route executes successfully. Always return a resolved promise to avoid the Layout causing your pages to display errors.
 
-## Getting Back to Normal
-As you navigate between routes, your route handlers may modify the Layout. Implement a `backToNormal` method on your Layout to tell Brisket what the default state of your Layout looks like.
+## Setting Layout State From a Route
+Use `setLayoutData` in a route to pass data to your route's Layout:
 
 ```js
-var SomeView = Brisket.View.extend();
+const Layout = Brisket.Layout.extend({
 
-var SpecialRouter = Brisket.Router.extend({
-
-    routes: {
-        "special": "handleSpecial"
+    initialize() {
+        console.log(this.model.get('key')); // 'value from route'
     },
 
-    handleSpecial: function(layout) {
-        layout.beSpecial();
+    content: '.main-content',
 
-        return SomeView();
+    template({ key }) {
+        return `<div class='main-content'>${ key }</div>`;
     }
 
 });
 
-var Layout = Brisket.Layout.extend({
+const Router = Brisket.Router.extend({
 
-    template: '<!DOCTYPE html> \
-        <html> \
-        <head> \
-            <title>My first Brisket app</title> \
-        </head> \
-        <body> \
-            <main class="main-content"><!-- Views go here --></main> \
-        </body> \
-        </html>',
+    layout: Layout,
 
-    content: '.main-content',
-
-    defaultTitle: 'My first Brisket app',
-
-    beSpecial: function() {
-        // do some work like add a special class to layout
+    routes: {
+        'route': 'route'
     },
 
-    beNormal: function() {
-        // do some work like removing any special class on layout
-    },
+    route: function(setLayoutData) {
+        setLayoutData('key', 'value from route');
 
-    backToNormal: function() {
-        this.beNormal();
+        return new Brisket.View();
     }
 
 });
 ```
 
-In this example, when you go to any route in SpecialRouter, the layout will become special. When you navigate to a route that is outside of SpecialRouter, the layout should be normal. `backToNormal` executes before every route so that the layout is normal before doing any route-specific work.
+Setting Layout data is useful when you need to fetch different data or render different content based on the route's context.
+
+## Changing Layout Data Between Routes
+As you navigate between routes, your route handlers may modify the Layout's state. Implement a change event handler in your Layout to respond to changes.
+
+```js
+const Layout = Brisket.Layout.extend({
+
+    initialize() {
+        this.model.on({
+            'change:be': this.updatedBe
+        }, this);
+    },
+
+    content: '.main-content',
+
+    template({ be = 'normal' }) {
+        return `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>My first Brisket app</title>
+            </head>
+            <body class='be-${ be }'>
+                <main class='main-content'><!-- Views go here --></main>
+            </body>
+            </html>`;
+    },
+
+    updatedBe(model, wayToBe = 'normal') {
+        document.body.className = document.body.className.replace(/be-[^\b]+/, `be-${ wayToBe }`);
+    }
+
+});
+
+const SpecialRouter = Brisket.Router.extend({
+
+    layout: Layout,
+
+    routes: {
+        'normal': 'handleNormal',
+        'special': 'handleSpecial'
+    },
+
+    handleNormal() {
+        return new Brisket.View();
+    }
+
+    handleSpecial(setLayoutData) {
+        setLayoutData('be', 'special');
+
+        return new Brisket.View();
+    }
+
+});
+```
+
+In this example, when you go to the normal route, the layout will render 'be-normal' class on the body tag. Then when you navigate in the browser to the special route, the layout will update the body className to replace 'be-normal' with 'be-special'. Now when you navigate back to the normal route, the class name will update back to 'be-normal'.

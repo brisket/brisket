@@ -8,7 +8,7 @@ describe("ErrorPage", function() {
     var PageNotFoundView;
     var ErrorView;
 
-    describe("deprecated #create", function() {
+    describe("[deprecated] #create", function() {
 
         it("creates instances of errorViewMapping", function() {
             errorViewMapping = ErrorPage.create({
