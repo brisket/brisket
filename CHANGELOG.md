@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 1.5.0
+- rethrow route error if error view mapping missing
+
 ### 1.4.0
 - client redirect when route uses different layout
 
