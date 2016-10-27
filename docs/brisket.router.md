@@ -49,13 +49,11 @@ When there is an error in a Brisket route handler preparing a View, Brisket will
 ```js
 var ErrorView = Brisket.View.extend();
 
-var ErrorViewMapping = Brisket.ErrorViewMapping.create({
-  500: ErrorView
-});
-
 var BaseRouter = Brisket.Router.extend({
 
-  errorViewMapping: ErrorViewMapping
+  errorViewMapping: {
+    500: ErrorView
+  }
 
 });
 
@@ -87,14 +85,12 @@ Brisket also handles error responses from the API while fetching data:
 var BadRequestView = Brisket.View.extend();
 var ErrorView = Brisket.View.extend();
 
-var ErrorViewMapping = Brisket.ErrorViewMapping.create({
-  400: BadRequestView,
-  500: ErrorView
-});
-
 var BaseRouter = Brisket.Router.extend({
 
-  errorViewMapping: ErrorViewMapping
+  errorViewMapping: {
+    400: BadRequestView,
+    500: ErrorView
+  }
 
 });
 
@@ -124,14 +120,12 @@ Your route handler can also explicitly tell Brisket that you want to display an 
 var BadRequestView = Brisket.View.extend();
 var ErrorView = Brisket.View.extend();
 
-var ErrorViewMapping = Brisket.ErrorViewMapping.create({
-  400: BadRequestView,
-  500: ErrorView
-});
-
 var BaseRouter = Brisket.Router.extend({
 
-  errorViewMapping: ErrorViewMapping
+  errorViewMapping: {
+    400: BadRequestView,
+    500: ErrorView
+  }
 
 });
 

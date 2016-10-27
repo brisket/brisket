@@ -8,7 +8,6 @@ describe("ClientRenderingWorkflow", function() {
     var Layout = require("lib/viewing/Layout");
     var LayoutDelegate = require("lib/controlling/LayoutDelegate");
     var View = require("lib/viewing/View");
-    var ErrorViewMapping = require("lib/errors/ErrorViewMapping");
     var mockWindow = require("mock/mockWindow");
     var Errors = require("lib/errors/Errors");
     var Promise = require("bluebird");
@@ -51,10 +50,10 @@ describe("ClientRenderingWorkflow", function() {
 
         fakeRouter = {
             layout: ExampleLayout,
-            errorViewMapping: ErrorViewMapping.create({
+            errorViewMapping: {
                 404: PageNotFoundView,
                 500: ErrorView
-            }),
+            },
             otherMethod: jasmine.createSpy("other method"),
             onRouteStart: onRouteStart,
             onRouteComplete: onRouteComplete,
@@ -1182,6 +1181,22 @@ describe("ClientRenderingWorkflow", function() {
             fakeRouter.close.and.callFake(function() {
                 throw error;
             });
+
+            handlerReturns = callAugmentedRouterHandler();
+        });
+
+        itNotifiesAboutError();
+        itRethrowsError();
+    });
+
+    describe("when router doesn't have errorViewMapping and there is an error", function() {
+
+        beforeEach(function() {
+            fakeRouter.errorViewMapping = null;
+
+            originalHandler = function() {
+                return Promise.reject(error);
+            };
 
             handlerReturns = callAugmentedRouterHandler();
         });

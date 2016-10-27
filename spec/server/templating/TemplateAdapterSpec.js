@@ -1,8 +1,8 @@
 "use strict";
 
-var TemplateAdapter = require("../../../lib/templating/TemplateAdapter");
-
 describe("TemplateAdapter", function() {
+    var TemplateAdapter = require("../../../lib/templating/TemplateAdapter");
+
     var ExampleTemplateAdapter;
     var NthTemplateAdapter;
 

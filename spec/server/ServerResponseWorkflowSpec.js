@@ -220,7 +220,9 @@ describe("ServerResponseWorkflow", function() {
     }
 
     function whenAppHandlesError(expectThings) {
-        whenContentIsReturned = Promise.reject({
+        serverResponse.fail();
+
+        whenContentIsReturned = Promise.resolve({
             html: "unsuccessful content",
             serverResponse: serverResponse
         });

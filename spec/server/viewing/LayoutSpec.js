@@ -2,6 +2,7 @@
 
 describe("Layout", function() {
     var Layout = require("../../../lib/viewing/Layout");
+
     var ExampleLayout;
     var layout;
 

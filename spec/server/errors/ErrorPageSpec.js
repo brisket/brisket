@@ -1,34 +1,41 @@
 "use strict";
 
-var ErrorViews = require("lib/errors/ErrorViews");
-var Backbone = require("lib/application/Backbone");
+describe("ErrorPage", function() {
+    var ErrorPage = require("../../../lib/errors/ErrorPage");
+    var Backbone = require("../../../lib/application/Backbone");
 
-describe("ErrorViews", function() {
-
-    var errorViews;
+    var errorViewMapping;
     var PageNotFoundView;
     var ErrorView;
 
-    it("requires that a 500 error be specified", function() {
-        var creatingWithoutA500View = function() {
-            new ErrorViews({
-                404: Backbone.View
-            });
-        };
+    describe("deprecated #create", function() {
 
-        expect(creatingWithoutA500View).toThrow();
+        it("creates instances of errorViewMapping", function() {
+            errorViewMapping = ErrorPage.create({
+                500: Backbone.View
+            });
+
+            expect(errorViewMapping).toEqual({
+                500: Backbone.View
+            });
+        });
+
     });
 
     describe("#viewFor", function() {
 
         beforeEach(function() {
-            createValidErrorViews();
+            createValidErrorViewMapping();
+        });
+
+        it("returns null when errorViewMapping is empty", function() {
+            expect(ErrorPage.viewFor(null, 500)).toBe(null);
         });
 
         describe("when statusCode is in mapping", function() {
 
             it("returns the View mapping to the statusCode", function() {
-                expect(errorViews.viewFor(404)).toBe(PageNotFoundView);
+                expect(ErrorPage.viewFor(errorViewMapping, 404)).toBe(PageNotFoundView);
             });
 
         });
@@ -36,7 +43,7 @@ describe("ErrorViews", function() {
         describe("when statusCode is NOT in mapping", function() {
 
             it("returns the View mapping to a 500 statusCode", function() {
-                expect(errorViews.viewFor(234)).toBe(ErrorView);
+                expect(ErrorPage.viewFor(errorViewMapping, 234)).toBe(ErrorView);
             });
 
         });
@@ -46,13 +53,17 @@ describe("ErrorViews", function() {
     describe("#getStatus", function() {
 
         beforeEach(function() {
-            createValidErrorViews();
+            createValidErrorViewMapping();
+        });
+
+        it("returns 500 when errorViewMapping is empty", function() {
+            expect(ErrorPage.getStatus(null, 500)).toBe(500);
         });
 
         describe("when statusCode is in mapping", function() {
 
             it("returns the statusCode", function() {
-                expect(errorViews.getStatus(404)).toBe(404);
+                expect(ErrorPage.getStatus(errorViewMapping, 404)).toBe(404);
             });
 
         });
@@ -60,14 +71,14 @@ describe("ErrorViews", function() {
         describe("when statusCode is NOT in mapping", function() {
 
             it("returns 500", function() {
-                expect(errorViews.getStatus(234)).toBe(500);
+                expect(ErrorPage.getStatus(errorViewMapping, 234)).toBe(500);
             });
 
         });
 
     });
 
-    function createValidErrorViews() {
+    function createValidErrorViewMapping() {
         PageNotFoundView = Backbone.View.extend({
             name: "page_not_found"
         });
@@ -75,10 +86,10 @@ describe("ErrorViews", function() {
             name: "unhandled_error"
         });
 
-        errorViews = new ErrorViews({
+        errorViewMapping = {
             404: PageNotFoundView,
             500: ErrorView
-        });
+        };
     }
 
 });
