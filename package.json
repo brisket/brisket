@@ -41,13 +41,14 @@
     "gulp-bench": "~1.1.0",
     "gulp-if": "~2.0.0",
     "gulp-jasmine": "^2.0.1",
-    "gulp-jasmine-browser": "~0.2.3",
+    "gulp-jasmine-browser": "^1.7.1",
     "gulp-jsbeautifier": "^1.0.0",
     "gulp-jshint": "^1.11.2",
     "gulp-uglify": "~1.4.2",
     "gulp-util": "~3.0.7",
     "jasmine-spec-reporter": "^2.4.0",
     "jshint-stylish": "^2.0.1",
+    "phantomjs-prebuilt": "^2.1.13",
     "run-sequence": "^1.1.1",
     "vinyl-buffer": "~1.0.0",
     "vinyl-source-stream": "^1.1.0"
@@ -71,7 +72,8 @@
     "benchmarks": "gulp benchmarks",
     "client-tests": "gulp test-on-client",
     "preinstall": "./bin/setup-jsdom-version.sh",
-    "test": "gulp"
+    "test": "gulp",
+    "gulp": "gulp"
   },
   "repository": {
     "type": "git",
