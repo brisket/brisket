@@ -79,9 +79,9 @@ Check the [Bundling With Browserify](/docs/recipes/bundling-with-browserify.md) 
 
 Please refer to `package.json` for Brisket's dependencies
 
-### Node.js and io.js Support
+### Node.js Support
 
-Brisket supports Node.js `>=0.10.0` and io.js `>=3.0.0`.
+Brisket officially supports Node.js `>=4.0.0` i.e. it is tested in the latest versions of Node. However Brisket likely works with Node `0.10.0`, `0.11.0`, `0.12.0`, and io.js `>=3.0.0`.
 
 ### Browser Support
 Chrome, Firefox, Safari, iOS 6+, Android 4+, Internet Explorer 9+
