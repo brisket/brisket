@@ -1,6 +1,13 @@
 Changelog
 ==========
 
+### 1.6.0
+- send state to layout from route
+- create element with serverWindow on server
+- update gulp jasmine browser dep
+- combine choosing view and validating view
+- drop support for EOL versions of Node
+
 ### 1.5.0
 - rethrow route error if error view mapping missing
 
