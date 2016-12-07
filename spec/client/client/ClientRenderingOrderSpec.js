@@ -37,11 +37,11 @@ describe("Client side rendering order", function() {
     it("maintains a predictable rendering lifecycle for layout AND view on first request", function(done) {
         runFirstRequest().finally(function() {
             expect(renderingOrder).toEqual([
-                "layout fetches data",
                 "route handler runs",
+                "layout fetches data",
                 "layout reattaches",
                 "layout renders",
-                "layout instructions from route handler run",
+                "[deprecated] layout instructions from route handler run",
                 "view for route renders",
                 "layout enters DOM",
                 "view for route enters DOM"
@@ -58,7 +58,7 @@ describe("Client side rendering order", function() {
                 expect(renderingOrder).toEqual([
                     "route handler runs",
                     "layout back to normal",
-                    "layout instructions from route handler run",
+                    "[deprecated] layout instructions from route handler run",
                     "view for route renders",
                     "view for route enters DOM"
                 ]);
@@ -100,7 +100,7 @@ describe("Client side rendering order", function() {
         });
 
         spyOn(router.layout.prototype, "customMethod").and.callFake(function() {
-            renderingOrder.push("layout instructions from route handler run");
+            renderingOrder.push("[deprecated] layout instructions from route handler run");
         });
 
         spyOn(router.layout.prototype, "backToNormal").and.callFake(function() {

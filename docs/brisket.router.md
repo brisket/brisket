@@ -18,7 +18,7 @@ One of the biggest differences between a Backbone.Router and a Brisket Router is
 
 ```js
 var Book = Backbone.Model.extend({
-  urlRoot: "/api/book"
+  urlRoot: '/api/book'
 });
 
 var BookView = Brisket.View.extend();
@@ -26,7 +26,7 @@ var BookView = Brisket.View.extend();
 var BookRouter = Brisket.Router.extend({
 
   routes: {
-    "books/:id": "book"
+    'books/:id': 'book'
   },
 
   book: function(id) {
@@ -40,7 +40,7 @@ var BookRouter = Brisket.Router.extend({
 
 });
 
-// The "book" route tells Brisket that it wants to display the BookView.
+// The 'book' route tells Brisket that it wants to display the BookView.
 ```
 
 ### Handling Errors
@@ -60,7 +60,7 @@ var BaseRouter = Brisket.Router.extend({
 var BookRouter = BaseRouter.extend({
 
   routes: {
-    "books/:id": "book"
+    'books/:id': 'book'
   },
 
   book: function(id) {
@@ -68,7 +68,7 @@ var BookRouter = BaseRouter.extend({
 
     return book.fetch()
       .then(function() {
-        throw new Error("There is some problem");
+        throw new Error('There is some problem');
 
         return new BookView({ model: book });
       });
@@ -76,7 +76,7 @@ var BookRouter = BaseRouter.extend({
 
 });
 
-// The "book" route throws an error so Brisket displays ErrorView.
+// The 'book' route throws an error so Brisket displays ErrorView.
 ```
 
 Brisket also handles error responses from the API while fetching data:
@@ -97,7 +97,7 @@ var BaseRouter = Brisket.Router.extend({
 var BookRouter = BaseRouter.extend({
 
   routes: {
-    "books/:id": "book"
+    'books/:id': 'book'
   },
 
   book: function(id) {
@@ -111,7 +111,7 @@ var BookRouter = BaseRouter.extend({
 
 });
 
-// The "book" route got a 400 response from the API so Brisket displays BadRequestView.
+// The 'book' route got a 400 response from the API so Brisket displays BadRequestView.
 ```
 
 Your route handler can also explicitly tell Brisket that you want to display an error view:
@@ -132,7 +132,7 @@ var BaseRouter = Brisket.Router.extend({
 var BookRouter = BaseRouter.extend({
 
   routes: {
-    "books/:id": "book"
+    'books/:id': 'book'
   },
 
   book: function(id) {
@@ -141,7 +141,7 @@ var BookRouter = BaseRouter.extend({
 
 });
 
-// The "book" route explicitly requested the 400 error view so Brisket displays BadRequestView.
+// The 'book' route explicitly requested the 400 error view so Brisket displays BadRequestView.
 ```
 
 ### Specifying a Layout
@@ -155,7 +155,7 @@ var BookRouter = Brisket.Router.extend({
   layout: BookLayout,
 
   routes: {
-    "books/:id": "book"
+    'books/:id': 'book'
   },
 
   book: function(id) {
@@ -179,11 +179,11 @@ var BookRouter = Brisket.Router.extend({
   layout: BookLayout,
 
   routes: {
-    "books/:id": "book"
+    'books/:id': 'book'
   },
 
-  book: function(id, layout) {
-    layout.doSomething();
+  book: function(id, setLayoutData) {
+    setLayoutData('key', 'book value');
 
     return new BookView();
   }
@@ -191,10 +191,7 @@ var BookRouter = Brisket.Router.extend({
 });
 ```
 
-When the "book" route renders BookView, it will tell the BookLayout to `doSomething`.
-
-**Note:** If you modify the layout in a route handler, be sure to implement your Layout's [`backToNormal`](brisket.layout.md#getting-back-to-normal) that will return your layout to the default state between routes.
-
+When the 'book' route renders BookView, it will set the Layout's data 'key' to 'book value'. For more details on setting up your Layout to respond to data from the route, see [Setting Layout State From a Route](brisket.layout.md#setting-layout-state-from-a-route)
 
 ### Set/Update Page Title and Meta Tags
 You may want to set or update the page title and page meta tags when the route handler executes. Using `.withTitle()` and `.withMetatags()`, you can pass a new page title and meta tags to the view returned by the route handler:
@@ -204,16 +201,16 @@ var Metatags = Brisket.Layout.Metatags;
 var BookRouter = Brisket.Router.extend({
 
   routes: {
-    "books/:id": "book"
+    'books/:id': 'book'
   },
 
   book: function(id) {
     return new BookView()
-      .withTitle("Nice Books!")
+      .withTitle('Nice Books!')
       .withMetatags(new Metatags({
-        "description": "These are some great books.",
-        "og:image": "sample-books.jpg",
-        "canonical": "the-canonical-link"
+        'description': 'These are some great books.',
+        'og:image': 'sample-books.jpg',
+        'canonical': 'the-canonical-link'
       }));
   }
 
@@ -238,19 +235,25 @@ You may want to run some code when route handlers fire e.g. make a loading spinn
 ```js
 var BookRouter = Brisket.Router.extend({
 
-  onRouteStart: function(layout) {
-    layout.doSomething();
+  onRouteStart: function(setLayoutData) {
+    setLayoutData('key', 'value');
   },
 
-  onRouteComplete: function(layout) {
-    layout.doSomethingElse();
+  onRouteComplete: function(setLayoutData) {
+    setLayoutData('key2', 'value2');
   },
 
   routes: {
-    "books/:id": "book"
+    'books/:id': 'book'
   },
 
   book: function(id) {
+    /*
+     * Overrides layout data's key value - when the route renders, the
+     * layout will see 'key' is 'book value'
+     */
+    setLayoutData('key', 'book value');
+
     return new BookView();
   }
 
@@ -264,23 +267,23 @@ In some cases your route handlers may need to be cleaned up e.g. if you bind to 
 
 
 ```js
-var MyAppsEventBus = require("/path/to/my/apps/eventbus");
+var MyAppsEventBus = require('/path/to/my/apps/eventbus');
 var doSomething = function() {};
 
 var BookRouter = Brisket.Router.extend({
 
   routes: {
-    "books/:id": "book"
+    'books/:id': 'book'
   },
 
   book: function(id) {
-    MyAppsEventBus.on("some-event", doSomething);
+    MyAppsEventBus.on('some-event', doSomething);
 
     return new BookView();
   },
 
   onClose: function() {
-    MyAppsEventBus.off("some-event", doSomething);
+    MyAppsEventBus.off('some-event', doSomething);
   }
 
 });

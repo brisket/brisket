@@ -15,7 +15,7 @@ describe("public interface to Brisket", function() {
         expect(Brisket.View).toBe(requireFromLib("viewing/View"));
     });
 
-    it("exposes deprecated Brisket.ErrorViewMapping", function() {
+    it("[deprecated] exposes Brisket.ErrorViewMapping", function() {
         expect(Brisket.ErrorViewMapping.create).toBe(requireFromLib("errors/ErrorPage").create);
     });
 
@@ -35,7 +35,7 @@ describe("public interface to Brisket", function() {
         expect(Brisket.Templating.StringTemplateAdapter).toBe(requireFromLib("templating/StringTemplateAdapter"));
     });
 
-    it("exposes Brisket.Testing (deprecated)", function() {
+    it("[deprecated] exposes Brisket.Testing", function() {
         expect(Brisket.Testing).toBe(requireFromLib("testing/Testing"));
     });
 

@@ -8,7 +8,6 @@ describe("ServerRenderingWorkflow", function() {
     var ServerRequest = require("../../lib/server/ServerRequest");
     var ServerResponse = require("../../lib/server/ServerResponse");
     var Layout = require("../../lib/viewing/Layout");
-    var LayoutDelegate = require("../../lib/controlling/LayoutDelegate");
     var Errors = require("../../lib/errors/Errors");
 
     var originalHandler;
@@ -78,7 +77,7 @@ describe("ServerRenderingWorkflow", function() {
         handlerReturns = callAugmentedRouterHandler();
     });
 
-    it("passes request as option to layout", function(done) {
+    it("[deprecated] passes request as option to layout", function(done) {
         fakeRouter.layout = Layout.extend({
             initialize: function(options) {
                 expect(options.request.host).toEqual("mockHost");
@@ -100,11 +99,12 @@ describe("ServerRenderingWorkflow", function() {
         it("calls original handler with params, layoutDelegate, brisketRequest, and brisketResponse", function(done) {
             handlerReturns = callAugmentedRouterHandlerWith("param1", "param2");
 
-            handlerReturns.finally(function() {
-                expect(originalHandler)
-                    .toHaveBeenCalledWith("param1", "param2", jasmine.any(LayoutDelegate), mockServerRequest, mockServerResponse);
-                done();
-            });
+            handlerReturns
+                .then(function() {
+                    expect(originalHandler)
+                        .toHaveBeenCalledWith("param1", "param2", jasmine.any(Function), mockServerRequest, mockServerResponse);
+                    done();
+                });
         });
 
     });
@@ -157,6 +157,7 @@ describe("ServerRenderingWorkflow", function() {
             });
         });
 
+        itPassesEmptyRouteStateToLayout();
         itCleansUpLayoutAndRouter();
     });
 
@@ -248,6 +249,7 @@ describe("ServerRenderingWorkflow", function() {
             });
         });
 
+        itPassesRouteStateToLayout();
         itCleansUpLayoutAndRouter();
     });
 
@@ -276,6 +278,7 @@ describe("ServerRenderingWorkflow", function() {
             });
         });
 
+        itPassesRouteStateToLayout();
         itCleansUpLayoutAndRouter();
     });
 
@@ -301,6 +304,7 @@ describe("ServerRenderingWorkflow", function() {
             });
         });
 
+        itPassesEmptyRouteStateToLayout();
         itCleansUpLayoutAndRouter();
         itDoesNotRethrowError();
     });
@@ -340,6 +344,7 @@ describe("ServerRenderingWorkflow", function() {
             });
         });
 
+        itPassesEmptyRouteStateToLayout();
         itCleansUpLayoutAndRouter();
         itDoesNotRethrowError();
     });
@@ -379,6 +384,7 @@ describe("ServerRenderingWorkflow", function() {
             });
         });
 
+        itPassesEmptyRouteStateToLayout();
         itCleansUpLayoutAndRouter();
         itDoesNotRethrowError();
     });
@@ -418,6 +424,7 @@ describe("ServerRenderingWorkflow", function() {
             });
         });
 
+        itPassesEmptyRouteStateToLayout();
         itCleansUpLayoutAndRouter();
         itDoesNotRethrowError();
     });
@@ -462,6 +469,7 @@ describe("ServerRenderingWorkflow", function() {
             });
         });
 
+        itPassesEmptyRouteStateToLayout();
         itCleansUpLayoutAndRouter();
         itDoesNotRethrowError();
     });
@@ -501,13 +509,14 @@ describe("ServerRenderingWorkflow", function() {
             });
         });
 
-        it("returns status from layout failure", function(done) {
+        it("returns status from view failure", function(done) {
             handlerReturns.then(function(responseForRoute) {
-                expect(responseForRoute.serverResponse.statusCode).toBe(404);
+                expect(responseForRoute.serverResponse.statusCode).toBe(500);
                 done();
             });
         });
 
+        itPassesEmptyRouteStateToLayout();
         itCleansUpLayoutAndRouter();
         itDoesNotRethrowError();
     });
@@ -545,6 +554,7 @@ describe("ServerRenderingWorkflow", function() {
             });
         });
 
+        itPassesEmptyRouteStateToLayout();
         itCleansUpLayoutAndRouter();
         itDoesNotRethrowError();
     });
@@ -592,6 +602,51 @@ describe("ServerRenderingWorkflow", function() {
         itNotifiesAboutError();
         itRethrowsError();
     });
+
+    function itPassesRouteStateToLayout() {
+
+        it("passes recorded state as model to layout", function(done) {
+            originalHandler = function(setLayoutData) {
+                setLayoutData("key1", "value1");
+                setLayoutData("key2", "value2");
+
+                return expectedView;
+            };
+
+            fakeRouter.layout = Layout.extend({
+                initialize: function() {
+                    expect(this.model.get("key1")).toBe("value1");
+                    expect(this.model.get("key2")).toBe("value2");
+                    done();
+                }
+            });
+
+            callAugmentedRouterHandler();
+        });
+
+    }
+
+    function itPassesEmptyRouteStateToLayout() {
+
+        it("passes empty state as model to layout", function(done) {
+            originalHandler = function(setLayoutData) {
+                setLayoutData("key1", "value1");
+                setLayoutData("key2", "value2");
+
+                throw new Error();
+            };
+
+            fakeRouter.layout = Layout.extend({
+                initialize: function() {
+                    expect(this.model.isEmpty()).toBe(true);
+                    done();
+                }
+            });
+
+            callAugmentedRouterHandler();
+        });
+
+    }
 
     function itNotifiesAboutError() {
         it("notifies about error", function(done) {

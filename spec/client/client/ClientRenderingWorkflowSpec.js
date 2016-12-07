@@ -6,7 +6,6 @@ describe("ClientRenderingWorkflow", function() {
     var ClientRequest = require("lib/client/ClientRequest");
     var ClientResponse = require("lib/client/ClientResponse");
     var Layout = require("lib/viewing/Layout");
-    var LayoutDelegate = require("lib/controlling/LayoutDelegate");
     var View = require("lib/viewing/View");
     var mockWindow = require("mock/mockWindow");
     var Errors = require("lib/errors/Errors");
@@ -219,7 +218,7 @@ describe("ClientRenderingWorkflow", function() {
                     expect(originalHandler).toHaveBeenCalledWith(
                         "param1",
                         "param2",
-                        jasmine.any(LayoutDelegate),
+                        jasmine.any(Function),
                         mockClientRequest,
                         mockClientResponse
                     );
@@ -455,9 +454,9 @@ describe("ClientRenderingWorkflow", function() {
         it("logs the jqxhr to console", function(done) {
             handlerReturns
                 .then(function() {
-                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual({
+                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                         status: 404
-                    });
+                    }));
                 })
                 .catch(failTest)
                 .finally(done);
@@ -495,9 +494,9 @@ describe("ClientRenderingWorkflow", function() {
         it("logs the jqxhr to console", function(done) {
             handlerReturns
                 .then(function() {
-                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual({
+                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                         status: 500
-                    });
+                    }));
                 })
                 .catch(failTest)
                 .finally(done);
@@ -535,9 +534,9 @@ describe("ClientRenderingWorkflow", function() {
         it("logs the jqxhr to console", function(done) {
             handlerReturns
                 .then(function() {
-                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual({
+                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                         status: 503
-                    });
+                    }));
                 })
                 .catch(failTest)
                 .finally(done);
@@ -1078,7 +1077,7 @@ describe("ClientRenderingWorkflow", function() {
                     .catch(failTest)
                     .finally(function() {
                         expect(onRouteStart).toHaveBeenCalledWith(
-                            jasmine.any(Layout),
+                            jasmine.any(Function),
                             mockClientRequest,
                             mockClientResponse
                         );
@@ -1098,7 +1097,7 @@ describe("ClientRenderingWorkflow", function() {
                 handlerReturns
                     .then(function() {
                         expect(onRouteComplete).toHaveBeenCalledWith(
-                            jasmine.any(Layout),
+                            jasmine.any(Function),
                             mockClientRequest,
                             mockClientResponse
                         );
@@ -1123,7 +1122,7 @@ describe("ClientRenderingWorkflow", function() {
                 bothReturn
                     .then(function() {
                         expect(onRouteComplete).toHaveBeenCalledWith(
-                            jasmine.any(Layout),
+                            jasmine.any(Function),
                             mockClientRequest,
                             mockClientResponse
                         );
