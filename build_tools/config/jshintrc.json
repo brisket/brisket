@@ -5,6 +5,8 @@
     "strict": true,
     "trailing": true,
     "camelcase": true,
+    "noarg": true,
+    "curly": true,
     "indent": 4,
     "globals": {
         "console": true,
