@@ -99,15 +99,15 @@ describe("ServerAjax", function() {
             givenApiRequestWillSucceed();
 
             Backbone.ajax({
-                    url: "/api/path/to/data",
-                    data: {
-                        a: "param1",
-                        b: [
-                            "b1",
-                            "b2"
-                        ]
-                    }
-                })
+                url: "/api/path/to/data",
+                data: {
+                    a: "param1",
+                    b: [
+                        "b1",
+                        "b2"
+                    ]
+                }
+            })
                 .then(function() {
                     thenRequestMadeWith({
                         url: "http://api.example.com/path/to/data?a=param1&b=b1%2Cb2",
@@ -131,12 +131,12 @@ describe("ServerAjax", function() {
             givenApiRequestWillSucceed();
 
             Backbone.ajax({
-                    url: "/api/path/to/data",
-                    headers: {
-                        "x-my-custom-header": "some value",
-                        "x-some-other-header": "some other value"
-                    }
-                })
+                url: "/api/path/to/data",
+                headers: {
+                    "x-my-custom-header": "some value",
+                    "x-some-other-header": "some other value"
+                }
+            })
                 .then(function() {
                     thenRequestMadeWith({
                         url: "http://api.example.com/path/to/data",
@@ -158,10 +158,10 @@ describe("ServerAjax", function() {
             givenApiRequestWillSucceed();
 
             Backbone.ajax({
-                    url: "/api/path/to/data",
-                    success: successCallback,
-                    error: errorCallback
-                })
+                url: "/api/path/to/data",
+                success: successCallback,
+                error: errorCallback
+            })
                 .then(function() {
                     expect(successCallback).toHaveBeenCalledWith({
                         some: "data"
@@ -180,10 +180,10 @@ describe("ServerAjax", function() {
             givenApiRequestWillSucceedNonJSON();
 
             Backbone.ajax({
-                    url: "/api/path/to/data",
-                    success: successCallback,
-                    error: errorCallback,
-                })
+                url: "/api/path/to/data",
+                success: successCallback,
+                error: errorCallback,
+            })
                 .then(function() {
                     expect(successCallback).toHaveBeenCalledWith("data");
                     expect(errorCallback).not.toHaveBeenCalled();
@@ -196,10 +196,10 @@ describe("ServerAjax", function() {
             givenApiRequestWillFail();
 
             Backbone.ajax({
-                    url: "/api/path/to/data",
-                    success: successCallback,
-                    error: errorCallback
-                })
+                url: "/api/path/to/data",
+                success: successCallback,
+                error: errorCallback
+            })
                 .catch(function() {
                     expect(errorCallback).toHaveBeenCalledWith({
                         proxy: "http://proxy.example.com",
@@ -225,10 +225,10 @@ describe("ServerAjax", function() {
             successCallback.and.throwError(error);
 
             Backbone.ajax({
-                    url: "/api/path/to/data",
-                    success: successCallback,
-                    error: errorCallback
-                })
+                url: "/api/path/to/data",
+                success: successCallback,
+                error: errorCallback
+            })
                 .catch(function(reason) {
                     expect(reason).toBe(error);
                 })
@@ -243,10 +243,10 @@ describe("ServerAjax", function() {
             errorCallback.and.throwError(error);
 
             Backbone.ajax({
-                    url: "/api/path/to/data",
-                    success: successCallback,
-                    error: errorCallback
-                })
+                url: "/api/path/to/data",
+                success: successCallback,
+                error: errorCallback
+            })
                 .catch(function(reason) {
                     expect(reason).toBe(error);
                 })

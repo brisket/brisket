@@ -110,9 +110,6 @@ describe("Server", function() {
                 some: "data"
             };
 
-            console.log(validConfigWith({
-                environmentConfig: environmentConfig
-            }));
             Server.create(validConfigWith({
                 environmentConfig: environmentConfig
             }));

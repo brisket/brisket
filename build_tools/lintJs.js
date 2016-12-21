@@ -1,15 +1,27 @@
 "use strict";
 
 var gulp = require("gulp");
-var jshint = require("gulp-jshint");
-var stylish = require("jshint-stylish");
-var jshintConfig = require("./config/jshintrc.json");
+var eslint = require("gulp-eslint");
+var gulpif = require("gulp-if");
+var path = require("path");
 
-function lintJs(what) {
-    return gulp.src(what)
-        .pipe(jshint(jshintConfig))
-        .pipe(jshint.reporter(stylish))
-        .pipe(jshint.reporter("fail"));
+function lintJs(options) {
+    var settings = options || {};
+
+    return gulp.src(settings.what)
+        .pipe(eslint({
+            fix: !!settings.fix,
+            configFile: path.join(__dirname, "config/eslintrc.json")
+        }))
+        .pipe(eslint.format())
+        .pipe(eslint.failAfterError())
+        .pipe(gulpif(isFixed, gulp.dest(function(file) {
+            return file.base;
+        })));
+}
+
+function isFixed(file) {
+    return file.eslint && file.eslint.fixed;
 }
 
 module.exports = lintJs;

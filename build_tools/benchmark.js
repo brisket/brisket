@@ -5,8 +5,8 @@ var bench = require("gulp-bench");
 
 function benchmark(what) {
     return gulp.src(what, {
-            read: false
-        })
+        read: false
+    })
         .pipe(bench())
         .pipe(gulp.dest("."));
 }
