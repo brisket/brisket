@@ -42,7 +42,7 @@
     "gulp-if": "^2.0.2",
     "gulp-jasmine": "^2.0.1",
     "gulp-jasmine-browser": "^1.7.1",
-    "gulp-jsbeautifier": "^1.0.0",
+    "gulp-jsbeautifier": "^2.0.3",
     "gulp-jshint": "^2.0.4",
     "gulp-util": "~3.0.7",
     "jasmine-spec-reporter": "^2.4.0",
