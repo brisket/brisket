@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "bluebird": ">=2.0.0",
-    "browserify": "^10.2.6",
+    "browserify": "^13.1.1",
     "glob": "^7.1.1",
     "gulp": "^3.9.0",
     "gulp-bench": "~1.1.0",
