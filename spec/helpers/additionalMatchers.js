@@ -1,5 +1,6 @@
+"use strict";
+
 (function(global, undefined) {
-    "use strict";
 
     var additionalMatchers = {
 

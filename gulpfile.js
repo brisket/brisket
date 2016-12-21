@@ -1,7 +1,6 @@
 "use strict";
 
 var gulp = require("gulp");
-var beautifyJs = require("./build_tools/beautifyJs");
 var lintJs = require("./build_tools/lintJs");
 var bundle = require("./build_tools/bundle");
 var sequence = require("./build_tools/sequence");
@@ -33,12 +32,11 @@ var ALL_CODE = [
     NOT_BUILD_DIRECTORY_THOUGH
 ];
 
-gulp.task("beautifyJs", function() {
-    return beautifyJs(ALL_CODE);
-});
-
 gulp.task("lintJs", function() {
-    return lintJs(ALL_CODE);
+    return lintJs({
+        what: ALL_CODE,
+        fix: process.env.CI !== "true"
+    });
 });
 
 gulp.task("test-on-server", function() {
@@ -101,8 +99,7 @@ gulp.task("test-on-client", ["bundle-for-client"], function() {
 });
 
 gulp.task("default", sequence(
-    "beautifyJs", [
-        "lintJs",
+    "lintJs", [
         "test-on-server",
         "test-debug-mode",
         "test-on-client"

@@ -11,7 +11,6 @@ describe("HasChildViews", function() {
     var childView;
     var viewRelationship;
     var anotherChildView;
-    var childViewWithIdentifier;
 
     beforeEach(function() {
         ParentView = Backbone.View.extend(_.extend({}, HasChildViews, {
@@ -24,7 +23,6 @@ describe("HasChildViews", function() {
         childView = new ChildView();
 
         anotherChildView = new ChildView();
-        childViewWithIdentifier = null;
         viewRelationship = null;
 
         expectParentChildCountToBe(0);
@@ -365,3 +363,4 @@ describe("HasChildViews", function() {
 // limitations under the License.
 //
 // ----------------------------- END-OF-FILE ----------------------------------
+

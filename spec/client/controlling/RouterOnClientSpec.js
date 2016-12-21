@@ -8,7 +8,6 @@ describe("Routing on server", function() {
     var routeHandler;
     var ExampleRouter;
     var router;
-    var handledRoute;
 
     beforeEach(function() {
         spyOn(ClientRenderingWorkflow, "execute");
@@ -55,7 +54,7 @@ describe("Routing on server", function() {
     describe("when route does NOT exist, Backbone.history", function() {
 
         beforeEach(function() {
-            handledRoute = Backbone.history.loadUrl("notroute");
+            Backbone.history.loadUrl("notroute");
         });
 
         it("does NOT execute a handler", function() {

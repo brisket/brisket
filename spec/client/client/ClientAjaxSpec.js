@@ -40,7 +40,8 @@ describe("ClientAjax", function() {
         it("makes ajax call with config passed to it", function(done) {
             givenAjaxCallWillSucceed();
 
-            Backbone.ajax(supportedAjaxConfig()).then(function() {
+            Backbone.ajax(supportedAjaxConfig())
+                .then(function() {
                     expect(ClientTestable.BackboneNativeAjax).toHaveBeenCalledWith(jasmine.objectContaining({
                         url: "/api/url",
                         type: "GET",
@@ -60,7 +61,8 @@ describe("ClientAjax", function() {
                 url: "/api/from/bootstrappedData"
             });
 
-            Backbone.ajax(ajaxConfig).then(function(data) {
+            Backbone.ajax(ajaxConfig)
+                .then(function(data) {
                     expect(data).toEqual({
                         "from": "bootstrappedData"
                     });
@@ -96,7 +98,8 @@ describe("ClientAjax", function() {
                 error: errorCallback
             });
 
-            Backbone.ajax(ajaxConfig).catch(function(reason) {
+            Backbone.ajax(ajaxConfig)
+                .catch(function(reason) {
                     expect(reason).toBe(error);
                 })
                 .finally(done);

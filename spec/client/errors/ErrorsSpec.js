@@ -38,10 +38,8 @@ describe("Errors", function() {
 
         it("calls event handler with object", function() {
             expect(eventHandler).toHaveBeenCalledWith({
-                    some: "object"
-                },
-                mockRequest
-            );
+                some: "object"
+            }, mockRequest);
         });
 
     });
