@@ -4,9 +4,6 @@ var gulp = require("gulp");
 var glob = require("glob");
 var browserify = require("browserify");
 var source = require("vinyl-source-stream");
-var gulpif = require("gulp-if");
-var uglify = require("gulp-uglify");
-var buffer = require("vinyl-buffer");
 
 function bundle(options) {
     var settings = options || {};
@@ -15,7 +12,6 @@ function bundle(options) {
     var ignore = settings.ignore;
     var alias = settings.alias || {};
     var mapDirectories = settings.mapDirectories || {};
-    var shouldMinify = settings.minify === true;
     var shouldDebug = !!settings.debug;
 
     var toBundle = files(src);
@@ -34,13 +30,6 @@ function bundle(options) {
 
     return bundler.bundle()
         .pipe(source(dest))
-        .pipe(buffer())
-        .pipe(gulpif(shouldMinify, uglify({
-            compress: {
-                "hoist_funs": false,
-                "hoist_vars": false
-            }
-        })))
         .pipe(gulp.dest("."));
 }
 
