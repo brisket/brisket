@@ -189,6 +189,8 @@ const Layout = Brisket.Layout.extend({
 
     initialize() {
         console.log(this.model.get('key')); // 'value from route'
+        console.log(this.model.get('key2')); // 'value2 from route'
+        console.log(this.model.get('key3')); // 'value3 from route'
     },
 
     content: '.main-content',
@@ -209,6 +211,10 @@ const Router = Brisket.Router.extend({
 
     route: function(setLayoutData) {
         setLayoutData('key', 'value from route');
+        setLayoutData({
+            'key2': 'value2 from route',
+            'key3': 'value3 from route'
+        });
 
         return new Brisket.View();
     }

@@ -608,7 +608,10 @@ describe("ServerRenderingWorkflow", function() {
         it("passes recorded state as model to layout", function(done) {
             originalHandler = function(setLayoutData) {
                 setLayoutData("key1", "value1");
-                setLayoutData("key2", "value2");
+                setLayoutData({
+                    "key2": "value2",
+                    "key3": "value3"
+                });
 
                 return expectedView;
             };
@@ -617,6 +620,7 @@ describe("ServerRenderingWorkflow", function() {
                 initialize: function() {
                     expect(this.model.get("key1")).toBe("value1");
                     expect(this.model.get("key2")).toBe("value2");
+                    expect(this.model.get("key3")).toBe("value3");
                     done();
                 }
             });
@@ -631,7 +635,10 @@ describe("ServerRenderingWorkflow", function() {
         it("passes empty state as model to layout", function(done) {
             originalHandler = function(setLayoutData) {
                 setLayoutData("key1", "value1");
-                setLayoutData("key2", "value2");
+                setLayoutData({
+                    "key2": "value2",
+                    "key3": "value3"
+                });
 
                 throw new Error();
             };
