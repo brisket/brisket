@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 1.7.0
+- setLayoutData with multiple key/values
+
 ### 1.6.0
 - send state to layout from route
 - create element with serverWindow on server
