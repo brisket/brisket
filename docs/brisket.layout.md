@@ -78,18 +78,11 @@ Now every page's page title will be 'My first Brisket app' unless you set a cust
 You will likely want to expose some data from your [environmentConfig](brisket.createserver.md#environmentConfig) to the Layout template. The `environmentConfig` will be accessible to your Layout's methods as `this.environmentConfig`. Expose the environmentConfig through the logic method ([read here for more details](brisket.view.md#exposing-data-to-a-template)).
 
 ```js
-
-const MustacheTemplateAdapter = TemplateAdapter.extend({
-
-    templateToHTML: function(template, data, partials) {
-        return Mustache.render(template, data, partials);
-    }
-
-});
-
 const Layout = Brisket.Layout.extend({
 
-    templateAdapter: MustacheTemplateAdapter,
+    initialize() {
+        console.log(this.model.get("environmentConfig").some); // data
+    },
 
     template({ environmentConfig }) {
         return `
@@ -108,13 +101,7 @@ const Layout = Brisket.Layout.extend({
         `;
     },
 
-    content: '.main-content',
-
-    logic: function() {
-        return {
-            environmentConfig: this.environmentConfig
-        };
-    }
+    content: '.main-content'
 
 });
 ```
@@ -125,21 +112,11 @@ The template will display the value 'data' if environmentConfig is `{ 'some': 'd
 If your layout's display depends on data fetched from an API, implement the `fetchData` method. The return value of your implementation should be a promise. Here's an example:
 
 ```js
-const MustacheTemplateAdapter = TemplateAdapter.extend({
-
-    templateToHTML: function(template, data, partials) {
-        return Mustache.render(template, data, partials);
-    }
-
-});
-
 const Model = Backbone.Model.extend({
     url: '/api/model' // returns { some: 'modeldata' }
 });
 
 const Layout = Brisket.Layout.extend({
-
-    templateAdapter: MustacheTemplateAdapter,
 
     template({ navModel }) {
         return `

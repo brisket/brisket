@@ -62,11 +62,26 @@ describe("ServerRenderingWorkflow", function() {
         spyOn(ServerResponse, "create").and.returnValue(mockServerResponse);
     });
 
-    it("ensures layout has environmentConfig before it is passed to route handlers", function(done) {
+    it("[deprecated] ensures layout has environmentConfig before it is passed to route handlers", function(done) {
         fakeRouter.layout = Layout.extend({
 
             beforeRender: function() {
                 expect(this.environmentConfig).toEqual({
+                    "made": "in server rendering spec"
+                });
+                done();
+            }
+
+        });
+
+        handlerReturns = callAugmentedRouterHandler();
+    });
+
+    it("ensures layout's model has environmentConfig", function(done) {
+        fakeRouter.layout = Layout.extend({
+
+            initialize: function() {
+                expect(this.model.get("environmentConfig")).toEqual({
                     "made": "in server rendering spec"
                 });
                 done();
@@ -645,7 +660,9 @@ describe("ServerRenderingWorkflow", function() {
 
             fakeRouter.layout = Layout.extend({
                 initialize: function() {
-                    expect(this.model.isEmpty()).toBe(true);
+                    expect(this.model.attributes).toEqual({
+                        environmentConfig: environmentConfig
+                    });
                     done();
                 }
             });
