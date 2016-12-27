@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 1.8.0
+- easier access to environmentConfig in Layout
+
 ### 1.7.0
 - setLayoutData with multiple key/values
 
