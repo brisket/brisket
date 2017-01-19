@@ -1,11 +1,11 @@
 "use strict";
 
 describe("SetupLinksAndPushState", function() {
-    var SetupLinksAndPushState = require("lib/client/SetupLinksAndPushState");
-    var Browser = require("lib/client/Browser");
-    var ClientRequest = require("lib/client/ClientRequest");
-    var Backbone = require("lib/application/Backbone");
-    var $ = require("lib/application/jquery");
+    var SetupLinksAndPushState = require("../../../lib/client/SetupLinksAndPushState");
+    var Browser = require("../../../lib/client/Browser");
+    var ClientRequest = require("../../../lib/client/ClientRequest");
+    var Backbone = require("../../../lib/application/Backbone");
+    var $ = require("../../../lib/application/jquery");
 
     var $fixture;
     var $link;

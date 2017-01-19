@@ -1,7 +1,7 @@
 "use strict";
 
 describe("isExternalLinkTarget", function() {
-    var isExternalLinkTarget = require("lib/controlling/isExternalLinkTarget");
+    var isExternalLinkTarget = require("../../../lib/controlling/isExternalLinkTarget");
 
     it("returns true when target is '_blank'", function() {
         expect(isExternalLinkTarget("_blank")).toBe(true);

@@ -1,9 +1,9 @@
 "use strict";
 
 describe("Client side rendering order", function() {
-    var ClientRenderingWorkflow = require("lib/client/ClientRenderingWorkflow");
-    var View = require("lib/viewing/View");
-    var MockRouter = require("mock/MockRouter");
+    var ClientRenderingWorkflow = require("../../../lib/client/ClientRenderingWorkflow");
+    var View = require("../../../lib/viewing/View");
+    var MockRouter = require("../../mock/MockRouter");
 
     var renderingOrder;
     var expectedView;

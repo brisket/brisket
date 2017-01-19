@@ -1,14 +1,14 @@
 "use strict";
 
 describe("ClientRenderingWorkflow", function() {
-    var ClientRenderingWorkflow = require("lib/client/ClientRenderingWorkflow");
-    var ClientRenderer = require("lib/client/ClientRenderer");
-    var ClientRequest = require("lib/client/ClientRequest");
-    var ClientResponse = require("lib/client/ClientResponse");
-    var Layout = require("lib/viewing/Layout");
-    var View = require("lib/viewing/View");
-    var mockWindow = require("mock/mockWindow");
-    var Errors = require("lib/errors/Errors");
+    var ClientRenderingWorkflow = require("../../../lib/client/ClientRenderingWorkflow");
+    var ClientRenderer = require("../../../lib/client/ClientRenderer");
+    var ClientRequest = require("../../../lib/client/ClientRequest");
+    var ClientResponse = require("../../../lib/client/ClientResponse");
+    var Layout = require("../../../lib/viewing/Layout");
+    var View = require("../../../lib/viewing/View");
+    var mockWindow = require("../../mock/mockWindow");
+    var Errors = require("../../../lib/errors/Errors");
     var Promise = require("bluebird");
 
     var originalHandler;

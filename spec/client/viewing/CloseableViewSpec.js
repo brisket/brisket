@@ -1,9 +1,9 @@
 "use strict";
 
 describe("CloseableView", function() {
-    var CloseableView = require("lib/viewing/CloseableView");
-    var HasChildViews = require("lib/viewing/HasChildViews");
-    var Backbone = require("lib/application/Backbone");
+    var CloseableView = require("../../../lib/viewing/CloseableView");
+    var HasChildViews = require("../../../lib/viewing/HasChildViews");
+    var Backbone = require("../../../lib/application/Backbone");
     var _ = require("underscore");
 
     var ViewThatCloses;

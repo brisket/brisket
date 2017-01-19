@@ -45,8 +45,10 @@
     "gulp-jasmine-browser": "^1.7.1",
     "gulp-util": "~3.0.7",
     "jasmine-spec-reporter": "^2.4.0",
+    "nock": "^9.0.2",
     "phantomjs-prebuilt": "^2.1.13",
     "run-sequence": "^1.1.1",
+    "supertest": "^2.0.1",
     "vinyl-source-stream": "^1.1.0"
   },
   "browser": {

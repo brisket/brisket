@@ -1,9 +1,9 @@
 "use strict";
 
 describe("ClientResponse", function() {
-    var ClientResponse = require("lib/client/ClientResponse");
-    var Response = require("lib/controlling/Response");
-    var mockWindow = require("mock/mockWindow");
+    var ClientResponse = require("../../../lib/client/ClientResponse");
+    var Response = require("../../../lib/controlling/Response");
+    var mockWindow = require("../../mock/mockWindow");
 
     var clientResponse;
     var windough;

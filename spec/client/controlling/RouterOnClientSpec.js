@@ -1,9 +1,9 @@
 "use strict";
 
 describe("Routing on server", function() {
-    var Router = require("lib/controlling/Router");
+    var Router = require("../../../lib/controlling/Router");
     var Backbone = require("backbone");
-    var ClientRenderingWorkflow = require("lib/client/ClientRenderingWorkflow");
+    var ClientRenderingWorkflow = require("../../../lib/client/ClientRenderingWorkflow");
 
     var routeHandler;
     var ExampleRouter;

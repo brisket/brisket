@@ -1,7 +1,7 @@
 "use strict";
 
 describe("constructQualifiedUrl", function() {
-    var constructQualifiedUrl = require("lib/util/constructQualifiedUrl");
+    var constructQualifiedUrl = require("../../../lib/util/constructQualifiedUrl");
 
     describe("parameters", function() {
 

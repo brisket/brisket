@@ -1,10 +1,10 @@
 "use strict";
 
 describe("App starts client", function() {
-    var App = require("lib/application/App");
-    var ClientInitializer = require("lib/client/ClientInitializer");
-    var SetupLinksAndPushState = require("lib/client/SetupLinksAndPushState");
-    var Browser = require("lib/client/Browser");
+    var App = require("../../../lib/application/App");
+    var ClientInitializer = require("../../../lib/client/ClientInitializer");
+    var SetupLinksAndPushState = require("../../../lib/client/SetupLinksAndPushState");
+    var Browser = require("../../../lib/client/Browser");
 
     var startConfig;
     var serverRendererStartScript;

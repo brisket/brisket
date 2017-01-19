@@ -1,7 +1,7 @@
 "use strict";
 
 describe("Errors", function() {
-    var Errors = require("lib/errors/Errors");
+    var Errors = require("../../../lib/errors/Errors");
 
     var eventHandler;
     var mockRequest;

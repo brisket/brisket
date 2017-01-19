@@ -1,8 +1,8 @@
 "use strict";
 
 describe("Events", function() {
-    var Events = require("lib/events/Events");
-    var Backbone = require("lib/application/Backbone");
+    var Events = require("../../../lib/events/Events");
+    var Backbone = require("../../../lib/application/Backbone");
 
     it("proxies on to Backbone.Events", function() {
         expect(Events.on).toBe(Backbone.Events.on);

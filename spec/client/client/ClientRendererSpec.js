@@ -1,11 +1,11 @@
 "use strict";
 
 describe("ClientRenderer", function() {
-    var ClientRenderer = require("lib/client/ClientRenderer");
-    var HasPageLevelData = require("lib/traits/HasPageLevelData");
-    var Layout = require("lib/viewing/Layout");
-    var View = require("lib/viewing/View");
-    var $ = require("lib/application/jquery");
+    var ClientRenderer = require("../../../lib/client/ClientRenderer");
+    var HasPageLevelData = require("../../../lib/traits/HasPageLevelData");
+    var Layout = require("../../../lib/viewing/Layout");
+    var View = require("../../../lib/viewing/View");
+    var $ = require("../../../lib/application/jquery");
 
     var layout;
     var view;

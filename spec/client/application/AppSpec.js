@@ -1,8 +1,8 @@
 "use strict";
 
 describe("App", function() {
-    var App = require("lib/application/App");
-    var Environment = require("lib/environment/Environment");
+    var App = require("../../../lib/application/App");
+    var Environment = require("../../../lib/environment/Environment");
 
     var initializer;
     var startConfig;

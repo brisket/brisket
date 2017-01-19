@@ -1,9 +1,9 @@
 "use strict";
 
 describe("RenderableView", function() {
-    var RenderableView = require("lib/viewing/RenderableView");
-    var Backbone = require("lib/application/Backbone");
-    var TemplateAdapter = require("lib/templating/TemplateAdapter");
+    var RenderableView = require("../../../lib/viewing/RenderableView");
+    var Backbone = require("../../../lib/application/Backbone");
+    var TemplateAdapter = require("../../../lib/templating/TemplateAdapter");
 
     var model;
     var BaseRenderableView;

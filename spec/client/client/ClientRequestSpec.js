@@ -1,8 +1,8 @@
 "use strict";
 
 describe("ClientRequest", function() {
-    var ClientRequest = require("lib/client/ClientRequest");
-    var mockWindow = require("mock/mockWindow");
+    var ClientRequest = require("../../../lib/client/ClientRequest");
+    var mockWindow = require("../../mock/mockWindow");
 
     var clientRequest;
     var requestId;

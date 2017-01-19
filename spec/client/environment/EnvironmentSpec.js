@@ -1,7 +1,7 @@
 "use strict";
 
 describe("Environment", function() {
-    var Environment = require("lib/environment/Environment");
+    var Environment = require("../../../lib/environment/Environment");
 
     it("can be fully mocked out by just setting isServer", function() {
         spyOn(Environment, "isServer").and.returnValue(true);
