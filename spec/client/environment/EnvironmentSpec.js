@@ -45,7 +45,7 @@ describe("Environment", function() {
 });
 
 // ----------------------------------------------------------------------------
-// Copyright (C) 2016 Bloomberg Finance L.P.
+// Copyright (C) 2017 Bloomberg Finance L.P.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
