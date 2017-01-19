@@ -1,10 +1,10 @@
 "use strict";
 
 describe("ClientInitializer", function() {
-    var ClientInitializer = require("lib/client/ClientInitializer");
-    var ClientRenderingWorkflow = require("lib/client/ClientRenderingWorkflow");
-    var ClientAjax = require("lib/client/ClientAjax");
-    var ViewsFromServer = require("lib/viewing/ViewsFromServer");
+    var ClientInitializer = require("../../../lib/client/ClientInitializer");
+    var ClientRenderingWorkflow = require("../../../lib/client/ClientRenderingWorkflow");
+    var ClientAjax = require("../../../lib/client/ClientAjax");
+    var ViewsFromServer = require("../../../lib/viewing/ViewsFromServer");
 
     var bootstrappedData;
 

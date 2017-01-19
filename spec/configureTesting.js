@@ -1,9 +1,16 @@
 "use strict";
 
-var Testing = require("lib/testing/Testing");
+var Testing = require("../lib/testing/Testing");
+var Deprecated = require("../lib/util/Deprecated");
+var Promise = require("bluebird");
+
+Promise.config({
+    warnings: false
+});
 
 beforeEach(function() {
     Testing.setup();
+    spyOn(Deprecated, "message");
 });
 
 // ----------------------------------------------------------------------------

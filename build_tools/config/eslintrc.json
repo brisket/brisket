@@ -39,5 +39,8 @@
     "no-trailing-spaces": 2,
     "semi": 2
   },
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
   "extends": "eslint:recommended"
 }

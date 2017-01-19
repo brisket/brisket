@@ -15,10 +15,9 @@ var TEST_HELPERS = "./spec/helpers/**/*.js";
 var CLIENT_TESTS = "./spec/client/**/*.js";
 var CLIENT_TEST_BUNDLE = "./spec/build/lib.js";
 var DEBUG_MODE_TEST_BUNDLE = "./spec/build/debugModeSpec.js";
-var CONFIGURE_CLIENT_TEST = "./spec/configureClientTesting.js";
+var CONFIGURE_TESTS = "./spec/configureTesting.js";
 var DEBUG_MODE_TEST = "./spec/debug_mode/debugModeSpec.js";
 var SERVER_TESTS = "./spec/server/**/*.js";
-var CONFIGURE_SERVER_TEST = "./spec/configureServerTesting.js";
 var BENCHMARKS = "./benchmarks/**/*.js";
 var ALL_TEST_CODE = "./spec/**/*.js";
 var NOT_BUILD_DIRECTORY_THOUGH = "!./spec/build/**/*.js";
@@ -41,7 +40,7 @@ gulp.task("lintJs", function() {
 
 gulp.task("test-on-server", function() {
     return serverSideJasmine([
-        CONFIGURE_SERVER_TEST,
+        CONFIGURE_TESTS,
         TEST_HELPERS,
         SERVER_TESTS
     ]);
@@ -69,23 +68,11 @@ gulp.task("test-debug-mode", ["bundle-for-debug-mode"], function() {
 gulp.task("bundle-for-client", function() {
     return bundle({
         src: [
-            CONFIGURE_CLIENT_TEST,
+            CONFIGURE_TESTS,
             TEST_HELPERS,
             CLIENT_TESTS
         ],
         dest: CLIENT_TEST_BUNDLE,
-        alias: {
-            "backbone": "./node_modules/backbone/backbone.js",
-            "underscore": "./node_modules/underscore/underscore.js",
-            "promise": "./node_modules/promise/index.js",
-            "bluebird": "./node_modules/bluebird/js/release/bluebird.js",
-            "jquery": "./node_modules/jquery/dist/jquery.js",
-            "cookie": "./node_modules/cookie/index.js"
-        },
-        mapDirectories: {
-            "lib": "./lib",
-            "mock": "./spec/mock"
-        },
         debug: true
     });
 });

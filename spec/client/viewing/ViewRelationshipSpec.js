@@ -1,8 +1,8 @@
 "use strict";
 
 describe("ViewRelationshipSpec", function() {
-    var View = require("lib/viewing/View");
-    var ViewRelationship = require("lib/viewing/ViewRelationship");
+    var View = require("../../../lib/viewing/View");
+    var ViewRelationship = require("../../../lib/viewing/ViewRelationship");
 
     var ChildView;
     var childView;

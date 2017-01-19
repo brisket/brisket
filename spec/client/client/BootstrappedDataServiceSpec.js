@@ -1,7 +1,7 @@
 "use strict";
 
 describe("BootstrappedDataService", function() {
-    var BootstrappedDataService = require("lib/client/BootstrappedDataService");
+    var BootstrappedDataService = require("../../../lib/client/BootstrappedDataService");
 
     var bootstrappedData;
 

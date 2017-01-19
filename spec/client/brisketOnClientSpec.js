@@ -1,8 +1,8 @@
 "use strict";
 
 describe("public interface to Brisket on client", function() {
-    var Brisket = require("lib/brisket");
-    var SetupLinksAndPushState = require("lib/client/SetupLinksAndPushState");
+    var Brisket = require("../../lib/brisket");
+    var SetupLinksAndPushState = require("../../lib/client/SetupLinksAndPushState");
 
     it("exposes SetupLinksAndPushState navigateTo", function() {
         expect(Brisket.navigateTo).toBe(SetupLinksAndPushState.navigateTo);

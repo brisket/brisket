@@ -1,7 +1,7 @@
 "use strict";
 
 describe("Metatags", function() {
-    var Metatags = require("lib/metatags/Metatags");
+    var Metatags = require("../../../lib/metatags/Metatags");
 
     var metatags;
     var tags;

@@ -1,9 +1,9 @@
 "use strict";
 
 describe("HasChildViews", function() {
-    var HasChildViews = require("lib/viewing/HasChildViews");
+    var HasChildViews = require("../../../lib/viewing/HasChildViews");
     var _ = require("underscore");
-    var Backbone = require("lib/application/Backbone");
+    var Backbone = require("../../../lib/application/Backbone");
 
     var ParentView;
     var parentView;

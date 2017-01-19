@@ -1,8 +1,8 @@
 "use strict";
 
 describe("ClientAjax", function() {
-    var ClientAjax = require("lib/client/ClientAjax");
-    var ClientTestable = require("lib/client/ClientTestable");
+    var ClientAjax = require("../../../lib/client/ClientAjax");
+    var ClientTestable = require("../../../lib/client/ClientTestable");
     var Promise = require("bluebird");
     var Backbone = require("backbone");
     var _ = require("underscore");

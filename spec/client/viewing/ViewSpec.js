@@ -1,8 +1,8 @@
 "use strict";
 
 describe("View", function() {
-    var View = require("lib/viewing/View");
-    var Backbone = require("lib/application/Backbone");
+    var View = require("../../../lib/viewing/View");
+    var Backbone = require("../../../lib/application/Backbone");
 
     var view;
 
