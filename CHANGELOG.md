@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 1.9.0
+- rerender
+
 ### 1.8.0
 - easier access to environmentConfig in Layout
 
