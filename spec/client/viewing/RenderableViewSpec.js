@@ -4,6 +4,7 @@ describe("RenderableView", function() {
     var RenderableView = require("../../../lib/viewing/RenderableView");
     var Backbone = require("../../../lib/application/Backbone");
     var TemplateAdapter = require("../../../lib/templating/TemplateAdapter");
+    var View = require("../../../lib/viewing/View");
 
     var model;
     var BaseRenderableView;
@@ -11,6 +12,9 @@ describe("RenderableView", function() {
     var ViewThatRenders;
     var view;
     var childView;
+    var childView1;
+    var childView2;
+    var childView3;
 
     beforeEach(function() {
         model = new Backbone.Model({
@@ -110,9 +114,6 @@ describe("RenderableView", function() {
     });
 
     describe("when rendering", function() {
-        var childView1;
-        var childView2;
-        var childView3;
 
         describe("when it has child views placed directly in template", function() {
 
@@ -647,6 +648,101 @@ describe("RenderableView", function() {
 
             it("invokes onDOM once", function() {
                 expect(view.onDOM.calls.count()).toBe(1);
+            });
+
+        });
+
+    });
+
+    describe("rerendering", function() {
+
+        describe("when view has child views", function() {
+
+            beforeEach(function() {
+                ViewThatRenders = BaseRenderableView.extend({
+                    template: function(data) {
+                        return data["from_rerender_test"] + data.views["child1"] + data.views["child2"];
+                    },
+
+                    beforeRender: function() {
+                        childView1 = new View({ id: "child1" });
+                        childView2 = new View({ id: "child2" });
+
+                        this.createChildView("child1", childView1);
+                        this.createChildView("child2", childView2);
+                    }
+                });
+
+                view = new ViewThatRenders({ model: model });
+
+                view.render();
+            });
+
+            it("closes all child views", function() {
+                spyOn(View.prototype, "closeAsChild");
+
+                view.render();
+
+                expect(View.prototype.closeAsChild.calls.count()).toBe(2);
+            });
+
+            it("renders again into itself", function() {
+                model.set("from_rerender_test", "hello");
+
+                view.render();
+
+                expect(view.el.innerHTML).toBe(
+                    "hello<div id=\"child1\" data-view-uid=\"null_3\"></div><div id=\"child2\" data-view-uid=\"null_4\"></div>"
+                );
+            });
+
+        });
+
+        describe("when view has decorators", function() {
+
+            beforeEach(function() {
+                ViewThatRenders = BaseRenderableView.extend({
+                    decorators: [{
+                        decorate: jasmine.createSpy()
+                    }, {
+                        decorate: jasmine.createSpy()
+                    }]
+                });
+
+                view = new ViewThatRenders();
+
+                spyOn(view, "runDecorators").and.callThrough();
+
+                view.render();
+
+                expect(view.runDecorators.calls.count()).toBe(1);
+            });
+
+            it("runs decorators again", function() {
+                view.render();
+
+                expect(view.runDecorators.calls.count()).toBe(2);
+            });
+
+        });
+
+        describe("when view is already in the DOM", function() {
+
+            beforeEach(function() {
+                view = new BaseRenderableView();
+
+                spyOn(view, "enterDOM").and.callThrough();
+
+                view.render();
+                view.enterDOM();
+
+                expect(view.enterDOM.calls.count()).toBe(1);
+            });
+
+            it("enters the DOM again", function() {
+                view.render();
+
+                expect(view.enterDOM.calls.count()).toBe(2);
             });
 
         });
