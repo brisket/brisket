@@ -10,6 +10,7 @@ An extension of Backbone.View that provides a Rendering Workflow, Child View Man
 * [Setting A Templating Engine](#setting-a-templating-engine)
 * [Exposing Data to A Template](#exposing-data-to-a-template)
 * [Creating Child Views](#creating-child-views)
+* [Rerendering A View](#rerendering-a-view)
 
 ## Rendering A View
 
@@ -216,3 +217,23 @@ Just as before with a real `model`, Brisket combines the data from the View's `m
 
 ## Creating Child Views
 Please go [**here**](brisket.childviews.md) to read about child views.
+
+## Rerendering A View
+To rerender a View after it's been rendered, call render again and it will re-render in place:
+
+```
+var View = Brisket.View.extend({
+    template({ count }) {
+      return count;
+    }
+});
+
+var model = new Backbone.Model({ count: 0 });
+var view = new View({ model });
+
+view.render().el.innerHTML; // <div>0</div>
+
+model.set("count", 1);
+
+view.render().el.innerHTML; // <div>1</div>
+```
