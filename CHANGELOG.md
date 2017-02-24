@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 1.10.0
+- add timeout parameter for api
+
 ### 1.9.0
 - rerender
 
