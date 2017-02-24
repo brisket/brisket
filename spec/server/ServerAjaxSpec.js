@@ -28,46 +28,9 @@ describe("ServerAjax", function() {
                     proxy: "http://proxy.example.com"
                 },
                 "nav": {
-                    host: "http://other-api.example.com"
+                    host: "http://other-api.example.com",
+                    timeout: 5000
                 }
-            });
-        });
-
-        describe("apis alias has slashes", function() {
-            beforeEach(function() {
-                ServerAjax.setup({
-                    "api": {
-                        host: "http://api.example.com",
-                        proxy: "http://proxy.example.com"
-                    },
-                    "markets/api": {
-                        host: "http://markets.example.com"
-                    }
-                });
-            });
-
-            it("sends request to the correct api", function() {
-                givenApiRequestWillSucceed();
-
-                Backbone.ajax({
-                    url: "/markets/api/path/to/data"
-                });
-
-                thenRequestMadeWith({
-                    url: "http://markets.example.com/path/to/data",
-                    proxy: null,
-                    method: "GET"
-                });
-
-                Backbone.ajax({
-                    url: "/api/path/to/data"
-                });
-
-                thenRequestMadeWith({
-                    url: "http://api.example.com/path/to/data",
-                    proxy: "http://proxy.example.com",
-                    method: "GET"
-                });
             });
         });
 
@@ -81,7 +44,8 @@ describe("ServerAjax", function() {
             thenRequestMadeWith({
                 url: "http://api.example.com/path/to/data",
                 proxy: "http://proxy.example.com",
-                method: "GET"
+                method: "GET",
+                timeout: null
             });
 
             Backbone.ajax({
@@ -91,7 +55,8 @@ describe("ServerAjax", function() {
             thenRequestMadeWith({
                 url: "http://other-api.example.com/path/to/data",
                 proxy: null,
-                method: "GET"
+                method: "GET",
+                timeout: 5000
             });
         });
 
@@ -111,7 +76,8 @@ describe("ServerAjax", function() {
                 .then(function() {
                     thenRequestMadeWith({
                         url: "http://api.example.com/path/to/data?a=param1&b=b1%2Cb2",
-                        method: "GET"
+                        method: "GET",
+                        timeout: null
                     });
 
                     thenAjaxCallIsRecorded("/api/path/to/data", {
@@ -144,7 +110,8 @@ describe("ServerAjax", function() {
                         headers: {
                             "x-my-custom-header": "some value",
                             "x-some-other-header": "some other value"
-                        }
+                        },
+                        timeout: null
                     });
 
                     thenAjaxCallIsRecorded("/api/path/to/data", undefined, {
@@ -251,6 +218,48 @@ describe("ServerAjax", function() {
                     expect(reason).toBe(error);
                 })
                 .finally(done);
+        });
+
+        describe("apis alias has slashes", function() {
+
+            beforeEach(function() {
+                ServerAjax.setup({
+                    "api": {
+                        host: "http://api.example.com",
+                        proxy: "http://proxy.example.com"
+                    },
+                    "markets/api": {
+                        host: "http://markets.example.com",
+                        timeout: 5000
+                    }
+                });
+            });
+
+            it("sends request to the correct api", function() {
+                givenApiRequestWillSucceed();
+
+                Backbone.ajax({
+                    url: "/markets/api/path/to/data"
+                });
+
+                thenRequestMadeWith({
+                    url: "http://markets.example.com/path/to/data",
+                    proxy: null,
+                    method: "GET",
+                    timeout: 5000
+                });
+
+                Backbone.ajax({
+                    url: "/api/path/to/data"
+                });
+
+                thenRequestMadeWith({
+                    url: "http://api.example.com/path/to/data",
+                    proxy: "http://proxy.example.com",
+                    method: "GET",
+                    timeout: null
+                });
+            });
         });
 
     });

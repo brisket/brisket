@@ -15,12 +15,16 @@ Use apis configuration to specify the apis that your application will hit:
 
 ```js
 apis: {
-    'api': { host: 'http://api.example.com', proxy: 'http://proxy.example.com' }
+    'api': {
+        host: 'http://api.example.com',
+        proxy: 'http://proxy.example.com',
+        timeout: 5000 // milliseconds
+    },
     'other-api': { host: 'http://other-api.example.com' }
 }
 ```
 
-For each api, you can specify the host and proxy. Brisket automatically adds a middleware (relative to your app's root) for each api to handle client side ajax calls. Your app's `Backbone.Model`s and `Backbone.Collection`s can [fetch data from the apis you specify](modeling.md#fetch-data).
+For each api, you can specify the host, proxy and timeout (in milliseconds). Brisket automatically adds a middleware (relative to your app's root) for each api to handle client side ajax calls. Your app's `Backbone.Model`s and `Backbone.Collection`s can [fetch data from the apis you specify](modeling.md#fetch-data).
 
 ## Optional Configuration Options
 

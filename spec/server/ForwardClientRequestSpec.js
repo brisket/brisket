@@ -15,6 +15,10 @@ describe("ForwardClientRequest", function() {
     var apiConfig;
 
     beforeEach(function() {
+        apiConfig = {
+            host: "http://www.example.com"
+        };
+
         req = mockStream();
         req.url = "/path/to/data";
 
@@ -31,6 +35,7 @@ describe("ForwardClientRequest", function() {
 
     it("forwards api requests", function() {
         givenApiConfigHasProxy();
+        givenApiConfigHasTimeout();
         givenApiResponseWillSucceed();
         whenMiddlewareForwardsRequest();
 
@@ -41,6 +46,7 @@ describe("ForwardClientRequest", function() {
 
     it("forwards api requests when config does NOT have proxy", function() {
         givenApiConfigDoesNOTHaveProxy();
+        givenApiConfigHasTimeout();
         givenApiResponseWillSucceed();
         whenMiddlewareForwardsRequest();
 
@@ -49,8 +55,20 @@ describe("ForwardClientRequest", function() {
         expect(Errors.notify).not.toHaveBeenCalled();
     });
 
+    it("forwards api requests when config does NOT have timeout", function() {
+        givenApiConfigHasProxy();
+        givenApiConfigDoesNOTHaveTimeout();
+        givenApiResponseWillSucceed();
+        whenMiddlewareForwardsRequest();
+
+        thenRequestIsMadeToApiWITHOUTTimeout();
+        thenRequestIsPipedToResponse();
+        expect(Errors.notify).not.toHaveBeenCalled();
+    });
+
     it("notifies app of an error when response from remote api is failure", function() {
         givenApiConfigHasProxy();
+        givenApiConfigHasTimeout();
         givenApiResponseWillFail();
         whenMiddlewareForwardsRequest();
 
@@ -60,17 +78,16 @@ describe("ForwardClientRequest", function() {
     });
 
     function givenApiConfigHasProxy() {
-        apiConfig = {
-            host: "http://www.example.com",
-            proxy: "http://proxy.example.com"
-        };
+        apiConfig.proxy = "http://proxy.example.com";
     }
 
-    function givenApiConfigDoesNOTHaveProxy() {
-        apiConfig = {
-            host: "http://www.example.com"
-        };
+    function givenApiConfigDoesNOTHaveProxy() {}
+
+    function givenApiConfigHasTimeout() {
+        apiConfig.timeout = 5000;
     }
+
+    function givenApiConfigDoesNOTHaveTimeout() {}
 
     function givenApiResponseWillSucceed() {
         incomingMessage = {
@@ -94,14 +111,24 @@ describe("ForwardClientRequest", function() {
     function thenRequestIsMadeToApiWithProxy() {
         expect(Testable.request).toHaveBeenCalledWith(jasmine.objectContaining({
             url: "http://www.example.com/path/to/data",
-            proxy: "http://proxy.example.com"
+            proxy: "http://proxy.example.com",
+            timeout: 5000
         }));
     }
 
     function thenRequestIsMadeToApiWITHOUTProxy() {
         expect(Testable.request).toHaveBeenCalledWith(jasmine.objectContaining({
             url: "http://www.example.com/path/to/data",
-            proxy: null
+            proxy: null,
+            timeout: 5000
+        }));
+    }
+
+    function thenRequestIsMadeToApiWITHOUTTimeout() {
+        expect(Testable.request).toHaveBeenCalledWith(jasmine.objectContaining({
+            url: "http://www.example.com/path/to/data",
+            proxy: "http://proxy.example.com",
+            timeout: null
         }));
     }
 
