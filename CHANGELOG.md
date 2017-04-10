@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 1.10.1
+- add link to package.json in README
+
 ### 1.10.0
 - add timeout parameter for api
 
