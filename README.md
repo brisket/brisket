@@ -77,7 +77,7 @@ Check the [Bundling With Browserify](/docs/recipes/bundling-with-browserify.md) 
 
 ## Compatibility and Requirements
 
-Please refer to `package.json` for Brisket's dependencies
+Please refer to [package.json](https://github.com/bloomberg/brisket/blob/master/package.json) for Brisket's dependencies
 
 ### Node.js Support
 
