@@ -7,6 +7,8 @@ For changes see the [Changelog](CHANGELOG.md). You can also find older versions 
 ## About Brisket
 Brisket is a framework for building single page web apps using isomorphic JavaScript. A Brisket app is both a traditional web site AND a single page web application at the same time. Brisket provides the tools that you need to spend your time focusing on your application's logic rather than on "what environment is my code running in?".
 
+Brisket is built for rapid development, SEO optimization and a fast end-user experience, allowing developers to focus on the product without worrying about the plumbing.
+
 ## Getting Started
 Using [generator-brisket](https://github.com/wawjr3d/generator-brisket) is the fastest way to get started.
 
