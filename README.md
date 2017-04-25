@@ -22,6 +22,12 @@ To install generator-brisket from npm, run:
 npm install -g generator-brisket
 ```
 
+To install grunt-cli from npm, run:
+
+```bash
+npm install -g grunt-cli
+```
+
 Create a directory for your app:
 
 ```bash
