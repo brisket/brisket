@@ -74,7 +74,15 @@ describe("ForwardClientRequest", function() {
 
         thenRequestIsMadeToApiWithProxy();
         thenRequestIsPipedToResponse();
-        expect(Errors.notify).toHaveBeenCalledWith(incomingMessage, req);
+        expect(Errors.notify).toHaveBeenCalledWith({
+            error: incomingMessage,
+            type: "ApiError",
+            detail: {
+                url: "http://www.example.com/path/to/data",
+                proxy: "http://proxy.example.com",
+                apiAlias: undefined
+            }
+        }, req);
     });
 
     it("notifies app of an error when response from remote api fails without a response", function() {
