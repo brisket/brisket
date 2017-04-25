@@ -10,10 +10,12 @@ Brisket is a framework for building single page web apps using isomorphic JavaSc
 ## Getting Started
 Using [generator-brisket](https://github.com/wawjr3d/generator-brisket) is the fastest way to get started.
 
-Install [Yeoman](http://yeoman.io):
+Install [Yeoman](http://yeoman.io), [Grunt](http://gruntjs.com/) and [Bower](http://bower.io/):
 
 ```bash
 npm install -g yo
+npm install -g grunt-cli
+npm install -g bower
 ```
 
 To install generator-brisket from npm, run:
