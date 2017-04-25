@@ -77,6 +77,25 @@ describe("ForwardClientRequest", function() {
         expect(Errors.notify).toHaveBeenCalledWith(incomingMessage, req);
     });
 
+    it("notifies app of an error when response from remote api fails without a response", function() {
+        givenApiConfigHasProxy();
+        givenApiConfigHasTimeout();
+        givenApiResponseWillFail();
+        whenMiddlewareForwardsError();
+
+        thenRequestIsMadeToApiWithProxy();
+        thenRequestIsPipedToResponse();
+        expect(Errors.notify).toHaveBeenCalledWith({
+            error: new Error("tunneling socket error"),
+            type: "ApiError",
+            detail: {
+                url: "http://www.example.com/path/to/data",
+                proxy: "http://proxy.example.com",
+                apiAlias: undefined
+            }
+        }, req);
+    });
+
     function givenApiConfigHasProxy() {
         apiConfig.proxy = "http://proxy.example.com";
     }
@@ -106,6 +125,13 @@ describe("ForwardClientRequest", function() {
         forwardingMiddleware(req, res);
 
         requestStream.emit("response", incomingMessage);
+    }
+
+    function whenMiddlewareForwardsError() {
+        forwardingMiddleware = ForwardClientRequest.toApi(apiConfig);
+        forwardingMiddleware(req, res);
+
+        requestStream.emit("error", new Error("tunneling socket error"));
     }
 
     function thenRequestIsMadeToApiWithProxy() {
