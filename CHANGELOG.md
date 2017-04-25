@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 1.11.0
+- notify API errors that do not send a response
+
 ### 1.10.1
 - add link to package.json in README
 
