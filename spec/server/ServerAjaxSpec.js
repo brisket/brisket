@@ -70,6 +70,32 @@ describe("ServerAjax", function() {
             }).toThrow();
         });
 
+        it("sends request to the correct api when leading slash left off", function() {
+            givenApiRequestWillSucceed();
+
+            Backbone.ajax({
+                url: "api/path/to/data"
+            });
+
+            thenRequestMadeWith({
+                url: "http://api.example.com/path/to/data",
+                proxy: "http://proxy.example.com",
+                method: "GET",
+                timeout: null
+            });
+
+            Backbone.ajax({
+                url: "nav/path/to/data"
+            });
+
+            thenRequestMadeWith({
+                url: "http://other-api.example.com/path/to/data",
+                proxy: null,
+                method: "GET",
+                timeout: 5000
+            });
+        });
+
         it("sends request with query params when they are passed", function(done) {
             givenApiRequestWillSucceed();
 
