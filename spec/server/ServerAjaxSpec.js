@@ -60,6 +60,16 @@ describe("ServerAjax", function() {
             });
         });
 
+        it("errors when url doesn't match any api", function() {
+            givenApiRequestWillSucceed();
+
+            expect(function() {
+                Backbone.ajax({
+                    url: "/unknown/path/to/data"
+                });
+            }).toThrow();
+        });
+
         it("sends request with query params when they are passed", function(done) {
             givenApiRequestWillSucceed();
 
