@@ -1,6 +1,10 @@
 Changelog
 ==========
 
+### 1.12.0
+- support api path without leading slash
+- better error message when ajax url is unknown api
+
 ### 1.11.0
 - notify API errors that do not send a response
 
