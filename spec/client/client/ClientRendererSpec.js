@@ -244,6 +244,15 @@ describe("ClientRenderer", function() {
                 expect(document.title).toBe("Default Title");
             });
 
+            it("doesn't change title when there is no defaultTitle", function() {
+                whenClientRenders(1);
+                expect(document.title).toBe(originalPageTitle);
+
+                view = new View();
+                whenClientRenders(2);
+                expect(document.title).toBe(originalPageTitle);
+            });
+
         });
 
         describe("when layout template has title tag with attributes", function() {
