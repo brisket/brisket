@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 1.13.0
+- deprecate Brisket's built in metatag handling
+
 ### 1.12.0
 - support api path without leading slash
 - better error message when ajax url is unknown api
