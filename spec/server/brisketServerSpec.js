@@ -23,7 +23,10 @@ describe("Brisket server", function() {
 
         brisketServer = Brisket.createServer({
             apis: {
-                "api": { host: "http://api.example.com" }
+                "api": {
+                    host: "http://api.example.com",
+                    proxy: null
+                }
             }
         });
     });

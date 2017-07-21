@@ -54,7 +54,6 @@ describe("ServerAjax", function() {
 
             thenRequestMadeWith({
                 url: "http://other-api.example.com/path/to/data",
-                proxy: null,
                 method: "GET",
                 timeout: 5000
             });
@@ -90,7 +89,6 @@ describe("ServerAjax", function() {
 
             thenRequestMadeWith({
                 url: "http://other-api.example.com/path/to/data",
-                proxy: null,
                 method: "GET",
                 timeout: 5000
             });
@@ -280,7 +278,6 @@ describe("ServerAjax", function() {
 
                 thenRequestMadeWith({
                     url: "http://markets.example.com/path/to/data",
-                    proxy: null,
                     method: "GET",
                     timeout: 5000
                 });

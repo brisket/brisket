@@ -44,6 +44,17 @@ describe("ForwardClientRequest", function() {
         expect(Errors.notify).not.toHaveBeenCalled();
     });
 
+    it("forwards api requests when config has 'null' proxy", function() {
+        givenApiConfigHasNullProxy();
+        givenApiConfigHasTimeout();
+        givenApiResponseWillSucceed();
+        whenMiddlewareForwardsRequest();
+
+        thenRequestIsMadeToApiWithNullProxy();
+        thenRequestIsPipedToResponse();
+        expect(Errors.notify).not.toHaveBeenCalled();
+    });
+
     it("forwards api requests when config does NOT have proxy", function() {
         givenApiConfigDoesNOTHaveProxy();
         givenApiConfigHasTimeout();
@@ -100,6 +111,10 @@ describe("ForwardClientRequest", function() {
         apiConfig.proxy = "http://proxy.example.com";
     }
 
+    function givenApiConfigHasNullProxy() {
+        apiConfig.proxy = null;
+    }
+
     function givenApiConfigDoesNOTHaveProxy() {}
 
     function givenApiConfigHasTimeout() {
@@ -142,10 +157,17 @@ describe("ForwardClientRequest", function() {
         }));
     }
 
-    function thenRequestIsMadeToApiWITHOUTProxy() {
+    function thenRequestIsMadeToApiWithNullProxy() {
         expect(Testable.request).toHaveBeenCalledWith(jasmine.objectContaining({
             url: "http://www.example.com/path/to/data",
             proxy: null,
+            timeout: 5000
+        }));
+    }
+
+    function thenRequestIsMadeToApiWITHOUTProxy() {
+        expect(Testable.request).toHaveBeenCalledWith(jasmine.objectContaining({
+            url: "http://www.example.com/path/to/data",
             timeout: 5000
         }));
     }
