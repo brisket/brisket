@@ -1,31 +1,48 @@
 "use strict";
 
-var Brisket = require("../lib/brisket");
-var BrisketTesting = require("../testing");
-var View = require("../lib/viewing/View");
+const Benchmark = require("benchmark");
+const prettyOutput = require("beautify-benchmark");
+const Brisket = require("../lib/brisket");
+const BrisketTesting = require("../testing");
+const View = require("../lib/viewing/View");
 
-var ParentView = View.extend();
-var ChildView = View.extend();
+const ParentView = View.extend();
+const ChildView = View.extend();
 
 BrisketTesting.setup();
 
-var parentView = new ParentView();
+const parentView = new ParentView();
 
 function reset() {
     parentView = new ParentView();
     childViewInstance = new ChildView();
 }
 
-module.exports = {
-    name: "Creating many child views",
-    maxTime: 2,
-    fn: function() {
-        var i = 100;
-
-        while(i > 0) {
-            parentView.createChildView(ChildView);
-
-            i--;
-        }
+const suite = new Benchmark.Suite("Creating many child views", {
+    onStart() {
+        console.log(`${ this.name }:`);
     }
-};
+});
+
+suite
+    .add({
+        name: "with simple View",
+        maxTime: 2,
+        "fn": function(deferred) {
+            let i = 100;
+
+            while(i > 0) {
+                parentView.createChildView(ChildView);
+
+                i--;
+            }
+        }
+    })
+
+    .on("cycle", function(event) {
+        prettyOutput.add(event.target)
+    })
+    .on("complete", function() {
+        prettyOutput.log();
+    })
+    .run();

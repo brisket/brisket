@@ -1,20 +1,22 @@
 "use strict";
 
-var Brisket = require("../lib/brisket");
-var BrisketTesting = require("../testing");
-var View = require("../lib/viewing/View");
+const Benchmark = require("benchmark");
+const prettyOutput = require("beautify-benchmark");
+const Brisket = require("../lib/brisket");
+const BrisketTesting = require("../testing");
+const View = require("../lib/viewing/View");
 
-var EmptyView = View.extend();
+const EmptyView = View.extend();
 
-var ViewWithMarkup = View.extend({
+const ViewWithMarkup = View.extend({
     template: "<div id='div-0'><span></span></div>"
 });
 
-var ViewWithALotOfMarkup = View.extend({
+const ViewWithALotOfMarkup = View.extend({
 
     template: function() {
-        var markup = "";
-        var i = 100;
+        let markup = "";
+        let i = 100;
 
         while(i > 0) {
             markup += "<div id='div-" + i + "'><span></span></div>";
@@ -29,22 +31,29 @@ var ViewWithALotOfMarkup = View.extend({
 
 BrisketTesting.setup();
 
-module.exports = {
-    name: "Rendering views",
-    maxTime: 2,
-    tests: {
-
-        "empty View": function() {
-            (new EmptyView()).render();
-        },
-
-        "View with markup": function() {
-            (new ViewWithMarkup()).render();
-        },
-
-        "View with a lot of markup": function() {
-            (new ViewWithALotOfMarkup()).render();
-        }
-
+const suite = new Benchmark.Suite("Rendering views", {
+    onStart() {
+        console.log(`${ this.name }:`);
     }
-};
+});
+
+suite
+    .add("empty View", function() {
+        (new EmptyView()).render();
+    })
+
+    .add("View with markup", function() {
+        (new ViewWithMarkup()).render();
+    })
+
+    .add("View with a lot of markup", function() {
+        (new ViewWithALotOfMarkup()).render();
+    })
+
+    .on("cycle", function(event) {
+        prettyOutput.add(event.target)
+    })
+    .on("complete", function() {
+        prettyOutput.log();
+    })
+    .run();

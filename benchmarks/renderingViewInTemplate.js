@@ -1,14 +1,16 @@
 "use strict";
 
-var Brisket = require("../lib/brisket");
-var BrisketTesting = require("../testing");
-var View = require("../lib/viewing/View");
+const Benchmark = require("benchmark");
+const prettyOutput = require("beautify-benchmark");
+const Brisket = require("../lib/brisket");
+const BrisketTesting = require("../testing");
+const View = require("../lib/viewing/View");
 
 BrisketTesting.setup();
 
-var ChildView = View.extend();
+const ChildView = View.extend();
 
-var ParentView = View.extend({
+const ParentView = View.extend({
 
     template: function(data) {
         return "<div class='other-el'></div>" + data.views["child"];
@@ -20,7 +22,7 @@ var ParentView = View.extend({
 
 });
 
-var ParentView2 = View.extend({
+const ParentView2 = View.extend({
 
     template: "<div class='other-el'></div><div id='child'></div>",
 
@@ -31,7 +33,7 @@ var ParentView2 = View.extend({
 
 });
 
-var ParentView3 = View.extend({
+const ParentView3 = View.extend({
 
     template: "<div class='other-el'></div>",
 
@@ -42,27 +44,34 @@ var ParentView3 = View.extend({
 
 });
 
-var parentView;
+let parentView;
 
-module.exports = {
-    name: "Rendering child views in template",
-    maxTime: 2,
-    tests: {
-
-        "child views in template": function() {
-            parentView = new ParentView();
-            parentView.render().el.outerHTML;
-        },
-
-        "child views by replacing a node via parent view": function() {
-            parentView = new ParentView2();
-            parentView.render().el.outerHTML;
-        },
-
-        "child views by appending them via parent view": function() {
-            parentView = new ParentView3();
-            parentView.render().el.outerHTML;
-        }
-
+const suite = new Benchmark.Suite("Rendering child views in template", {
+    onStart() {
+        console.log(`${ this.name }:`);
     }
-};
+});
+
+suite
+    .add("child views in template", function() {
+        parentView = new ParentView();
+        parentView.render().el.outerHTML;
+    })
+
+    .add("child views by replacing a node via parent view", function() {
+        parentView = new ParentView2();
+        parentView.render().el.outerHTML;
+    })
+
+    .add("child views by appending them via parent view", function() {
+        parentView = new ParentView3();
+        parentView.render().el.outerHTML;
+    })
+
+    .on("cycle", function(event) {
+        prettyOutput.add(event.target)
+    })
+    .on("complete", function() {
+        prettyOutput.log();
+    })
+    .run();
