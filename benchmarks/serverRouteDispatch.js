@@ -25,24 +25,7 @@ const Router = Brisket.Router.extend({
     },
 
     handler: function() {
-        return new Brisket.View()
-            .withMetatags(new Brisket.Layout.Metatags({
-                "canonical": "http://www.example.com",
-                "description": "summary",
-                "og:image": "http://www.example.com/image.png",
-                "twitter:card": "summary",
-                "twitter:site": "business",
-                "twitter:description": "summary",
-                "twitter:title": "title",
-                "twitter:url": "url",
-                "og:description": "summary",
-                "og:title": "title",
-                "og:url": "url",
-                "parsely-title": "title",
-                "parsely-link": "url",
-                "parsely-type": "frontpage",
-                "parsely-section": "home"
-            }));
+        return new Brisket.View();
     }
 
 });

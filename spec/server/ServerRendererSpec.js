@@ -6,7 +6,6 @@ describe("ServerRenderer", function() {
     var View = require("../../lib/viewing/View");
     var Layout = require("../../lib/viewing/Layout");
     var Environment = require("../../lib/environment/Environment");
-    var HasPageLevelData = require("../../lib/traits/HasPageLevelData");
     var AjaxCallsForCurrentRequest = require("../../lib/server/AjaxCallsForCurrentRequest");
     var version = require("../../version.json").version;
     var $ = require("../../lib/application/jquery");
@@ -14,10 +13,8 @@ describe("ServerRenderer", function() {
 
     var view;
     var html;
-    var metatags;
     var layout;
     var environmentConfig;
-    var ViewWithPageLevelData;
     var mockServerRequest;
 
     beforeEach(function() {
@@ -33,8 +30,6 @@ describe("ServerRenderer", function() {
         environmentConfig = {
             some: "environment config"
         };
-
-        ViewWithPageLevelData = Backbone.View.extend(HasPageLevelData);
 
         mockServerRequest = validMockServerRequest();
 
@@ -210,6 +205,10 @@ describe("ServerRenderer", function() {
             expect(view.setUid).toHaveBeenCalledWith("1|0_1");
         });
 
+        it("sets the layout content", function() {
+            expect(layout.setContent).toHaveBeenCalledWith(view);
+        });
+
     });
 
     describe("when view is NOT Brisket.View", function() {
@@ -222,210 +221,9 @@ describe("ServerRenderer", function() {
             expect(renderingBackboneView).not.toThrow();
         });
 
-    });
-
-    describe("when view has a page level data", function() {
-
-        beforeEach(function() {
-            metatags = new Layout.Metatags({
-                description: "description"
-            });
-
-            view = new ViewWithPageLevelData()
-                .withTitle("Title")
-                .withMetatags(metatags);
-
-            html = ServerRenderer.render(layout, view, null, mockServerRequest);
-        });
-
-        it("renders layout metatags", function() {
-            expect(html).toMatch(/<meta name="description" content="description"/);
-        });
-
         it("sets the layout content", function() {
+            ServerRenderer.render(layout, view, null, mockServerRequest);
             expect(layout.setContent).toHaveBeenCalledWith(view);
-        });
-
-    });
-
-    describe("when view does NOT have page level data", function() {
-
-        beforeEach(function() {
-            html = ServerRenderer.render(layout, view, null, mockServerRequest);
-        });
-
-        it("it does NOT render layout metatags", function() {
-            expect(html).not.toMatch(/<meta/);
-        });
-
-        it("sets the layout content", function() {
-            expect(layout.setContent).toHaveBeenCalledWith(view);
-        });
-
-    });
-
-    describe("rendering page title", function() {
-
-        describe("when layout template has title tag without attributes", function() {
-
-            it("renders title from view's page level data", function() {
-                layout.defaultTitle = "Default Title";
-                view = new ViewWithPageLevelData().withTitle("Title");
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
-
-                expect(html).toMatch(/<html>(.|\r|\n)*<title>Title<\/title>(.|\r|\n)*<\/html>/mi);
-            });
-
-            it("renders layout's defaultTitle when view does NOT have page level data", function() {
-                layout.defaultTitle = "Default Title";
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
-
-                expect(html).toMatch(/<html>(.|\r|\n)*<title>Default Title<\/title>(.|\r|\n)*<\/html>/mi);
-            });
-
-            it("does NOT render title when view does NOT have page level data NOR layout has defaultTitle", function() {
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
-
-                expect(html).toMatch(/<html>(.|\r|\n)*<title><\/title>(.|\r|\n)*<\/html>/mi);
-            });
-
-            it("escapes title for use in html", function() {
-                layout.defaultTitle = "Title \" ' & < > $ $$ $' $` $& $3";
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
-
-                expect(html).toMatch(/<html>(.|\r|\n)*<title>Title &quot; &#39; &amp; &lt; &gt; \$ \$\$ \$&#39; \$` \$&amp; \$3<\/title>(.|\r|\n)*<\/html>/mi);
-            });
-
-            it("renders title when title tag is on multiple lines", function() {
-                layout.el.innerHTML = "<html><head><title>\n</title></head><body></body></html>";
-                layout.defaultTitle = "Default Title";
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
-
-                expect(html).toMatch(/<html>(.|\r|\n)*<title>Default Title<\/title>(.|\r|\n)*<\/html>/mi);
-            });
-
-        });
-
-        describe("when layout template has title tag with attributes", function() {
-
-            beforeEach(function() {
-                layout.el.innerHTML = "<html><head><title class='klass'></title></head><body></body></html>";
-            });
-
-            it("renders title from view's page level data", function() {
-                layout.defaultTitle = "Default Title";
-                view = new ViewWithPageLevelData().withTitle("Title");
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
-
-                expect(html).toMatch(/<html>(.|\r|\n)*<title class="klass">Title<\/title>(.|\r|\n)*<\/html>/mi);
-            });
-
-            it("renders layout's defaultTitle when view does NOT have page level data", function() {
-                layout.defaultTitle = "Default Title";
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
-
-                expect(html).toMatch(/<html>(.|\r|\n)*<title class="klass">Default Title<\/title>(.|\r|\n)*<\/html>/mi);
-            });
-
-            it("does NOT render title when view does NOT have page level data NOR layout has defaultTitle", function() {
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
-
-                expect(html).toMatch(/<html>(.|\r|\n)*<title class="klass"><\/title>(.|\r|\n)*<\/html>/mi);
-            });
-
-            it("escapes title for use in html", function() {
-                layout.defaultTitle = "Title \" ' & < > $ $$ $' $` $& $3";
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
-
-                expect(html).toMatch(/<html>(.|\r|\n)*<title class="klass">Title &quot; &#39; &amp; &lt; &gt; \$ \$\$ \$&#39; \$` \$&amp; \$3<\/title>/mi);
-            });
-
-            it("renders title when title tag is on multiple lines", function() {
-                layout.el.innerHTML = "<html><head><title class='klass'>\n</title></head><body></body></html>";
-                layout.defaultTitle = "Default Title";
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
-
-                expect(html).toMatch(/<html>(.|\r|\n)*<title class="klass">Default Title<\/title>(.|\r|\n)*<\/html>/i);
-            });
-
-        });
-
-    });
-
-    describe("rendering metatags", function() {
-
-        it("escapes metatags for use in html", function() {
-            view = new ViewWithPageLevelData()
-                .withMetatags(new Layout.Metatags({
-                    "description": "Title \" ' & < > $ $$ $' $` $& $3"
-                }));
-
-            html = ServerRenderer.render(layout, view, null, mockServerRequest);
-
-            expect(html)
-                .toMatch(/<meta name="description" content="Title &quot; &#39; &amp; &lt; &gt; \$ \$\$ \$&#39; \$` \$&amp; \$3" data-ephemeral="true"/);
-        });
-
-        describe("when there are no metatags", function() {
-
-            beforeEach(function() {
-                view = new ViewWithPageLevelData();
-
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
-            });
-
-            it("does NOT render metatags", function() {
-                expect(html).not.toMatch(/<meta/);
-            });
-
-        });
-
-        describe("when there is only 1 group of metatags", function() {
-
-            beforeEach(function() {
-                view = new ViewWithPageLevelData()
-                    .withMetatags(new Layout.Metatags({
-                        "description": "a",
-                        "keywords": "b"
-                    }));
-
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
-            });
-
-            it("renders metatags into html", function() {
-                expect(html).toMatch(/<meta name="description" content="a" data-ephemeral="true">/);
-                expect(html).toMatch(/<meta name="keywords" content="b" data-ephemeral="true">/);
-            });
-
-        });
-
-        describe("when there are many groups of metatags", function() {
-
-            beforeEach(function() {
-                view = new ViewWithPageLevelData()
-                    .withMetatags([
-                        new Layout.Metatags({
-                            "description": "a",
-                            "keywords": "b"
-                        }),
-                        new Layout.OpenGraphTags({
-                            "og:image": "b"
-                        }),
-                        new Layout.LinkTags({
-                            "canonical": "c"
-                        })
-                    ]);
-
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
-            });
-
-            it("renders metatags into html", function() {
-                expect(html).toMatch(/<meta name="description" content="a" data-ephemeral="true">/);
-                expect(html).toMatch(/<meta name="keywords" content="b" data-ephemeral="true">/);
-                expect(html).toMatch(/<meta property="og:image" content="b" data-ephemeral="true">/);
-                expect(html).toMatch(/<link rel="canonical" href="c" data-ephemeral="true">/);
-            });
-
         });
 
     });

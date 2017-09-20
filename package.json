@@ -24,12 +24,11 @@
     "backbone": ">=1.2.3 <=1.3.3",
     "backbone.nativeajax": "^0.4.3",
     "cookie": ">=0.1.2",
-    "escape-html": "~1.0.3",
     "express": "4.x",
     "jquery": ">=1.11.1 <3.0.0",
     "jsdom": ">=3.0.0 <8.0.0",
-    "qs": ">=2.3.0",
     "promise": "^7.1.1",
+    "qs": ">=2.3.0",
     "request": "^2.60.0",
     "underscore": "^1.8.3"
   },

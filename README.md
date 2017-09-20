@@ -57,7 +57,7 @@ Now that you have a working app, check out our [Recipes](docs/recipes/README.md)
 * [**Brisket.Router**](docs/brisket.router.md): An implementation of Backbone.Router that routes on client and server.
 * [**Brisket.Events**](docs/brisket.events.md): A proxy to Backbone.Events that exposes a noop on the server to avoid server-side memory leaks.
 * [**Brisket.View**](docs/brisket.view.md): Our version of a Backbone.View that allows support for some of the core features - reattaching views, child view management, memory management, etc.
-* [**Brisket.Layout**](docs/brisket.layout.md): A specialized View that handles meta tags, page title, etc.
+* [**Brisket.Layout**](docs/brisket.layout.md): A specialized View that knows how to render as an html document.
 * [**Brisket.Templating.TemplateAdapter**](docs/brisket.templating.templateadapter.md): Inherit from this to tell Brisket how to render templates.
 * [**Brisket.Templating.StringTemplateAdapter**](docs/brisket.templating.stringtemplateadapter.md): The default template adapter. Set a View's template key to be a string template to get started.
 * Brisket.version: The version of Brisket. On the client, the version can be accessed by `window.Brisket.version`.
