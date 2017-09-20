@@ -1,6 +1,42 @@
 "use strict";
 
-module.exports = require("./lib/testing/Testing");
+var Layout = require("./lib/viewing/Layout");
+var View = require("./lib/viewing/View");
+var Backbone = require("./lib/application/Backbone");
+var Events = require("./lib/events/Events");
+var noop = require("./lib/util/noop");
+var _ = require("underscore");
+
+var originalEvents = _.clone(Events);
+
+module.exports = {
+
+    setup: function() {
+        Layout.prototype.reattach = noop;
+    },
+
+    enableEvents: function() {
+        View.prototype.delegateEvents = Backbone.View.prototype.delegateEvents;
+        View.prototype.undelegateEvents = Backbone.View.prototype.undelegateEvents;
+
+        _.extend(View.prototype, Backbone.Events);
+        _.extend(Events, Backbone.Events);
+    },
+
+    disableEvents: function() {
+        View.prototype.delegateEvents = function() {
+            return this;
+        };
+
+        View.prototype.undelegateEvents = function() {
+            return this;
+        };
+
+        _.extend(View.prototype, originalEvents);
+        _.extend(Events, originalEvents);
+    }
+
+};
 
 // ----------------------------------------------------------------------------
 // Copyright (C) 2018 Bloomberg Finance L.P.

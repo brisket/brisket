@@ -1,7 +1,7 @@
 "use strict";
 
-describe("Testing", function() {
-    var Testing = require("../../lib/testing/Testing");
+describe("BrisketTesting", function() {
+    var BrisketTesting = require("../../testing");
     var Backbone = require("../../lib/application/Backbone");
     var Events = require("../../lib/events/Events");
     var Layout = require("../../lib/viewing/Layout");
@@ -20,11 +20,11 @@ describe("Testing", function() {
     describe("#enableEvents", function() {
 
         beforeEach(function() {
-            Testing.enableEvents();
+            BrisketTesting.enableEvents();
         });
 
         afterEach(function() {
-            Testing.disableEvents();
+            BrisketTesting.disableEvents();
         });
 
         it("enables events", function() {
@@ -40,8 +40,8 @@ describe("Testing", function() {
     describe("disableEvents", function() {
 
         beforeEach(function() {
-            Testing.enableEvents();
-            Testing.disableEvents();
+            BrisketTesting.enableEvents();
+            BrisketTesting.disableEvents();
         });
 
         it("disables events", function() {
