@@ -9,7 +9,6 @@ Brisket.Router are a little different from a standard Backbone.Router. The diffe
 * [Handling Errors](#handling-errors)
 * [Specifying a Layout](#specifying-a-layout)
 * [Communicating With the Layout](#communicating-with-the-layout)
-* [Set/Update Page Title and Meta Tags](#setupdate-page-title-and-meta-tags)
 * [Executing Code When Routes Begin/End](#executing-code-when-routes-beginend)
 * [Closing a Router](#closing-a-router)
 
@@ -192,42 +191,6 @@ var BookRouter = Brisket.Router.extend({
 ```
 
 When the 'book' route renders BookView, it will set the Layout's data 'key' to 'book value'. For more details on setting up your Layout to respond to data from the route, see [Setting Layout State From a Route](brisket.layout.md#setting-layout-state-from-a-route)
-
-### Set/Update Page Title and Meta Tags
-You may want to set or update the page title and page meta tags when the route handler executes. Using `.withTitle()` and `.withMetatags()`, you can pass a new page title and meta tags to the view returned by the route handler:
-
-```js
-var Metatags = Brisket.Layout.Metatags;
-var BookRouter = Brisket.Router.extend({
-
-  routes: {
-    'books/:id': 'book'
-  },
-
-  book: function(id) {
-    return new BookView()
-      .withTitle('Nice Books!')
-      .withMetatags(new Metatags({
-        'description': 'These are some great books.',
-        'og:image': 'sample-books.jpg',
-        'canonical': 'the-canonical-link'
-      }));
-  }
-
-});
-```
-**Note:** By default, `withMetatags` only updates the meta tags for the initial page load from server. To enable meta tags update on client, set the attribute `updateMetatagsOnClientRender` of your `Layout` to `true`:
-```js
-var Layout = Brisket.Layout.extend({
-
-    ...,
-
-    updateMetatagsOnClientRender: true,
-
-    ...
-
-});
-```
 
 ### Executing Code When Routes Begin/End
 You may want to run some code when route handlers fire e.g. make a loading spinny appear and disappear. To set that up, set the `onRouteStart` and `onRouteComplete` properties of your Router. These callbacks will be passed the `layout`:
