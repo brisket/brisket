@@ -132,28 +132,6 @@ describe("ClientRenderingWorkflow", function() {
             });
         });
 
-        it("[deprecated] ensures layout has environmentConfig before it is passed to route handlers", function(done) {
-            fakeRouter.layout = Layout.extend({
-
-                testEnvironmentConfig: function() {
-                    expect(this.environmentConfig).toEqual({
-                        "made": "in client rendering spec"
-                    });
-                }
-
-            });
-
-            originalHandler = function(layout) {
-                layout.testEnvironmentConfig();
-
-                return expectedView;
-            };
-
-            callAugmentedRouterHandler()
-                .catch(failTest)
-                .finally(done);
-        });
-
         it("ensures layout's model has environmentConfig", function(done) {
             fakeRouter.layout = Layout.extend({
 

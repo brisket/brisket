@@ -28,7 +28,6 @@ describe("ServerRenderer", function() {
         layout = new Layout();
         layout.el.innerHTML = "<html><head><title></title></head><body></body></html>";
         spyOn(layout, "setContent");
-        spyOn(layout, "setEnvironmentConfig");
         spyOn(layout, "close");
 
         environmentConfig = {

@@ -48,7 +48,7 @@ const Layout = Brisket.Layout.extend({
 The Layout's template should be the full html for your pages i.e. it should include doctype, head tag, body tag, etc. When you set a template for you layout, you must specify the `content` property. This property should be a selector pointing to the main content element of the template. In this template, the main content element is the element with the class 'main-content'.
 
 ## Using Environment Config In Template
-You will likely want to expose some data from your [environmentConfig](brisket.createserver.md#environmentConfig) to the Layout template. The `environmentConfig` will be accessible to your Layout's methods as `this.environmentConfig`. Expose the environmentConfig through the logic method ([read here for more details](brisket.view.md#exposing-data-to-a-template)).
+You will likely want to expose some data from your [environmentConfig](brisket.createserver.md#environmentConfig) to the Layout template. The `environmentConfig` will be accessible to your Layout's methods as `this.model.get("environmentConfig")`. Expose the environmentConfig through the logic method ([read here for more details](brisket.view.md#exposing-data-to-a-template)).
 
 ```js
 const Layout = Brisket.Layout.extend({
