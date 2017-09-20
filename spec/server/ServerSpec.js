@@ -197,18 +197,6 @@ describe("Server", function() {
             expect(environmentConfig["brisket:wantsCookies"]).toBe(true);
         });
 
-        it("[deprecated] lets client app know if it should NOT redirect on new layout", function() {
-            middleware = Server.sendResponseFromApp(environmentConfig, null, false);
-            middleware(mockRequest, mockResponse, mockNext);
-            expect(environmentConfig["brisket:layoutRedirect"]).toBe(false);
-        });
-
-        it("[deprecated] lets client app know if it should redirect on new layout", function() {
-            middleware = Server.sendResponseFromApp(environmentConfig, null, true);
-            middleware(mockRequest, mockResponse, mockNext);
-            expect(environmentConfig["brisket:layoutRedirect"]).toBe(true);
-        });
-
         it("dispatches to server app with leading slash of request path stripped", function() {
             middleware(mockRequest, mockResponse, mockNext);
             expect(ServerDispatcher.dispatch.calls.mostRecent().args[0]).toBe("aRoute");
