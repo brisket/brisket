@@ -34,11 +34,12 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
+    "beautify-benchmark": "^0.2.4",
+    "benchmark": "^2.1.4",
     "bluebird": ">=2.0.0",
     "browserify": "^13.1.1",
     "glob": "^7.1.1",
     "gulp": "^3.9.0",
-    "gulp-bench": "~1.1.0",
     "gulp-eslint": "^3.0.1",
     "gulp-if": "^2.0.2",
     "gulp-jasmine": "^2.0.1",
@@ -67,7 +68,7 @@
     "./lib/server/serverWindow.js": false
   },
   "scripts": {
-    "benchmarks": "gulp benchmarks",
+    "benchmarks": "node ./benchmarks.js",
     "client-tests": "gulp test-on-client",
     "preinstall": "./bin/setup-jsdom-version.sh",
     "test": "gulp",

@@ -1,12 +1,14 @@
 "use strict";
 
-var Brisket = require("../lib/brisket");
-var BrisketTesting = require("../testing");
-var ServerDispatcher = require("../lib/server/ServerDispatcher");
+const Benchmark = require("benchmark");
+const prettyOutput = require("beautify-benchmark");
+const Brisket = require("../lib/brisket");
+const BrisketTesting = require("../testing");
+const ServerDispatcher = require("../lib/server/ServerDispatcher");
 
 BrisketTesting.setup();
 
-var Layout = Brisket.Layout.extend({
+const Layout = Brisket.Layout.extend({
 
     template: "<!DOCTYPE html>\n<html><head><title>sample</title></head><body></body></html>",
 
@@ -14,7 +16,7 @@ var Layout = Brisket.Layout.extend({
 
 });
 
-var Router = Brisket.Router.extend({
+const Router = Brisket.Router.extend({
 
     layout: Layout,
 
@@ -47,7 +49,7 @@ var Router = Brisket.Router.extend({
 
 new Router();
 
-var mockRequest = {
+const mockRequest = {
     protocol: "http",
     path: "/requested/path",
     host: "example.com",
@@ -65,24 +67,33 @@ var mockRequest = {
     originalUrl: "/requested/path?some=param&another%5Bparam%5D=value"
 };
 
-var html;
+let html;
 
-module.exports = {
-    name: "Server route dispatch",
-    maxTime: 2,
-    tests: {
-
-        "with simple View": {
-            defer: true,
-            fn: function(deferred) {
-                ServerDispatcher.dispatch("path", mockRequest, {})
-                    .content
-                    .then(function(renderedHtml) {
-                        html = renderedHtml;
-                        deferred.resolve();
-                    });
-            }
-        }
-
+const suite = new Benchmark.Suite("Server route dispatch", {
+    onStart() {
+        console.log(`${ this.name }:`);
     }
-};
+});
+
+suite
+    .add({
+        name: "with simple View",
+        maxTime: 2,
+        defer: true,
+        "fn": function(deferred) {
+            ServerDispatcher.dispatch("path", mockRequest, {})
+                .content
+                .then(function(renderedHtml) {
+                    html = renderedHtml;
+                    deferred.resolve();
+                });
+        }
+    })
+
+    .on("cycle", function(event) {
+        prettyOutput.add(event.target)
+    })
+    .on("complete", function() {
+        prettyOutput.log();
+    })
+    .run();

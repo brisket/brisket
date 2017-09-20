@@ -6,7 +6,6 @@ var bundle = require("./build_tools/bundle");
 var sequence = require("./build_tools/sequence");
 var clientSideJasmine = require("./build_tools/clientSideJasmine");
 var serverSideJasmine = require("./build_tools/serverSideJasmine");
-var benchmark = require("./build_tools/benchmark");
 
 var LIB = "./lib/**/*.js";
 var REST = "./*.js";
@@ -18,7 +17,6 @@ var DEBUG_MODE_TEST_BUNDLE = "./spec/build/debugModeSpec.js";
 var CONFIGURE_TESTS = "./spec/configureTesting.js";
 var DEBUG_MODE_TEST = "./spec/debug_mode/debugModeSpec.js";
 var SERVER_TESTS = "./spec/server/**/*.js";
-var BENCHMARKS = "./benchmarks/**/*.js";
 var ALL_TEST_CODE = "./spec/**/*.js";
 var NOT_BUILD_DIRECTORY_THOUGH = "!./spec/build/**/*.js";
 
@@ -44,10 +42,6 @@ gulp.task("test-on-server", function() {
         TEST_HELPERS,
         SERVER_TESTS
     ]);
-});
-
-gulp.task("benchmarks", function() {
-    return benchmark(BENCHMARKS);
 });
 
 gulp.task("bundle-for-debug-mode", function() {
