@@ -1,6 +1,6 @@
 "use strict";
 
-var Testing = require("../lib/testing/Testing");
+var BrisketTesting = require("../testing");
 var Deprecated = require("../lib/util/Deprecated");
 var Promise = require("bluebird");
 
@@ -9,7 +9,7 @@ Promise.config({
 });
 
 beforeEach(function() {
-    Testing.setup();
+    BrisketTesting.setup();
     spyOn(Deprecated, "message");
 });
 
