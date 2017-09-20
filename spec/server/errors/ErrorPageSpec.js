@@ -8,20 +8,6 @@ describe("ErrorPage", function() {
     var PageNotFoundView;
     var ErrorView;
 
-    describe("[deprecated] #create", function() {
-
-        it("creates instances of errorViewMapping", function() {
-            errorViewMapping = ErrorPage.create({
-                500: Backbone.View
-            });
-
-            expect(errorViewMapping).toEqual({
-                500: Backbone.View
-            });
-        });
-
-    });
-
     describe("#viewFor", function() {
 
         beforeEach(function() {
