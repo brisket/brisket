@@ -62,21 +62,6 @@ describe("ServerRenderingWorkflow", function() {
         spyOn(ServerResponse, "create").and.returnValue(mockServerResponse);
     });
 
-    it("[deprecated] ensures layout has environmentConfig before it is passed to route handlers", function(done) {
-        fakeRouter.layout = Layout.extend({
-
-            beforeRender: function() {
-                expect(this.environmentConfig).toEqual({
-                    "made": "in server rendering spec"
-                });
-                done();
-            }
-
-        });
-
-        handlerReturns = callAugmentedRouterHandler();
-    });
-
     it("ensures layout's model has environmentConfig", function(done) {
         fakeRouter.layout = Layout.extend({
 
