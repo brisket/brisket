@@ -672,51 +672,12 @@ describe("ClientRenderingWorkflow", function() {
                     .finally(done);
             });
 
-            describe("when should redirect on new layout", function() {
-
-                beforeEach(function() {
-                    expect(windough.location.replace).not.toHaveBeenCalled();
-
-                    ClientRenderingWorkflow.setEnvironmentConfig({
-                        "brisket:layoutRedirect": true
-                    });
+            it("redirects to new route", function() {
+                callAugmentedRouterHandler(function() {
+                    return expectedView2;
                 });
 
-                it("redirects to new route", function() {
-                    callAugmentedRouterHandler(function() {
-                        return expectedView2;
-                    });
-
-                    expect(windough.location.replace).toHaveBeenCalledWith("/second/route");
-                });
-
-            });
-
-            describe("[deprecated] when should NOT redirect on new layout", function() {
-
-                beforeEach(function() {
-                    ClientRenderingWorkflow.setEnvironmentConfig({
-                        "brisket:layoutRedirect": false
-                    });
-                });
-
-                it("renders an error", function() {
-                    callAugmentedRouterHandler(function() {
-                        return expectedView2;
-                    });
-
-                    expect(ClientRenderer.render).toHaveBeenCalledWith(
-                        jasmine.any(Layout),
-                        jasmine.any(ErrorView),
-                        jasmine.any(Number)
-                    );
-
-                    expect(Errors.notify).toHaveBeenCalledWith(
-                        jasmine.any(Error),
-                        mockClientRequest
-                    );
-                });
-
+                expect(windough.location.replace).toHaveBeenCalledWith("/second/route");
             });
 
         });
