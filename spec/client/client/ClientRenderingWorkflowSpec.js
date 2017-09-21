@@ -79,37 +79,10 @@ describe("ClientRenderingWorkflow", function() {
         spyOn(ClientResponse, "from").and.returnValue(mockClientResponse);
 
         spyOn(Layout.prototype, "close");
-        spyOn(Layout.prototype, "backToNormal");
     });
 
     afterEach(function() {
         ClientRenderingWorkflow.reset();
-    });
-
-    it("executes layout commands AFTER route handlers", function(done) {
-        var layoutCommandWasExecuted = false;
-
-        fakeRouter.layout = Layout.extend({
-
-            testLayoutCommandWasExecuted: function() {
-                layoutCommandWasExecuted = true;
-            }
-
-        });
-
-        originalHandler = function(layout) {
-            layout.testLayoutCommandWasExecuted();
-
-            expect(layoutCommandWasExecuted).toBe(false);
-
-            return expectedView;
-        };
-
-        callAugmentedRouterHandler()
-            .finally(function() {
-                expect(layoutCommandWasExecuted).toBe(true);
-            })
-            .finally(done);
     });
 
     describe("exposing environmentConfig to layout for rendering", function() {
@@ -410,7 +383,6 @@ describe("ClientRenderingWorkflow", function() {
         });
 
         itUnbindsRequestOnCompleteHandlers();
-        itResetsLayout();
         itCleansUpRouter();
         itDoesNotRethrowError();
     });
@@ -450,7 +422,6 @@ describe("ClientRenderingWorkflow", function() {
         });
 
         itUnbindsRequestOnCompleteHandlers();
-        itResetsLayout();
         itCleansUpRouter();
         itDoesNotRethrowError();
     });
@@ -490,7 +461,6 @@ describe("ClientRenderingWorkflow", function() {
         });
 
         itUnbindsRequestOnCompleteHandlers();
-        itResetsLayout();
         itCleansUpRouter();
         itDoesNotRethrowError();
     });
@@ -530,7 +500,6 @@ describe("ClientRenderingWorkflow", function() {
         });
 
         itUnbindsRequestOnCompleteHandlers();
-        itResetsLayout();
         itCleansUpRouter();
         itDoesNotRethrowError();
     });
@@ -569,7 +538,6 @@ describe("ClientRenderingWorkflow", function() {
         });
 
         itUnbindsRequestOnCompleteHandlers();
-        itResetsLayout();
         itCleansUpRouter();
         itDoesNotRethrowError();
     });
@@ -577,7 +545,13 @@ describe("ClientRenderingWorkflow", function() {
     describe("the first client side render", function() {
 
         beforeEach(function() {
-            originalHandler = function() {
+            originalHandler = function(setLayoutData) {
+                setLayoutData("key1", "value1");
+                setLayoutData({
+                    "key2": "value2",
+                    "key3": "value3"
+                });
+
                 return expectedView;
             };
 
@@ -594,35 +568,112 @@ describe("ClientRenderingWorkflow", function() {
                 .finally(done);
         });
 
+        it("passes recorded state as model to layout", function(done) {
+            fakeRouter.layout = Layout.extend({
+                initialize: function() {
+                    expect(this.model.get("key1")).toBe("value1");
+                    expect(this.model.get("key2")).toBe("value2");
+                    expect(this.model.get("key3")).toBe("value3");
+                }
+            });
+
+            callAugmentedRouterHandler()
+                .finally(done);
+        });
+
         itCleansUpRouter();
     });
 
     describe("all client side renders except for the first", function() {
         var firstHandlerReturns;
-        var CurrentLayout;
+        var layoutModelChanged;
+        var layoutModel;
 
         beforeEach(function() {
-            originalHandler = jasmine.createSpy("first client side render");
-            CurrentLayout = Layout.extend({
-                name: "currentLayout"
-            });
-            spyOn(CurrentLayout.prototype, "fetchData");
+            expectedView2 = new View();
+            layoutModelChanged = {};
 
-            fakeRouter.layout = CurrentLayout;
+            ExampleLayout.prototype.initialize = function() {
+                this.model.on({
+                    "change": function() {
+                        layoutModelChanged = this.model.changedAttributes();
+                        layoutModel = this.model;
+                    }
+                }, this);
+            };
+
+            spyOn(ExampleLayout.prototype, "fetchData");
+
+            originalHandler = function(setLayoutData) {
+                setLayoutData("key1", "value1");
+                setLayoutData({
+                    "key2": "value2",
+                    "key3": "value3"
+                });
+
+                return expectedView;
+            };
+
             firstHandlerReturns = callAugmentedRouterHandler();
+        });
+
+        describe("layout data updating", function() {
+
+            it("updates layout data with changed keys after first render completes", function(done) {
+                firstHandlerReturns
+                    .then(function() {
+                        return callAugmentedRouterHandler(function(setLayoutData) {
+                            setLayoutData("key1", "newValue1");
+
+                            return expectedView2;
+                        });
+                    })
+                    .then(function() {
+                        expect(layoutModelChanged).toEqual({
+                            "key1": "newValue1",
+                            "key2": undefined,
+                            "key3": undefined
+                        });
+
+                        done();
+                    })
+                    .catch(done.fail);
+            });
+
+            it("uses first handler's layout data when second handler starts before first render completes", function(done) {
+                Promise.all([
+                    firstHandlerReturns,
+                    callAugmentedRouterHandler(function(setLayoutData) {
+                        setLayoutData("key1", "newValue1");
+
+                        return expectedView2;
+                    })
+                ])
+                    .then(function() {
+                        expect(layoutModelChanged).toEqual({});
+                        expect(layoutModel.toJSON()).toEqual({
+                            "key1": "newValue1",
+                            "key2": undefined,
+                            "key3": undefined,
+                            environmentConfig: {}
+                        });
+                        done();
+                    })
+                    .catch(done.fail);
+            });
+
         });
 
         describe("when second request wants to render with current layout that was used in first request", function() {
 
             beforeEach(function(done) {
-                expectedView2 = new View();
                 handlerReturns = callAugmentedRouterHandler(function() {
                     return expectedView2;
                 });
 
                 firstHandlerReturns
                     .then(function() {
-                        expect(CurrentLayout.prototype.fetchData.calls.count()).toBe(1);
+                        expect(ExampleLayout.prototype.fetchData.calls.count()).toBe(1);
                     })
                     .catch(failTest)
                     .finally(done);
@@ -633,14 +684,13 @@ describe("ClientRenderingWorkflow", function() {
             it("does NOT fetch layout data for second request", function(done) {
                 bothReturn
                     .then(function() {
-                        expect(CurrentLayout.prototype.fetchData.calls.count()).toBe(1);
+                        expect(ExampleLayout.prototype.fetchData.calls.count()).toBe(1);
                     })
                     .catch(failTest)
                     .finally(done);
             });
 
             itDoesNotCleanUpLayout();
-
             itCleansUpBothRouters();
         });
 
@@ -754,8 +804,6 @@ describe("ClientRenderingWorkflow", function() {
     });
 
     describe("when the first render request takes longer to return than the second", function() {
-        var commandFromOriginalHandler;
-        var commandFromSecondHandler;
         var firstRouteOnComplete;
         var secondRouteOnComplete;
 
@@ -763,29 +811,20 @@ describe("ClientRenderingWorkflow", function() {
             expectedView2 = new View();
             expectedView2.id = "view2";
 
-            commandFromOriginalHandler = jasmine.createSpy("commands from original handler");
-            commandFromSecondHandler = jasmine.createSpy("commands from second handler");
             firstRouteOnComplete = jasmine.createSpy("first route on complete");
             secondRouteOnComplete = jasmine.createSpy("second route on complete");
-
-            fakeRouter.layout = Layout.extend({
-                commandFromOriginalHandler: commandFromOriginalHandler,
-                commandFromSecondHandler: commandFromSecondHandler
-            });
         });
 
         describe("when both handlers are resolved", function() {
 
             beforeEach(function() {
                 originalHandler = function(layout, request) {
-                    layout.commandFromOriginalHandler();
                     request.onComplete(firstRouteOnComplete);
 
                     return Promise.resolve(expectedView).timeout(10);
                 };
 
                 secondHandler = function(layout, request) {
-                    layout.commandFromSecondHandler();
                     request.onComplete(secondRouteOnComplete);
 
                     return Promise.resolve(expectedView2).timeout(5);
@@ -802,15 +841,6 @@ describe("ClientRenderingWorkflow", function() {
                             expectedView,
                             jasmine.any(Number)
                         );
-                    })
-                    .catch(failTest)
-                    .finally(done);
-            });
-
-            it("does NOT run layout commands for first request", function(done) {
-                bothReturn
-                    .then(function() {
-                        expect(commandFromOriginalHandler).not.toHaveBeenCalled();
                     })
                     .catch(failTest)
                     .finally(done);
@@ -838,15 +868,6 @@ describe("ClientRenderingWorkflow", function() {
                     .finally(done);
             });
 
-            it("runs layout commands for latest request", function(done) {
-                bothReturn
-                    .then(function() {
-                        expect(commandFromSecondHandler).toHaveBeenCalled();
-                    })
-                    .catch(failTest)
-                    .finally(done);
-            });
-
             it("runs request.onComplete handler for second request", function(done) {
                 bothReturn
                     .then(function() {
@@ -857,7 +878,6 @@ describe("ClientRenderingWorkflow", function() {
             });
 
             firstRouteDoesNotCleanUpLayout();
-
             itCleansUpBothRouters();
         });
 
@@ -904,7 +924,6 @@ describe("ClientRenderingWorkflow", function() {
             });
 
             firstRouteDoesNotCleanUpLayout();
-
             itCleansUpBothRouters();
         });
 
@@ -951,7 +970,6 @@ describe("ClientRenderingWorkflow", function() {
             });
 
             secondRouteDoesNotCleanUpLayout();
-
             itCleansUpBothRouters();
         });
 
@@ -1002,7 +1020,6 @@ describe("ClientRenderingWorkflow", function() {
 
             firstRouteDoesNotCleanUpLayout();
             secondRouteDoesNotCleanUpLayout();
-
             itCleansUpBothRouters();
         });
 
@@ -1251,17 +1268,6 @@ describe("ClientRenderingWorkflow", function() {
                 .finally(function() {
                     expect(mockClientRequest.off).toHaveBeenCalled();
                 })
-                .finally(done);
-        });
-    }
-
-    function itResetsLayout() {
-        it("resets layout", function(done) {
-            handlerReturns
-                .then(function() {
-                    expect(Layout.prototype.backToNormal).toHaveBeenCalled();
-                })
-                .catch(failTest)
                 .finally(done);
         });
     }
