@@ -2,7 +2,6 @@
 
 var View = require("../../lib/viewing/View");
 var Layout = require("../../lib/viewing/Layout");
-var noop = require("../../lib/util/noop");
 var _ = require("underscore");
 
 var PageNotFoundView = View.extend({
@@ -15,9 +14,7 @@ var ErrorView = View.extend({
 
 var ExampleLayout = Layout.extend({
     template: "<div></div>",
-    content: "div",
-
-    customMethod: noop
+    content: "div"
 });
 
 var MockRouter = {

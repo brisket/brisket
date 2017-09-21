@@ -84,7 +84,7 @@ describe("ServerRenderingWorkflow", function() {
             });
         });
 
-        it("calls original handler with params, layoutDelegate, brisketRequest, and brisketResponse", function(done) {
+        it("calls original handler with params, setLayoutData, brisketRequest, and brisketResponse", function(done) {
             handlerReturns = callAugmentedRouterHandlerWith("param1", "param2");
 
             handlerReturns
@@ -609,11 +609,11 @@ describe("ServerRenderingWorkflow", function() {
                     expect(this.model.get("key1")).toBe("value1");
                     expect(this.model.get("key2")).toBe("value2");
                     expect(this.model.get("key3")).toBe("value3");
-                    done();
                 }
             });
 
-            callAugmentedRouterHandler();
+            callAugmentedRouterHandler()
+                .finally(done);
         });
 
     }

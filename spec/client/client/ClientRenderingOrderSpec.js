@@ -20,10 +20,10 @@ describe("Client side rendering order", function() {
 
         spyRenderingFor(mockRouter);
 
-        originalHandler = function(layout) {
+        originalHandler = function(setLayoutData) {
             renderingOrder.push("route handler runs");
 
-            layout.customMethod();
+            setLayoutData("custom", "data");
 
             return expectedView;
         };
@@ -41,7 +41,6 @@ describe("Client side rendering order", function() {
                 "layout fetches data",
                 "layout reattaches",
                 "layout renders",
-                "[deprecated] layout instructions from route handler run",
                 "view for route renders",
                 "layout enters DOM",
                 "view for route enters DOM"
@@ -57,8 +56,6 @@ describe("Client side rendering order", function() {
             runAnotherRequest().finally(function() {
                 expect(renderingOrder).toEqual([
                     "route handler runs",
-                    "layout back to normal",
-                    "[deprecated] layout instructions from route handler run",
                     "view for route renders",
                     "view for route enters DOM"
                 ]);
@@ -93,18 +90,12 @@ describe("Client side rendering order", function() {
             renderingOrder.push("layout reattaches");
         });
 
+        var originalLayoutRender = router.layout.prototype.render;
+
         spyOn(router.layout.prototype, "render").and.callFake(function() {
             renderingOrder.push("layout renders");
 
-            this.hasBeenRendered = true;
-        });
-
-        spyOn(router.layout.prototype, "customMethod").and.callFake(function() {
-            renderingOrder.push("[deprecated] layout instructions from route handler run");
-        });
-
-        spyOn(router.layout.prototype, "backToNormal").and.callFake(function() {
-            renderingOrder.push("layout back to normal");
+            originalLayoutRender.apply(this, arguments);
         });
 
         spyOn(router.layout.prototype, "onDOM").and.callFake(function() {

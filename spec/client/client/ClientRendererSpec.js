@@ -13,7 +13,6 @@ describe("ClientRenderer", function() {
         spyOn(layout, "reattach");
         spyOn(layout, "render");
         spyOn(layout, "enterDOM");
-        spyOn(layout, "backToNormal");
         spyOn(layout, "setContentToAttachedView");
         spyOn(layout, "setContent");
 
