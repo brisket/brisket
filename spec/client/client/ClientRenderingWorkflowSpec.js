@@ -112,18 +112,6 @@ describe("ClientRenderingWorkflow", function() {
             .finally(done);
     });
 
-    it("passes request as option to layout", function(done) {
-        fakeRouter.layout = Layout.extend({
-            initialize: function(options) {
-                expect(options.request.host).toEqual("example.com:8080");
-            }
-        });
-
-        callAugmentedRouterHandler()
-            .catch(failTest)
-            .finally(done);
-    });
-
     describe("exposing environmentConfig to layout for rendering", function() {
 
         beforeEach(function() {
