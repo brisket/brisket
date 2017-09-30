@@ -19,10 +19,10 @@ describe("Server side rendering order", function() {
 
         spyRenderingFor(mockRouter);
 
-        originalHandler = function(layout) {
+        originalHandler = function(setLayoutData) {
             renderingOrder.push("route handler runs");
 
-            layout.customMethod();
+            setLayoutData("custom", "data");
 
             return expectedView;
         };
@@ -35,7 +35,6 @@ describe("Server side rendering order", function() {
                 "route handler runs",
                 "layout fetches data",
                 "layout renders",
-                "[deprecated] layout instructions from route handler run",
                 "view for route renders"
             ]);
 
@@ -56,18 +55,12 @@ describe("Server side rendering order", function() {
             renderingOrder.push("layout fetches data");
         });
 
+        var originalLayoutRender = router.layout.prototype.render;
+
         spyOn(router.layout.prototype, "render").and.callFake(function() {
             renderingOrder.push("layout renders");
 
-            this.hasBeenRendered = true;
-        });
-
-        spyOn(router.layout.prototype, "customMethod").and.callFake(function() {
-            renderingOrder.push("[deprecated] layout instructions from route handler run");
-        });
-
-        spyOn(router.layout.prototype, "backToNormal").and.callFake(function() {
-            renderingOrder.push("layout back to normal");
+            originalLayoutRender.apply(this, arguments);
         });
 
         spyOn(router.layout.prototype, "onDOM").and.callFake(function() {

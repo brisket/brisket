@@ -51,6 +51,15 @@ describe("ViewRelationshipSpec", function() {
                 spyOn(viewRelationship, "enterDOM");
             });
 
+            it("throws when you place with an unsupported method", function() {
+                ChildView = View.extend();
+                viewRelationship = new ViewRelationship(ChildView, parentView);
+
+                expect(function() {
+                    viewRelationship.andPlace(".descendant", "unknown");
+                }).toThrow();
+            });
+
             describe("when parent view has already attached to an existing element in the DOM", function() {
 
                 describe("when child view is a Brisket view", function() {
