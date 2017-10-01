@@ -300,77 +300,6 @@ describe("RenderableView", function() {
 
         });
 
-        describe("when view has decorators", function() {
-            var firstDecorateFunction;
-            var secondDecorateFunction;
-
-            beforeEach(function() {
-                firstDecorateFunction = jasmine.createSpy();
-                secondDecorateFunction = jasmine.createSpy();
-
-                ViewThatRenders = BaseRenderableView.extend({
-                    decorators: [{
-                        decorate: firstDecorateFunction
-                    }, {
-                        decorate: secondDecorateFunction
-                    }]
-                });
-
-                view = new ViewThatRenders();
-
-                spyOn(view, "runDecorators").and.callThrough();
-            });
-
-            it("runs decorators", function() {
-                view.render();
-                expect(view.runDecorators).toHaveBeenCalled();
-            });
-
-            it("calls decorate on each decorator", function() {
-                view.render();
-                expect(firstDecorateFunction).toHaveBeenCalled();
-                expect(secondDecorateFunction).toHaveBeenCalled();
-            });
-
-            it("calls decorate functions with the view's $el", function() {
-                view.render();
-                expect(firstDecorateFunction).toHaveBeenCalledWith(view.$el);
-                expect(secondDecorateFunction).toHaveBeenCalledWith(view.$el);
-            });
-
-            it("runs decorators after afterRender", function() {
-                spyOn(view, "afterRender").and.callFake(function() {
-                    expect(firstDecorateFunction).not.toHaveBeenCalled();
-                    expect(secondDecorateFunction).not.toHaveBeenCalled();
-                });
-                view.render();
-                expect(firstDecorateFunction).toHaveBeenCalled();
-                expect(secondDecorateFunction).toHaveBeenCalled();
-            });
-        });
-
-        describe("when view does NOT have decorators", function() {
-
-            beforeEach(function() {
-                view = new BaseRenderableView();
-                spyOn(view, "runDecorators").and.callThrough();
-            });
-
-            it("runs decorators", function() {
-                view.render();
-                expect(view.runDecorators).toHaveBeenCalled();
-            });
-
-            it("does NOT throw", function() {
-                var renderingWithoutDecorators = function() {
-                    view.render();
-                };
-
-                expect(renderingWithoutDecorators).not.toThrow();
-            });
-
-        });
-
         describe("when has already been attached", function() {
 
             beforeEach(function() {
@@ -694,34 +623,6 @@ describe("RenderableView", function() {
                 expect(view.el.innerHTML).toBe(
                     "hello<div id=\"child1\" data-view-uid=\"null_3\"></div><div id=\"child2\" data-view-uid=\"null_4\"></div>"
                 );
-            });
-
-        });
-
-        describe("when view has decorators", function() {
-
-            beforeEach(function() {
-                ViewThatRenders = BaseRenderableView.extend({
-                    decorators: [{
-                        decorate: jasmine.createSpy()
-                    }, {
-                        decorate: jasmine.createSpy()
-                    }]
-                });
-
-                view = new ViewThatRenders();
-
-                spyOn(view, "runDecorators").and.callThrough();
-
-                view.render();
-
-                expect(view.runDecorators.calls.count()).toBe(1);
-            });
-
-            it("runs decorators again", function() {
-                view.render();
-
-                expect(view.runDecorators.calls.count()).toBe(2);
             });
 
         });
