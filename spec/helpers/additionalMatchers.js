@@ -84,6 +84,14 @@
                     return passIf(key in actual && actual[key] === value);
                 }
             };
+        },
+
+        toInclude: function() {
+            return {
+                compare: function(actual, expected) {
+                    return passIf(actual.indexOf(expected) > -1);
+                }
+            };
         }
 
     };

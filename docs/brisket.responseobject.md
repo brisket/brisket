@@ -81,3 +81,6 @@ response.redirect('/foo/bar');
 response.redirect('http://example.com');
 response.redirect(301, 'http://example.com');
 ```
+
+### response.noStartupScript()
+Use this method to tell Brisket not to add it's start up script to the page's html. This method is useful for routes where you want server-side rendering and nothing else.

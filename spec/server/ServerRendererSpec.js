@@ -3,6 +3,7 @@
 describe("ServerRenderer", function() {
     var Backbone = require("../../lib/application/Backbone");
     var ServerRenderer = require("../../lib/server/ServerRenderer");
+    var ServerResponse = require("../../lib/server/ServerResponse");
     var View = require("../../lib/viewing/View");
     var Layout = require("../../lib/viewing/Layout");
     var Environment = require("../../lib/environment/Environment");
@@ -19,6 +20,7 @@ describe("ServerRenderer", function() {
     var environmentConfig;
     var ViewWithPageLevelData;
     var mockServerRequest;
+    var serverResponse;
 
     beforeEach(function() {
         Backbone.$ = $;
@@ -38,6 +40,7 @@ describe("ServerRenderer", function() {
         ViewWithPageLevelData = Backbone.View.extend(HasPageLevelData);
 
         mockServerRequest = validMockServerRequest();
+        serverResponse = ServerResponse.create();
 
         spyOn(Environment, "isServer").and.returnValue(true);
         spyOn(AjaxCallsForCurrentRequest, "all");
@@ -58,7 +61,7 @@ describe("ServerRenderer", function() {
             });
 
             it("injects base tag with appRoot", function() {
-                html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest);
+                html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest, serverResponse);
                 expect(html).toMatch(/<base href='http:\/\/host.com\/subdir\/'>/);
             });
 
@@ -73,7 +76,7 @@ describe("ServerRenderer", function() {
             });
 
             it("injects base tag with appRoot", function() {
-                html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest);
+                html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest, serverResponse);
                 expect(html).toMatch(/<base href='https:\/\/host.com\/subdir\/'>/);
             });
 
@@ -96,7 +99,7 @@ describe("ServerRenderer", function() {
             });
 
             it("injects base tag WITHOUT appRoot", function() {
-                html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest);
+                html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest, serverResponse);
                 expect(html).toMatch(/<base href='http:\/\/host.com\/'>/);
             });
 
@@ -111,7 +114,7 @@ describe("ServerRenderer", function() {
             });
 
             it("injects base tag WITHOUT appRoot", function() {
-                html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest);
+                html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest, serverResponse);
                 expect(html).toMatch(/<base href='https:\/\/host.com\/'>/);
             });
 
@@ -121,10 +124,22 @@ describe("ServerRenderer", function() {
 
     describe("when layout has a body", function() {
 
-        it("injects the client app start up script", function() {
-            html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest);
+        describe("client app start up script", function() {
 
-            expect(html).toMatch(clientStartScript(environmentConfig, null));
+            it("injects the client app start up script by default", function() {
+                html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest, serverResponse);
+
+                expect(html).toInclude(clientStartScript(environmentConfig, null));
+            });
+
+            it("does NOT inject the client app start up script when route requests not to", function() {
+                serverResponse.noStartupScript();
+
+                html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest, serverResponse);
+
+                expect(html).not.toInclude(clientStartScript(environmentConfig, null));
+            });
+
         });
 
         describe("when there is bootstrappedData from Backbone ajax requests during the request", function() {
@@ -142,9 +157,9 @@ describe("ServerRenderer", function() {
                 });
 
                 it("injects the bootstrappedData into the client app start up script", function() {
-                    html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest);
+                    html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest, serverResponse);
 
-                    expect(html).toMatch(clientStartScript(environmentConfig, bootstrappedData));
+                    expect(html).toInclude(clientStartScript(environmentConfig, bootstrappedData));
                 });
 
                 describe("when there are illegal characters environmentConfig and bootstrappedData", function() {
@@ -162,9 +177,9 @@ describe("ServerRenderer", function() {
                     });
 
                     it("removes illegal characters in the client start script", function() {
-                        html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest);
+                        html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest, serverResponse);
 
-                        expect(html).toMatch(clientStartScript(environmentConfig, bootstrappedData));
+                        expect(html).toInclude(clientStartScript(environmentConfig, bootstrappedData));
                     });
 
                 });
@@ -185,12 +200,12 @@ describe("ServerRenderer", function() {
                 });
 
                 it("escapes <script> closing tags", function() {
-                    html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest);
+                    html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest, serverResponse);
 
                     escapedBootstrappedData = bootstrappedData;
-                    escapedBootstrappedData["/url"].body = "<script type='text/javascript' src='some.js'><\\/script>";
+                    escapedBootstrappedData["/url"].body = "<script type='text/javascript' src='some.js'></script>";
 
-                    expect(html).toMatch(clientStartScript(environmentConfig, escapedBootstrappedData));
+                    expect(html).toInclude(clientStartScript(environmentConfig, escapedBootstrappedData));
                 });
 
             });
@@ -204,7 +219,7 @@ describe("ServerRenderer", function() {
         beforeEach(function() {
             view = new View();
             spyOn(view, "setUid");
-            ServerRenderer.render(layout, view, null, mockServerRequest);
+            ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
         });
 
         it("sets uid to reflect initial request and it's creation order", function() {
@@ -217,7 +232,7 @@ describe("ServerRenderer", function() {
 
         it("does NOT throw", function() {
             function renderingBackboneView() {
-                ServerRenderer.render(layout, view, null, mockServerRequest);
+                ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
             }
 
             expect(renderingBackboneView).not.toThrow();
@@ -236,7 +251,7 @@ describe("ServerRenderer", function() {
                 .withTitle("Title")
                 .withMetatags(metatags);
 
-            html = ServerRenderer.render(layout, view, null, mockServerRequest);
+            html = ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
         });
 
         it("renders layout metatags", function() {
@@ -252,7 +267,7 @@ describe("ServerRenderer", function() {
     describe("when view does NOT have page level data", function() {
 
         beforeEach(function() {
-            html = ServerRenderer.render(layout, view, null, mockServerRequest);
+            html = ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
         });
 
         it("it does NOT render layout metatags", function() {
@@ -272,27 +287,27 @@ describe("ServerRenderer", function() {
             it("renders title from view's page level data", function() {
                 layout.defaultTitle = "Default Title";
                 view = new ViewWithPageLevelData().withTitle("Title");
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
+                html = ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
 
                 expect(html).toMatch(/<html>(.|\r|\n)*<title>Title<\/title>(.|\r|\n)*<\/html>/mi);
             });
 
             it("renders layout's defaultTitle when view does NOT have page level data", function() {
                 layout.defaultTitle = "Default Title";
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
+                html = ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
 
                 expect(html).toMatch(/<html>(.|\r|\n)*<title>Default Title<\/title>(.|\r|\n)*<\/html>/mi);
             });
 
             it("does NOT render title when view does NOT have page level data NOR layout has defaultTitle", function() {
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
+                html = ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
 
                 expect(html).toMatch(/<html>(.|\r|\n)*<title><\/title>(.|\r|\n)*<\/html>/mi);
             });
 
             it("escapes title for use in html", function() {
                 layout.defaultTitle = "Title \" ' & < > $ $$ $' $` $& $3";
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
+                html = ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
 
                 expect(html).toMatch(/<html>(.|\r|\n)*<title>Title &quot; &#39; &amp; &lt; &gt; \$ \$\$ \$&#39; \$` \$&amp; \$3<\/title>(.|\r|\n)*<\/html>/mi);
             });
@@ -300,7 +315,7 @@ describe("ServerRenderer", function() {
             it("renders title when title tag is on multiple lines", function() {
                 layout.el.innerHTML = "<html><head><title>\n</title></head><body></body></html>";
                 layout.defaultTitle = "Default Title";
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
+                html = ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
 
                 expect(html).toMatch(/<html>(.|\r|\n)*<title>Default Title<\/title>(.|\r|\n)*<\/html>/mi);
             });
@@ -316,27 +331,27 @@ describe("ServerRenderer", function() {
             it("renders title from view's page level data", function() {
                 layout.defaultTitle = "Default Title";
                 view = new ViewWithPageLevelData().withTitle("Title");
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
+                html = ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
 
                 expect(html).toMatch(/<html>(.|\r|\n)*<title class="klass">Title<\/title>(.|\r|\n)*<\/html>/mi);
             });
 
             it("renders layout's defaultTitle when view does NOT have page level data", function() {
                 layout.defaultTitle = "Default Title";
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
+                html = ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
 
                 expect(html).toMatch(/<html>(.|\r|\n)*<title class="klass">Default Title<\/title>(.|\r|\n)*<\/html>/mi);
             });
 
             it("does NOT render title when view does NOT have page level data NOR layout has defaultTitle", function() {
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
+                html = ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
 
                 expect(html).toMatch(/<html>(.|\r|\n)*<title class="klass"><\/title>(.|\r|\n)*<\/html>/mi);
             });
 
             it("escapes title for use in html", function() {
                 layout.defaultTitle = "Title \" ' & < > $ $$ $' $` $& $3";
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
+                html = ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
 
                 expect(html).toMatch(/<html>(.|\r|\n)*<title class="klass">Title &quot; &#39; &amp; &lt; &gt; \$ \$\$ \$&#39; \$` \$&amp; \$3<\/title>/mi);
             });
@@ -344,7 +359,7 @@ describe("ServerRenderer", function() {
             it("renders title when title tag is on multiple lines", function() {
                 layout.el.innerHTML = "<html><head><title class='klass'>\n</title></head><body></body></html>";
                 layout.defaultTitle = "Default Title";
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
+                html = ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
 
                 expect(html).toMatch(/<html>(.|\r|\n)*<title class="klass">Default Title<\/title>(.|\r|\n)*<\/html>/i);
             });
@@ -361,7 +376,7 @@ describe("ServerRenderer", function() {
                     "description": "Title \" ' & < > $ $$ $' $` $& $3"
                 }));
 
-            html = ServerRenderer.render(layout, view, null, mockServerRequest);
+            html = ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
 
             expect(html)
                 .toMatch(/<meta name="description" content="Title &quot; &#39; &amp; &lt; &gt; \$ \$\$ \$&#39; \$` \$&amp; \$3" data-ephemeral="true"/);
@@ -372,7 +387,7 @@ describe("ServerRenderer", function() {
             beforeEach(function() {
                 view = new ViewWithPageLevelData();
 
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
+                html = ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
             });
 
             it("does NOT render metatags", function() {
@@ -390,7 +405,7 @@ describe("ServerRenderer", function() {
                         "keywords": "b"
                     }));
 
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
+                html = ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
             });
 
             it("renders metatags into html", function() {
@@ -417,7 +432,7 @@ describe("ServerRenderer", function() {
                         })
                     ]);
 
-                html = ServerRenderer.render(layout, view, null, mockServerRequest);
+                html = ServerRenderer.render(layout, view, null, mockServerRequest, serverResponse);
             });
 
             it("renders metatags into html", function() {
@@ -435,29 +450,27 @@ describe("ServerRenderer", function() {
 
         it("injects client side debug mode script into html when debug is true", function() {
             environmentConfig.debug = true;
-            html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest);
+            html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest, serverResponse);
             expect(html).toMatch(/<script>window.Brisket={debug:true};<\/script>/);
         });
 
         it("does NOT inject client side debug mode script into html when debug is false", function() {
             environmentConfig.debug = false;
-            html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest);
+            html = ServerRenderer.render(layout, view, environmentConfig, mockServerRequest, serverResponse);
             expect(html).not.toMatch(/<script>window.Brisket={debug:true};<\/script>/);
         });
 
     });
 
     function clientStartScript(environmentConfig, bootstrappedData) {
-        var pattern = "<script type=\"text/javascript\">\n" +
+        return stripIllegalCharacters("<script type=\"text/javascript\">\n" +
             "var b = window.Brisket = window.Brisket || {};\n" +
             "b.version = '" + version + "';\n" +
             "b.startConfig = {\n" +
             "environmentConfig: " + stringifyData(environmentConfig) + ",\n" +
-            "bootstrappedData: " + stringifyData(bootstrappedData) + "\n" +
+            "bootstrappedData: " + escapeClosingSlashes(stringifyData(bootstrappedData)) + "\n" +
             "};\n" +
-            "</script>";
-
-        return new RegExp(stripIllegalCharacters(pattern), "m");
+            "</script>");
     }
 
     function stringifyData(data) {
@@ -466,6 +479,10 @@ describe("ServerRenderer", function() {
 
     function stripIllegalCharacters(input) {
         return input.replace(/\u2028|\u2029/g, '');
+    }
+
+    function escapeClosingSlashes(string) {
+        return string.replace(/<\/script/g, "<\\/script");
     }
 
     function validMockServerRequest(props) {
