@@ -2,7 +2,6 @@
 
 const Benchmark = require("benchmark");
 const prettyOutput = require("beautify-benchmark");
-const Brisket = require("../lib/brisket");
 const BrisketTesting = require("../testing");
 const View = require("../lib/viewing/View");
 
@@ -18,7 +17,7 @@ const ViewWithALotOfMarkup = View.extend({
         let markup = "";
         let i = 100;
 
-        while(i > 0) {
+        while (i > 0) {
             markup += "<div id='div-" + i + "'><span></span></div>";
 
             i--;
@@ -33,6 +32,7 @@ BrisketTesting.setup();
 
 const suite = new Benchmark.Suite("Rendering views", {
     onStart() {
+        /* eslint-disable no-console */
         console.log(`${ this.name }:`);
     }
 });
@@ -51,7 +51,7 @@ suite
     })
 
     .on("cycle", function(event) {
-        prettyOutput.add(event.target)
+        prettyOutput.add(event.target);
     })
     .on("complete", function() {
         prettyOutput.log();
