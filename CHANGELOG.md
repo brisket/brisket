@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 1.13.1
+- update copyright to 2018
+
 ### 1.13.0
 - deprecate Brisket's built in metatag handling
 
