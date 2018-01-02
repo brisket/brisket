@@ -143,4 +143,4 @@ npm install jsdom@6 --save
 Apache License (Version 2). See license text in [LICENSE](LICENSE).
 
 ## Copyrights and Names
-Brisket is copyrighted by [Bloomberg Finance LP](http://bloomberg.com). Brisket is a service mark of [Bloomberg LP](http://bloomberg.com).
+Brisket originated at [Bloomberg Finance LP](http://bloomberg.com). The name 'Brisket' is a service mark of [Bloomberg LP](http://bloomberg.com).
