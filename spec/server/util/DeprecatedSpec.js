@@ -15,11 +15,11 @@ describe("Deprecated", function() {
     });
 
     it("console warns a deprecation message with a help page", function() {
-        Deprecated.message("feature is deprecated", "http://github.com/bloomberg/brisket/issues/11");
+        Deprecated.message("feature is deprecated", "http://github.com/brisket/brisket/issues/11");
 
         expect(console.warn).toHaveBeenCalledWith(
             "[DEPRECATED] feature is deprecated. " +
-            "Go to http://github.com/bloomberg/brisket/issues/11 for full documentation."
+            "Go to http://github.com/brisket/brisket/issues/11 for full documentation."
         );
     });
 

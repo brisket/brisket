@@ -76,13 +76,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bloomberg/brisket.git"
+    "url": "https://github.com/brisket/brisket.git"
   },
-  "bugs": "http://github.com/bloomberg/brisket/issues",
+  "bugs": "http://github.com/brisket/brisket/issues",
   "license": [
     {
       "type": "Apache-2.0",
-      "url": "https://github.com/bloomberg/brisket/blob/master/LICENSE"
+      "url": "https://github.com/brisket/brisket/blob/master/LICENSE"
     }
   ]
 }

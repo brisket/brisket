@@ -13,7 +13,7 @@ describe("SetupLinksAndPushState", function() {
 
     beforeEach(function() {
         spyOn(Browser, "location").and.returnValue({
-            href: "http://www.bloombergview.com/aRoute",
+            href: "http://www.example.com/aRoute",
             pathname: "/aRoute"
         });
 
