@@ -9,6 +9,7 @@ var serverSideJasmine = require("./build_tools/serverSideJasmine");
 
 var LIB = "./lib/**/*.js";
 var REST = "./*.js";
+var BENCHMARKS = "./benchmarks/**/*.js";
 var BUILD_TOOLS = "./build_tools/*.js";
 var TEST_HELPERS = "./spec/helpers/**/*.js";
 var CLIENT_TESTS = "./spec/client/**/*.js";
@@ -22,6 +23,7 @@ var NOT_BUILD_DIRECTORY_THOUGH = "!./spec/build/**/*.js";
 
 var ALL_CODE = [
     BUILD_TOOLS,
+    BENCHMARKS,
     LIB,
     REST,
     ALL_TEST_CODE,

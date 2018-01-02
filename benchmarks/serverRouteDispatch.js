@@ -67,10 +67,9 @@ const mockRequest = {
     originalUrl: "/requested/path?some=param&another%5Bparam%5D=value"
 };
 
-let html;
-
 const suite = new Benchmark.Suite("Server route dispatch", {
     onStart() {
+        /* eslint-disable no-console */
         console.log(`${ this.name }:`);
     }
 });
@@ -83,15 +82,14 @@ suite
         "fn": function(deferred) {
             ServerDispatcher.dispatch("path", mockRequest, {})
                 .content
-                .then(function(renderedHtml) {
-                    html = renderedHtml;
+                .then(function() {
                     deferred.resolve();
                 });
         }
     })
 
     .on("cycle", function(event) {
-        prettyOutput.add(event.target)
+        prettyOutput.add(event.target);
     })
     .on("complete", function() {
         prettyOutput.log();
