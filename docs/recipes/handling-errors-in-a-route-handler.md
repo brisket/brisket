@@ -1,7 +1,7 @@
 Handling Errors in a Route Handler
 ========================
 
-The documentation for Brisket.Router talks about [how to handle errors generally for all actions in a Router](https://github.com/bloomberg/brisket/blob/master/docs/brisket.router.md#handling-errors). You can also handle errors on a per route basis:
+The documentation for Brisket.Router talks about [how to handle errors generally for all actions in a Router](https://github.com/brisket/brisket/blob/master/docs/brisket.router.md#handling-errors). You can also handle errors on a per route basis:
 
 ```js
 const ErrorView = Brisket.View.extend();

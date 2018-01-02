@@ -18,8 +18,8 @@ A nice feature of `application link`s is they "work" even if JavaScript is disab
 Brisket allows all other types of links to behave as they would on a standard website:
 
 ```html
-<a href="http://www.bloomberg.com">Fully qualified link</a>
-<a href="//www.bloomberg.com">Protocol agnostic link</a>
+<a href="http://www.example.com">Fully qualified link</a>
+<a href="//www.example.com">Protocol agnostic link</a>
 <a href="#middle">Hash tag link</a>
 <a href="mailto:email@example.com">Mailto link</a>
 <a href="javascript:{}">Javascript Code Link</a>
