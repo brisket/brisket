@@ -1,6 +1,9 @@
 Changelog
 ==========
 
+### 1.14.0
+- move brisket repo to brisket org
+
 ### 1.13.1
 - update copyright to 2018
 
