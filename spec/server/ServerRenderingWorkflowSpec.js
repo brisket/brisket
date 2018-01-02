@@ -732,7 +732,8 @@ describe("ServerRenderingWorkflow", function() {
             layout,
             view,
             environmentConfig,
-            mockServerRequest
+            mockServerRequest,
+            mockServerResponse
         );
     }
 
@@ -741,7 +742,8 @@ describe("ServerRenderingWorkflow", function() {
             layout,
             view,
             environmentConfig,
-            mockServerRequest
+            mockServerRequest,
+            mockServerResponse
         );
     }
 

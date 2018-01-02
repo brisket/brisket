@@ -15,16 +15,26 @@ describe("ClientResponse", function() {
 
     afterEach(unsetAppRoot);
 
-    describe("#status", function() {
+    it("does NOT error when you call ClientResponse#status", function() {
+        expect(function() {
+            clientResponse.status(204);
+        }).not.toThrow();
+    });
 
-        it("is a function", function() {
-            expect(clientResponse.status).toEqual(jasmine.any(Function));
-        });
+    it("does NOT error when you call ClientResponse#set", function() {
+        expect(function() {
+            clientResponse.set("key", "value");
+            clientResponse.set({
+                "key2": "value2",
+                "key3": "value3"
+            });
+        }).not.toThrow();
+    });
 
-        it("does NOT throw an error", function() {
-            expect(settingClientResponseStatus).not.toThrow();
-        });
-
+    it("does NOT error when you call ClientResponse#noStartupScript", function() {
+        expect(function() {
+            clientResponse.noStartupScript();
+        }).not.toThrow();
     });
 
     describe("#redirect", function() {
@@ -75,10 +85,6 @@ describe("ClientResponse", function() {
         });
 
     });
-
-    function settingClientResponseStatus() {
-        clientResponse.status(204);
-    }
 
     function givenAppRootSet() {
         Response.setAppRoot("/appRoot");

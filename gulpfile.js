@@ -82,11 +82,10 @@ gulp.task("test-on-client", ["bundle-for-client"], function() {
 });
 
 gulp.task("default", sequence(
-    "lintJs", [
-        "test-on-server",
-        "test-debug-mode",
-        "test-on-client"
-    ]
+    "lintJs",
+    "test-on-server",
+    "test-debug-mode",
+    "test-on-client"
 ));
 
 // ----------------------------------------------------------------------------
