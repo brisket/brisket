@@ -312,7 +312,10 @@ describe("ServerRenderingWorkflow", function() {
         it("logs the error", function(done) {
             handlerReturns.finally(function() {
                 expect(Errors.notify).toHaveBeenCalledWith(
-                    error,
+                    {
+                        error: error,
+                        type: "ServerRenderingError"
+                    },
                     mockExpressRequest
                 );
                 done();
@@ -676,7 +679,10 @@ describe("ServerRenderingWorkflow", function() {
         it("notifies about error", function(done) {
             callAugmentedRouterHandler().catch(function() {
                 expect(Errors.notify).toHaveBeenCalledWith(
-                    error,
+                    {
+                        error: error,
+                        type: "ServerRenderingError"
+                    },
                     mockExpressRequest
                 );
 

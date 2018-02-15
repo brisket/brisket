@@ -435,7 +435,10 @@ describe("ClientRenderingWorkflow", function() {
             handlerReturns
                 .then(function() {
                     expect(Errors.notify).toHaveBeenCalledWith(
-                        "original handler returns a rejected promise",
+                        {
+                            error: "original handler returns a rejected promise",
+                            type: "ClientRenderingError"
+                        },
                         mockClientRequest
                     );
                 })
@@ -475,9 +478,12 @@ describe("ClientRenderingWorkflow", function() {
         it("logs the jqxhr to console", function(done) {
             handlerReturns
                 .then(function() {
-                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                        status: 404
-                    }));
+                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual({
+                        error: jasmine.objectContaining({
+                            status: 404
+                        }),
+                        type: "ClientRenderingError"
+                    });
                 })
                 .catch(failTest)
                 .finally(done);
@@ -515,9 +521,12 @@ describe("ClientRenderingWorkflow", function() {
         it("logs the jqxhr to console", function(done) {
             handlerReturns
                 .then(function() {
-                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                        status: 500
-                    }));
+                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual({
+                        error: jasmine.objectContaining({
+                            status: 500
+                        }),
+                        type: "ClientRenderingError"
+                    });
                 })
                 .catch(failTest)
                 .finally(done);
@@ -555,9 +564,12 @@ describe("ClientRenderingWorkflow", function() {
         it("logs the jqxhr to console", function(done) {
             handlerReturns
                 .then(function() {
-                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                        status: 503
-                    }));
+                    expect(Errors.notify.calls.mostRecent().args[0]).toEqual({
+                        error: jasmine.objectContaining({
+                            status: 503
+                        }),
+                        type: "ClientRenderingError"
+                    });
                 })
                 .catch(failTest)
                 .finally(done);
@@ -594,7 +606,10 @@ describe("ClientRenderingWorkflow", function() {
             handlerReturns
                 .then(function() {
                     expect(Errors.notify).toHaveBeenCalledWith(
-                        error,
+                        {
+                            error: error,
+                            type: "ClientRenderingError"
+                        },
                         mockClientRequest
                     );
                 })
@@ -734,7 +749,10 @@ describe("ClientRenderingWorkflow", function() {
                     );
 
                     expect(Errors.notify).toHaveBeenCalledWith(
-                        jasmine.any(Error),
+                        {
+                            error: jasmine.any(Error),
+                            type: "ClientRenderingError"
+                        },
                         mockClientRequest
                     );
                 });
@@ -1231,7 +1249,10 @@ describe("ClientRenderingWorkflow", function() {
                 .then(failTest)
                 .catch(function() {
                     expect(Errors.notify).toHaveBeenCalledWith(
-                        error,
+                        {
+                            error: error,
+                            type: "ClientRenderingError"
+                        },
                         mockClientRequest
                     );
                 })
