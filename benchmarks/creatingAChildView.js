@@ -1,9 +1,6 @@
-"use strict";
-
-const Benchmark = require("benchmark");
-const prettyOutput = require("beautify-benchmark");
-const BrisketTesting = require("../testing");
-const View = require("../lib/viewing/View");
+import { Bench } from 'tinybench';
+import BrisketTesting from '../testing.js';
+import View from '../lib/viewing/View.js';
 
 const ParentView = View.extend();
 const ChildView = View.extend();
@@ -14,46 +11,37 @@ let parentView;
 let childViewInstance;
 
 function reset() {
-    parentView = new ParentView();
-    childViewInstance = new ChildView();
+  parentView = new ParentView();
+  childViewInstance = new ChildView();
 }
 
+const bench = new Bench({ name: 'Creating a child view', time: 100 });
 
-const suite = new Benchmark.Suite("Creating a child view", {
-    onStart() {
-        /* eslint-disable no-console */
-        console.log(`${ this.name }:`);
-    }
-});
+bench
+  .add('creating child View with View constructor', () => {
+    reset();
+    parentView.createChildView(ParentView);
+  })
 
-suite
-    .add("creating child View with View constructor", function() {
-        reset();
-        parentView.createChildView(ParentView);
-    })
+  .add('creating child View with View constructor and options', () => {
+    reset();
+    parentView.createChildView(ParentView)
+      .withOptions({
+        some: 'data'
+      });
+  })
 
-    .add("creating child View with View constructor and options", function() {
-        reset();
-        parentView.createChildView(ParentView)
-            .withOptions({
-                some: "data"
-            });
-    })
+  .add('creating child View with instance of a View', () => {
+    reset();
+    parentView.createChildView(childViewInstance);
+  })
 
-    .add("creating child View with instance of a View", function() {
-        reset();
-        parentView.createChildView(childViewInstance);
-    })
+  .add('creating child View with an identifier', () => {
+    reset();
+    parentView.createChildView('identifier', childViewInstance);
+  });
 
-    .add("creating child View with an identifier", function() {
-        reset();
-        parentView.createChildView("identifier", childViewInstance);
-    })
+await bench.run();
 
-    .on("cycle", function(event) {
-        prettyOutput.add(event.target);
-    })
-    .on("complete", function() {
-        prettyOutput.log();
-    })
-    .run();
+console.log(bench.name);
+console.table(bench.table());

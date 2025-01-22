@@ -6,12 +6,12 @@ You can register multiple error callbacks, and they will be called in the same o
 
 ```js
 Brisket.onError(function(error, request) {
-    console.log("Error: ", error);
-    console.log("request.referrer: ", request.referrer);
+  console.log('Error: ', error);
+  console.log('request.referrer: ', request.referrer);
 });
 
 Brisket.onError(function(error, request) {
-    customLogger.log("Error: ", error);
-    customLogger.log("request.referrer: ", request.referrer);
+  customLogger.log('Error: ', error);
+  customLogger.log('request.referrer: ', request.referrer);
 });
 ```

@@ -1,45 +1,34 @@
-"use strict";
+import { Bench } from 'tinybench';
+import isApplicationLink from '../lib/controlling/isApplicationLink.js';
 
-const Benchmark = require("benchmark");
-const prettyOutput = require("beautify-benchmark");
-const isApplicationLink = require("../lib/controlling/isApplicationLink");
+const bench = new Bench({ name: 'Checking if a link is application link', time: 100 });
 
-const suite = new Benchmark.Suite("Checking if a link is application link", {
-    onStart() {
-        /* eslint-disable no-console */
-        console.log(`${ this.name }:`);
-    }
-});
+bench
+  .add('hash link', () => {
+    isApplicationLink('#top');
+  })
 
-suite
-    .add("hash link", function() {
-        isApplicationLink("#top");
-    })
+  .add('fully qualified link', () => {
+    isApplicationLink('http://www.somewhere.com');
+  })
 
-    .add("fully qualified link", function() {
-        isApplicationLink("http://www.somewhere.com");
-    })
+  .add('absolute link', () => {
+    isApplicationLink('/absolute/path');
+  })
 
-    .add("absolute link", function() {
-        isApplicationLink("/absolute/path");
-    })
+  .add('mailto link', function() {
+    isApplicationLink('mailto:someone@example.com');
+  })
 
-    .add("mailto link", function() {
-        isApplicationLink("mailto:someone@example.com");
-    })
+  .add('javascript code link', () => {
+    isApplicationLink('javascript:{}');
+  })
 
-    .add("javascript code link", function() {
-        isApplicationLink("javascript:{}");
-    })
+  .add('application link', () => {
+    isApplicationLink('application/link');
+  });
 
-    .add("application link", function() {
-        isApplicationLink("application/link");
-    })
+await bench.run();
 
-    .on("cycle", function(event) {
-        prettyOutput.add(event.target);
-    })
-    .on("complete", function() {
-        prettyOutput.log();
-    })
-    .run();
+console.log(bench.name);
+console.table(bench.table());

@@ -23,9 +23,9 @@ const ChildView = Brisket.View.extend();
 
 const ParentView = Brisket.View.extend({
 
-    beforeRender() {
-        this.createChildView(ChildView);
-    }
+  beforeRender() {
+    this.createChildView(ChildView);
+  },
 
 });
 ```
@@ -37,19 +37,19 @@ To pass options to the future ChildView instance, use `withOptions`:
 
 ```js
 const ChildView = Brisket.View.extend({
-    initialize(options) {
-        console.log(options.some); // "data"
-    }
+  initialize(options) {
+    console.log(options.some); // "data"
+  },
 });
 
 const ParentView = Brisket.View.extend({
 
-    beforeRender() {
-        this.createChildView(ChildView)
-            .withOptions({
-                some: "data"
-            });
-    }
+  beforeRender() {
+    this.createChildView(ChildView)
+      .withOptions({
+        some: 'data',
+      });
+  }
 
 });
 ```
@@ -65,15 +65,15 @@ const childView = new ChildView();
 
 const ParentView = Brisket.View.extend({
 
-    childView: null,
+  childView: null,
 
-    initialize(options) {
-        this.childView = options.childView;
-    },
+  initialize(options) {
+    this.childView = options.childView;
+  },
 
-    beforeRender() {
-        this.createChildView(this.childView);
-    }
+  beforeRender() {
+    this.createChildView(this.childView);
+  },
 
 });
 
@@ -92,9 +92,9 @@ const ChildView = Brisket.View.extend();
 
 const ParentView = Brisket.View.extend({
 
-    beforeRender() {
-        this.createChildView('child-view-id', ChildView);
-    }
+  beforeRender() {
+    this.createChildView('child-view-id', ChildView);
+  },
 
 });
 ```
@@ -112,15 +112,15 @@ const ChildView = Brisket.View.extend();
 
 const ParentView = Brisket.View.extend({
 
-    template({ views }) {
-        return `child1 should go here: ${views.child1} and
-                child2 goes here: ${views.child2}`;
-    },
+  template({ views }) {
+    return `child1 should go here: ${views.child1} and
+            child2 goes here: ${views.child2}`;
+  },
 
-    beforeRender() {
-        this.createChildView('child1', ChildView);
-        this.createChildView('child2', ChildView);
-    }
+  beforeRender() {
+    this.createChildView('child1', ChildView);
+    this.createChildView('child2', ChildView);
+  },
 
 });
 
@@ -140,17 +140,17 @@ Renders the child view at the end of the parent view.
 
 ```js
 const ChildView = Brisket.View.extend({
-    className: 'child',
-    template: 'child view'
+  className: 'child',
+  template: 'child view',
 });
 
 const ParentView = Brisket.View.extend({
-    template: 'parent view',
+  template: 'parent view',
 
-    beforeRender() {
-        this.createChildView(ChildView)
-            .andAppendIt();
-    }
+  beforeRender() {
+    this.createChildView(ChildView)
+        .andAppendIt();
+  },
 
 });
 
@@ -165,17 +165,17 @@ Renders the child view at the end of the passed in destination.
 
 ```js
 const ChildView = Brisket.View.extend({
-    className: 'child',
-    template: 'child view'
+  className: 'child',
+  template: 'child view',
 });
 
 const ParentView = Brisket.View.extend({
-    template: 'parent view <div class="destination">destination</div>',
+  template: 'parent view <div class="destination">destination</div>',
 
-    beforeRender() {
-        this.createChildView(ChildView)
-            .andAppendItTo('.destination');
-    }
+  beforeRender() {
+    this.createChildView(ChildView)
+        .andAppendItTo('.destination');
+  },
 
 });
 
@@ -190,17 +190,17 @@ Renders the child view at the beginning of the parent view.
 
 ```js
 const ChildView = Brisket.View.extend({
-    className: 'child',
-    template: 'child view'
+  className: 'child',
+  template: 'child view',
 });
 
 const ParentView = Brisket.View.extend({
-    template: 'parent view',
+  template: 'parent view',
 
-    beforeRender() {
-        this.createChildView(ChildView)
-            .andPrependIt();
-    }
+  beforeRender() {
+    this.createChildView(ChildView)
+        .andPrependIt();
+  },
 
 });
 
@@ -215,17 +215,17 @@ Renders the child view at the beginning of the passed in destination.
 
 ```js
 const ChildView = Brisket.View.extend({
-    className: 'child',
-    template: 'child view'
+  className: 'child',
+  template: 'child view',
 });
 
 const ParentView = Brisket.View.extend({
-    template: 'parent view <div class="destination">destination</div>',
+  template: 'parent view <div class="destination">destination</div>',
 
-    beforeRender() {
-        this.createChildView(ChildView)
-            .andPrependItTo('.destination');
-    }
+  beforeRender() {
+    this.createChildView(ChildView)
+        .andPrependItTo('.destination');
+  },
 
 });
 
@@ -240,20 +240,19 @@ Replaces the contents of the destination with the child view. It maintains the d
 
 ```js
 const ChildView = Brisket.View.extend({
-    className: 'child',
-    template: 'child view'
+  className: 'child',
+  template: 'child view',
 });
 
 const ParentView = Brisket.View.extend({
-    template: 'parent view <div class="destination">destination</div>',
+  template: 'parent view <div class="destination">destination</div>',
 
-    beforeRender() {
-        this.createChildView(ChildView)
-            .andInsertInto('.destination');
-    }
+  beforeRender() {
+    this.createChildView(ChildView)
+        .andInsertInto('.destination');
+  },
 
 });
-
 
 const parentView = new ParentView();
 console.log(parentView.render().el.innerHTML);
@@ -265,17 +264,17 @@ Renders the child view right before the destination.
 
 ```js
 const ChildView = Brisket.View.extend({
-    className: 'child',
-    template: 'child view'
+  className: 'child',
+  template: 'child view',
 });
 
 const ParentView = Brisket.View.extend({
-    template: 'parent view <div class="destination">destination</div>',
+  template: 'parent view <div class="destination">destination</div>',
 
-    beforeRender() {
-        this.createChildView(ChildView)
-            .andInsertBefore('.destination');
-    }
+  beforeRender() {
+    this.createChildView(ChildView)
+        .andInsertBefore('.destination');
+  },
 
 });
 
@@ -290,20 +289,19 @@ Renders the child view right after the destination.
 
 ```js
 const ChildView = Brisket.View.extend({
-    className: 'child',
-    template: 'child view'
+  className: 'child',
+  template: 'child view',
 });
 
 const ParentView = Brisket.View.extend({
-    template: 'parent view <div class="destination">destination</div> after destination',
+  template: 'parent view <div class="destination">destination</div> after destination',
 
-    beforeRender() {
-        this.createChildView(ChildView)
-            .andInsertAfter('.destination');
-    }
+  beforeRender() {
+    this.createChildView(ChildView)
+        .andInsertAfter('.destination');
+  },
 
 });
-
 
 const parentView = new ParentView();
 console.log(parentView.render().el.innerHTML);
@@ -315,20 +313,19 @@ Replaces the destination completely with the child view. The entire destination 
 
 ```js
 const ChildView = Brisket.View.extend({
-    className: 'child',
-    template: 'child view'
+  className: 'child',
+  template: 'child view',
 });
 
 const ParentView = Brisket.View.extend({
-    template: 'parent view <div class="destination">destination</div>',
+  template: 'parent view <div class="destination">destination</div>',
 
-    beforeRender() {
-        this.createChildView(ChildView)
-            .andReplace('.destination');
-    }
+  beforeRender() {
+    this.createChildView(ChildView)
+        .andReplace('.destination');
+  },
 
 });
-
 
 const parentView = new ParentView();
 console.log(parentView.render().el.innerHTML);
@@ -345,14 +342,14 @@ const ChildView = Brisket.View.extend();
 
 const ParentView = Brisket.View.extend({
 
-    removeAllChildViews() {
-        this.closeChildViews();
-    },
+  removeAllChildViews() {
+    this.closeChildViews();
+  },
 
-    beforeRender() {
-        this.createChildView(ChildView)
-            .andAppendIt();
-    }
+  beforeRender() {
+    this.createChildView(ChildView)
+        .andAppendIt();
+  },
 
 });
 
@@ -366,14 +363,14 @@ const ChildView = Brisket.View.extend();
 
 const ParentView = Brisket.View.extend({
 
-    removeAChildView() {
-        this.closeChildView('child-view-id');
-    },
+  removeAChildView() {
+    this.closeChildView('child-view-id');
+  },
 
-    beforeRender() {
-        this.createChildView('child-view-id', ChildView)
-            .andAppendIt();
-    }
+  beforeRender() {
+    this.createChildView('child-view-id', ChildView)
+        .andAppendIt();
+  },
 
 });
 
@@ -386,28 +383,28 @@ To replace a parent-child view relationship, use `replaceChildView`.
 
 ```js
 const ChildView = Brisket.View.extend({
-    className: 'child',
-    template: 'child view'
+  className: 'child',
+  template: 'child view',
 });
 
 const OtherChildView = Brisket.View.extend({
-    className: 'other-child',
-    template: 'other child view'
+  className: 'other-child',
+  template: 'other child view',
 });
 
 const ParentView = Brisket.View.extend({
 
-    template: 'parent view',
+  template: 'parent view',
 
-    beforeRender() {
-        this.createChildView('child-view-id', ChildView)
-            .andAppendIt();
-    },
+  beforeRender() {
+    this.createChildView('child-view-id', ChildView)
+        .andAppendIt();
+  },
 
-    afterRender() {
-        this.replaceChildView('child-view-id', OtherChidView)
-            .andPrependIt();
-    }
+  afterRender() {
+    this.replaceChildView('child-view-id', OtherChidView)
+        .andPrependIt();
+  },
 
 });
 

@@ -1,135 +1,119 @@
-"use strict";
+import ClientResponse from '../../../lib/client/ClientResponse.js';
+import Response from '../../../lib/controlling/Response.js';
+import mockWindow from '../../mock/mockWindow.js';
 
-describe("ClientResponse", function() {
-    var ClientResponse = require("../../../lib/client/ClientResponse");
-    var Response = require("../../../lib/controlling/Response");
-    var mockWindow = require("../../mock/mockWindow");
+describe('ClientResponse', function() {
+  let clientResponse;
+  let windough;
 
-    var clientResponse;
-    var windough;
+  beforeEach(function() {
+    windough = mockWindow();
+    clientResponse = ClientResponse.from(windough);
+  });
 
-    beforeEach(function() {
-        windough = mockWindow();
-        clientResponse = ClientResponse.from(windough);
+  afterEach(unsetAppRoot);
+
+  describe('#status', function() {
+
+    it('is a function', function() {
+      expect(clientResponse.status).toEqual(jasmine.any(Function));
     });
 
-    afterEach(unsetAppRoot);
-
-    describe("#status", function() {
-
-        it("is a function", function() {
-            expect(clientResponse.status).toEqual(jasmine.any(Function));
-        });
-
-        it("does NOT throw an error", function() {
-            expect(settingClientResponseStatus).not.toThrow();
-        });
-
+    it('does NOT throw an error', function() {
+      expect(settingClientResponseStatus).not.toThrow();
     });
 
-    describe("#redirect", function() {
+  });
 
-        it("redirects to application path WITHOUT appRoot set", function() {
-            whenRedirectWithApplicationPath();
+  describe('#redirect', function() {
 
-            expect(windough.location.replace).toHaveBeenCalledWith("/somewhere/in/app");
-        });
+    it('redirects to application path WITHOUT appRoot set', function() {
+      whenRedirectWithApplicationPath();
 
-        it("redirects to application path WITH appRoot set", function() {
-            givenAppRootSet();
-            whenRedirectWithApplicationPath();
-
-            expect(windough.location.replace).toHaveBeenCalledWith("/appRoot/somewhere/in/app");
-        });
-
-        it("redirects to absolute path WITHOUT appRoot set", function() {
-            whenRedirectWithAbsolutePath();
-
-            expect(windough.location.replace).toHaveBeenCalledWith("/somewhere/in/app");
-        });
-
-        it("redirects to absolute path WITH appRoot set", function() {
-            givenAppRootSet();
-            whenRedirectWithAbsolutePath();
-
-            expect(windough.location.replace).toHaveBeenCalledWith("/somewhere/in/app");
-        });
-
-        it("redirects to absolute path WITHOUT appRoot set", function() {
-            whenRedirectWithFullyQualifiedUrl();
-
-            expect(windough.location.replace).toHaveBeenCalledWith("http://www.fullyqualified.com");
-        });
-
-        it("redirects to absolute path WITH appRoot set", function() {
-            givenAppRootSet();
-            whenRedirectWithFullyQualifiedUrl();
-
-            expect(windough.location.replace).toHaveBeenCalledWith("http://www.fullyqualified.com");
-        });
-
-        it("redirects if custom status code is passed", function() {
-            whenRedirectWithCustomStatus();
-
-            expect(windough.location.replace).toHaveBeenCalledWith("/redirect/with/status");
-        });
-
+      expect(windough.location.replace).toHaveBeenCalledWith('/somewhere/in/app');
     });
 
-    function settingClientResponseStatus() {
-        clientResponse.status(204);
-    }
+    it('redirects to application path WITH appRoot set', function() {
+      givenAppRootSet();
+      whenRedirectWithApplicationPath();
 
-    function givenAppRootSet() {
-        Response.setAppRoot("/appRoot");
-        clientResponse = new ClientResponse(windough);
-    }
+      expect(windough.location.replace).toHaveBeenCalledWith('/appRoot/somewhere/in/app');
+    });
 
-    function whenRedirectWithCustomStatus() {
-        redirectWithStatus(301, "/redirect/with/status");
-    }
+    it('redirects to absolute path WITHOUT appRoot set', function() {
+      whenRedirectWithAbsolutePath();
 
-    function whenRedirectWithApplicationPath() {
-        redirectTo("somewhere/in/app");
-    }
+      expect(windough.location.replace).toHaveBeenCalledWith('/somewhere/in/app');
+    });
 
-    function whenRedirectWithAbsolutePath() {
-        redirectTo("/somewhere/in/app");
-    }
+    it('redirects to absolute path WITH appRoot set', function() {
+      givenAppRootSet();
+      whenRedirectWithAbsolutePath();
 
-    function whenRedirectWithFullyQualifiedUrl() {
-        redirectTo("http://www.fullyqualified.com");
-    }
+      expect(windough.location.replace).toHaveBeenCalledWith('/somewhere/in/app');
+    });
 
-    function redirectTo(destination) {
-        try {
-            clientResponse.redirect(destination);
-        } catch (e) {}
-    }
+    it('redirects to absolute path WITHOUT appRoot set', function() {
+      whenRedirectWithFullyQualifiedUrl();
 
-    function redirectWithStatus(status, destination) {
-        try {
-            clientResponse.redirect(status, destination);
-        } catch (e) {}
-    }
+      expect(windough.location.replace).toHaveBeenCalledWith('http://www.fullyqualified.com');
+    });
 
-    function unsetAppRoot() {
-        Response.setAppRoot("");
-    }
+    it('redirects to absolute path WITH appRoot set', function() {
+      givenAppRootSet();
+      whenRedirectWithFullyQualifiedUrl();
+
+      expect(windough.location.replace).toHaveBeenCalledWith('http://www.fullyqualified.com');
+    });
+
+    it('redirects if custom status code is passed', function() {
+      whenRedirectWithCustomStatus();
+
+      expect(windough.location.replace).toHaveBeenCalledWith('/redirect/with/status');
+    });
+
+  });
+
+  function settingClientResponseStatus() {
+    clientResponse.status(204);
+  }
+
+  function givenAppRootSet() {
+    Response.setAppRoot('/appRoot');
+    clientResponse = new ClientResponse(windough);
+  }
+
+  function whenRedirectWithCustomStatus() {
+    redirectWithStatus(301, '/redirect/with/status');
+  }
+
+  function whenRedirectWithApplicationPath() {
+    redirectTo('somewhere/in/app');
+  }
+
+  function whenRedirectWithAbsolutePath() {
+    redirectTo('/somewhere/in/app');
+  }
+
+  function whenRedirectWithFullyQualifiedUrl() {
+    redirectTo('http://www.fullyqualified.com');
+  }
+
+  function redirectTo(destination) {
+    try {
+      clientResponse.redirect(destination);
+    } catch (e) {}
+  }
+
+  function redirectWithStatus(status, destination) {
+    try {
+      clientResponse.redirect(status, destination);
+    } catch (e) {}
+  }
+
+  function unsetAppRoot() {
+    Response.setAppRoot('');
+  }
 
 });
 
-// ----------------------------------------------------------------------------
-// Copyright (C) 2018 Bloomberg Finance L.P.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// ----------------------------- END-OF-FILE ----------------------------------

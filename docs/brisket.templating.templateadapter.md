@@ -17,9 +17,9 @@ Below is a TemplateAdapter that always returns "hello world";
 ```js
 const HelloWorldTemplateAdapter = Brisket.Templating.TemplateAdapter.extend({
 
-    templateToHTML(template, data, partials) {
-        return 'hello world';
-    }
+  templateToHTML(template, data, partials) {
+    return 'hello world';
+  },
 
 });
 ```
@@ -29,13 +29,13 @@ Here is the implementation of the StringTemplateAdapter that ships with Brisket:
 ```js
 const StringTemplateAdapter = Brisket.Templating.TemplateAdapter.extend({
 
-    templateToHTML(template, data, partials) {
-        if (typeof template !== "function") {
-            return template;
-        }
-
-        return template(data);
+  templateToHTML(template, data, partials) {
+    if (typeof template !== 'function') {
+      return template;
     }
+
+    return template(data);
+  },
 
 });
 ```
@@ -47,9 +47,9 @@ Below is an example implementation of a Mustache TemplateAdapter. It uses all th
 ```js
 const MustacheTemplateAdapter = TemplateAdapter.extend({
 
-    templateToHTML(template, data, partials) {
-        return Mustache.render(template, data, partials);
-    }
+  templateToHTML(template, data, partials) {
+    return Mustache.render(template, data, partials);
+  },
 
 });
 ```

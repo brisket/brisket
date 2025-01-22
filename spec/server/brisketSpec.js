@@ -1,80 +1,66 @@
-"use strict";
+import Brisket from '../../lib/brisket.js';
 
-describe("public interface to Brisket", function() {
-    var Brisket = require("../../lib/brisket");
+describe('public interface to Brisket', function() {
 
-    it("exposes Brisket.App", function() {
-        expect(Brisket.App).toBe(requireFromLib("application/App"));
-    });
+  it('exposes Brisket.App', async function() {
+    await expectIsModuleAtPath(Brisket.App, 'lib/application/App.js');
+  });
 
-    it("exposes Brisket.Router", function() {
-        expect(Brisket.Router).toBe(requireFromLib("controlling/Router"));
-    });
+  it('exposes Brisket.Router', async function() {
+    await expectIsModuleAtPath(Brisket.Router, 'lib/controlling/Router.js');
+  });
 
-    it("exposes Brisket.View", function() {
-        expect(Brisket.View).toBe(requireFromLib("viewing/View"));
-    });
+  it('exposes Brisket.View', async function() {
+    await expectIsModuleAtPath(Brisket.View, 'lib/viewing/View.js');
+  });
 
-    it("[deprecated] exposes Brisket.ErrorViewMapping", function() {
-        expect(Brisket.ErrorViewMapping.create).toBe(requireFromLib("errors/ErrorPage").create);
-    });
+  it('exposes Brisket.Events', async function() {
+    await expectIsModuleAtPath(Brisket.Events, 'lib/events/Events.js');
+  });
 
-    it("exposes Brisket.Events", function() {
-        expect(Brisket.Events).toBe(requireFromLib("events/Events"));
-    });
+  it('exposes Brisket.Layout', async function() {
+    await expectIsModuleAtPath(Brisket.Layout, 'lib/viewing/Layout.js');
+  });
 
-    it("exposes Brisket.Layout", function() {
-        expect(Brisket.Layout).toBe(requireFromLib("viewing/Layout"));
-    });
+  it('exposes Brisket.Templating.TemplateAdapter', async function() {
+    await expectIsModuleAtPath(Brisket.Templating.TemplateAdapter, 'lib/templating/TemplateAdapter.js');
+  });
 
-    it("exposes Brisket.Templating.TemplateAdapter", function() {
-        expect(Brisket.Templating.TemplateAdapter).toBe(requireFromLib("templating/TemplateAdapter"));
-    });
+  it('exposes Brisket.Templating.StringTemplateAdapter', async function() {
+    await expectIsModuleAtPath(Brisket.Templating.StringTemplateAdapter, 'lib/templating/StringTemplateAdapter.js');
+  });
 
-    it("exposes Brisket.Templating.StringTemplateAdapter", function() {
-        expect(Brisket.Templating.StringTemplateAdapter).toBe(requireFromLib("templating/StringTemplateAdapter"));
-    });
+  it('exposes Brisket.createServer', async function() {
+    await expectIsModuleAtPath(Brisket.createServer, 'lib/server/Server.js', 'create');
+  });
 
-    it("[deprecated] exposes Brisket.Testing", function() {
-        expect(Brisket.Testing).toBe(requireFromLib("testing/Testing"));
-    });
+  it('exposes Backbone as Brisket.Backbone', async function() {
+    await expectIsModuleAtPath(Brisket.Backbone, 'lib/application/Backbone.js');
+  });
 
-    it("exposes Brisket.createServer", function() {
-        expect(Brisket.createServer).toBe(requireFromLib("server/Server").create);
-    });
+  it('exposes jquery as Brisket.$', async function() {
+    await expectIsModuleAtPath(Brisket.$, 'lib/application/jquery.js');
+  });
 
-    it("exposes Backbone as Brisket.Backbone", function() {
-        expect(Brisket.Backbone).toBe(requireFromLib("application/Backbone"));
-    });
+  it('exposes Brisket.onError', async function() {
+    await expectIsModuleAtPath(Brisket.onError, 'lib/errors/Errors.js', 'onError');
+  });
 
-    it("exposes jquery as Brisket.$", function() {
-        expect(Brisket.$).toBe(requireFromLib("application/jquery"));
-    });
+  it('exposes Brisket.version', async function() {
+    const { default: version } = await import('../../version.json', { with: { type: 'json' } });
 
-    it("exposes Brisket.version", function() {
-        expect(Brisket.version).toBe(require("../../package.json").version);
-    });
+    expect(Brisket.version).toBe(version.version);
+  });
 
-    it("exposes Brisket.onError", function() {
-        expect(Brisket.onError).toBe(requireFromLib("errors/Errors").onError);
-    });
+  async function expectIsModuleAtPath(BrisketProperty, path, key) {
+    const { default: module } = await import(`../../${path}`);
 
-    function requireFromLib(path) {
-        return require("../../lib/" + path);
+    if (key) {
+      expect(BrisketProperty).toBe(module[key]);
+      return;
     }
+
+    expect(BrisketProperty).toBe(module);
+  }
 });
 
-// ----------------------------------------------------------------------------
-// Copyright (C) 2018 Bloomberg Finance L.P.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// ----------------------------- END-OF-FILE ----------------------------------

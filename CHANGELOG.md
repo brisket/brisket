@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+### 2.0.0
+- switch to ESM
+- upgrade runtime to Node >=22
+- upgrade to express 5.x
+- upgrade to Backbone 1.6
+
 ### 1.14.0
 - move brisket repo to brisket org
 

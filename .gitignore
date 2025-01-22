@@ -25,3 +25,12 @@ benchmarks/results.json
 specRunner.html
 spec/build
 benchmark-results.json
+
+# Playwright
+/e2e/test-results/
+/e2e/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Demo
+/demo/public/javascripts/*

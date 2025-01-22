@@ -1,149 +1,148 @@
-"use strict";
+import Brisket from '../../lib/brisket.js';
+import ServerDispatcher from '../../lib/server/ServerDispatcher.js';
+import App from '../../lib/application/App.js';
 
-var Brisket = require("../../lib/brisket");
-var Backbone = Brisket.Backbone;
-var ServerDispatcher = require("../../lib/server/ServerDispatcher");
-var App = require("../../lib/application/App");
+const Backbone = Brisket.Backbone;
 
-var MockBrisketApp = {
+const MockBrisketApp = {
 
-    initialize() {
-        var Layout = Brisket.Layout.extend({
-            template: "<!DOCTYPE html>\n<html><head><title>New App</title></head><body></body></html>",
-            content: "body"
-        });
+  initialize() {
+    const Layout = Brisket.Layout.extend({
+      template: '<!DOCTYPE html>\n<html><head><title>New App</title></head><body></body></html>',
+      content: 'body'
+    });
 
-        var PageNotFoundView = Brisket.View.extend({ className: "not-found" });
-        var ErrorView = Brisket.View.extend({ className: "errored" });
+    const PageNotFoundView = Brisket.View.extend({ className: 'not-found' });
+    const ErrorView = Brisket.View.extend({ className: 'errored' });
 
-        var Router = Brisket.Router.extend({
+    const Router = Brisket.Router.extend({
 
-            layout: Layout,
+      layout: Layout,
 
-            errorViewMapping: {
-                404: PageNotFoundView,
-                500: ErrorView
-            },
+      errorViewMapping: {
+        404: PageNotFoundView,
+        500: ErrorView
+      },
 
-            routes: {
-                "working": "working",
-                "failing": "failing",
-                "redirecting": "redirecting",
-                "setsStatus": "setsStatus",
-                "fetch200": "fetch200",
-                "fetch200ButRouteFails": "fetch200ButRouteFails",
-                "fetch200ButRouteRedirects": "fetch200ButRouteRedirects",
-                "fetch200ButRouteSetsStatus": "fetch200ButRouteSetsStatus",
-                "fetch404": "fetch404",
-                "fetch500": "fetch500",
-                "fetch410": "fetch410"
-            },
+      routes: {
+        'working': 'working',
+        'failing': 'failing',
+        'redirecting': 'redirecting',
+        'setsStatus': 'setsStatus',
+        'fetch200': 'fetch200',
+        'fetch200ButRouteFails': 'fetch200ButRouteFails',
+        'fetch200ButRouteRedirects': 'fetch200ButRouteRedirects',
+        'fetch200ButRouteSetsStatus': 'fetch200ButRouteSetsStatus',
+        'fetch404': 'fetch404',
+        'fetch500': 'fetch500',
+        'fetch410': 'fetch410'
+      },
 
-            working() {
-                return new Brisket.View();
-            },
+      working() {
+        return new Brisket.View();
+      },
 
-            failing() {
-                willThrow();
+      failing() {
+        willThrow();
 
-                return new Brisket.View();
-            },
+        return new Brisket.View();
+      },
 
-            redirecting(setLayoutData, request, response) {
-                response.redirect("/working");
+      redirecting(setLayoutData, request, response) {
+        response.redirect('/working');
 
-                return new Brisket.View();
-            },
+        return new Brisket.View();
+      },
 
-            setsStatus(setLayoutData, request, response) {
-                response.status(206);
+      setsStatus(setLayoutData, request, response) {
+        response.status(206);
 
-                return new Brisket.View();
-            },
+        return new Brisket.View();
+      },
 
-            fetch200() {
-                return Backbone.ajax({
-                    url: "/api/fetch200"
-                })
-                .then(function() {
-                    return new Brisket.View();
-                });
-            },
+      fetch200() {
+        return Backbone.ajax({
+          url: '/api/fetch200'
+        })
+          .then(function() {
+            return new Brisket.View();
+          });
+      },
 
-            fetch200ButRouteFails() {
-                return Backbone.ajax({
-                    url: "/api/fetch200"
-                })
-                .then(function() {
-                    willThrow();
+      fetch200ButRouteFails() {
+        return Backbone.ajax({
+          url: '/api/fetch200'
+        })
+          .then(function() {
+            willThrow();
 
-                    return new Brisket.View();
-                });
-            },
+            return new Brisket.View();
+          });
+      },
 
-            fetch200ButRouteRedirects(setLayoutData, request, response) {
-                return Backbone.ajax({
-                    url: "/api/fetch200"
-                })
-                .then(function() {
-                    response.redirect("/working");
+      fetch200ButRouteRedirects(setLayoutData, request, response) {
+        return Backbone.ajax({
+          url: '/api/fetch200'
+        })
+          .then(function() {
+            response.redirect('/working');
 
-                    return new Brisket.View();
-                });
-            },
+            return new Brisket.View();
+          });
+      },
 
-            fetch200ButRouteSetsStatus(setLayoutData, request, response) {
-                return Backbone.ajax({
-                    url: "/api/fetch200"
-                })
-                .then(function() {
-                    response.status(206);
+      fetch200ButRouteSetsStatus(setLayoutData, request, response) {
+        return Backbone.ajax({
+          url: '/api/fetch200'
+        })
+          .then(function() {
+            response.status(206);
 
-                    return new Brisket.View();
-                });
-            },
+            return new Brisket.View();
+          });
+      },
 
-            fetch404() {
-                return Backbone.ajax({
-                    url: "/api/fetch404"
-                })
-                .then(function() {
-                    return new Brisket.View();
-                });
-            },
+      fetch404() {
+        return Backbone.ajax({
+          url: '/api/fetch404'
+        })
+          .then(function() {
+            return new Brisket.View();
+          });
+      },
 
-            fetch500() {
-                return Backbone.ajax({
-                    url: "/api/fetch500"
-                })
-                .then(function() {
-                    return new Brisket.View();
-                });
-            },
+      fetch500() {
+        return Backbone.ajax({
+          url: '/api/fetch500'
+        })
+          .then(function() {
+            return new Brisket.View();
+          });
+      },
 
-            fetch410() {
-                return Backbone.ajax({
-                    url: "/api/fetch410"
-                })
-                .then(function() {
-                    return new Brisket.View();
-                });
-            }
+      fetch410() {
+        return Backbone.ajax({
+          url: '/api/fetch410'
+        })
+          .then(function() {
+            return new Brisket.View();
+          });
+      }
 
-        });
+    });
 
-        new Router();
-    },
+    new Router();
+  },
 
-    cleanup() {
-        ServerDispatcher.reset();
-        App.reset();
-    }
+  cleanup() {
+    ServerDispatcher.reset();
+    App.reset();
+  }
 
 };
 
 function willThrow() {
-    throw "an error";
+  throw 'an error';
 }
 
-module.exports = MockBrisketApp;
+export default MockBrisketApp;

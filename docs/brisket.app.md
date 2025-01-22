@@ -14,11 +14,15 @@ Similar to vanilla Backbone, initializing Routers will register them with Briske
 
 ```js
 import { App } from 'brisket';
+import Handles404Router from './application/Handles404Router.js';
+import FooRouter from './foo/FooRouter.js';
+import BarRouter from './bar/BarRouter.js';
+import BazRouter from './baz/BazRouter.js';
 
-new require('./application/Handles404Router')();
-new require('./foo/FooRouter')();
-new require('./bar/BarRouter')();
-new require('./baz/BazRouter')();
+new Handles404Router();
+new FooRouter();
+new BarRouter();
+new BazRouter();
 
 App.start();
 ```
@@ -27,16 +31,20 @@ App.start();
 
 ```js
 import { App } from 'brisket';
+import Handles404Router from './application/Handles404Router.js';
+import FooRouter from './foo/FooRouter.js';
+import BarRouter from './bar/BarRouter.js';
+import BazRouter from './baz/BazRouter.js';
 
 App.useRouters({
 
-    CatchAllRouter: require('./application/Handles404Router'),
+	CatchAllRouter: Handles404Router,
 
-    routers: [
-        require('./foo/FooRouter'),
-        require('./bar/BarRouter'),
-        require('./baz/BazRouter')
-    ]
+	routers: [
+		FooRouter,
+		BarRouter,
+		BazRouter,
+	],
 
 });
 
@@ -50,17 +58,21 @@ Use `addServerInitializer` in your express server setup to add an initializer th
 /* initialize.js */
 
 import { App } from 'brisket';
+import Handles404Router from './application/Handles404Router.js';
+import FooRouter from './foo/FooRouter.js';
+import BarRouter from './bar/BarRouter.js';
+import BazRouter from './baz/BazRouter.js';
 
 // Add Routers
 App.useRouters({
 
-    CatchAllRouter: require('./application/Handles404Router'),
+	CatchAllRouter: Handles404Router,
 
-    routers: [
-        require('./foo/FooRouter'),
-        require('./bar/BarRouter'),
-        require('./baz/BazRouter')
-    ]
+	routers: [
+		FooRouter,
+		BarRouter,
+		BazRouter,
+	],
 
 });
 
@@ -101,21 +113,20 @@ On the server side, be sure to require initialize.js before creating yur Brisket
 ```js
 /* server.js */
 import { createServer } from 'brisket';
-
-require("./initialize");
+import "./initialize.js";
 
 const brisketServer = createServer({
-    apis: {
-        host: 'http://api.example.com'
-    },
+	apis: {
+		host: 'http://api.example.com',
+	},
 
-    environmentConfig: {
-        data: 'data'
-    },
+	environmentConfig: {
+		data: 'data',
+	},
 
-    serverConfig: {
-        data: 'serverData'
-    }
+	serverConfig: {
+		data: 'serverData',
+	},
 });
 ```
 
@@ -123,8 +134,8 @@ For the client side, make sure initialize.js is in your client side bundle and r
 
 ```js
 browserify({
-    entries: './initialize.js'
-}
+  entries: './initialize.js',
+});
 ```
 
 If you need to initialize modules that will throw an error on either the server OR client side just by importing them, you should break up initialize.js into multiple files - initializeClient.js and initializeServer.js:
@@ -132,58 +143,60 @@ If you need to initialize modules that will throw an error on either the server 
 ```js
 /* initialize.js */
 import { App } from 'brisket';
+import Handles404Router from './application/Handles404Router.js';
+import FooRouter from './foo/FooRouter.js';
+import BarRouter from './bar/BarRouter.js';
+import BazRouter from './baz/BazRouter.js';
 
 // Add Routers
 App.useRouters({
 
-    CatchAllRouter: require('./application/Handles404Router'),
+	CatchAllRouter: Handles404Router,
 
-    routers: [
-        require('./foo/FooRouter'),
-        require('./bar/BarRouter'),
-        require('./baz/BazRouter')
-    ]
+	routers: [
+		FooRouter,
+		BarRouter,
+		BazRouter,
+	],
 
 });
 
 // Initialize application
 App.addInitializer(({ environmentConfig, serverConfig }) => {
-    // serverConfig will be passed ONLY on the server
-    doSomethingOnClientANDServer();
+	// serverConfig will be passed ONLY on the server
+	doSomethingOnClientANDServer();
 });
 
 App.addInitializer(({ environmentConfig, serverConfig }) => {
-    doSomethingElseOnClientANDServer();
+  doSomethingElseOnClientANDServer();
 });
 ```
 
 ```js
 /* initializeClient.js */
 import { App } from 'brisket';
-
-require('./initialize');
+import './initialize.js';
 
 App.addClientInitializer(({ environmentConfig }) => {
-    doSomethingOnClient();
+  doSomethingOnClient();
 });
 
 App.addClientInitializer(({ environmentConfig }) => {
-    doSomethingElseOnClient();
+  doSomethingElseOnClient();
 });
 ```
 
 ```js
 /* initializeServer.js */
 import { App } from 'brisket';
-
-require('./initialize');
+import './initialize.js';
 
 App.addServerInitializer(({ environmentConfig, serverConfig }) => {
-    doSomethingOnServer();
+  doSomethingOnServer();
 });
 
 App.addServerInitializer(({ environmentConfig, serverConfig }) => {
-    doSomethingElseOnServer();
+  doSomethingElseOnServer();
 });
 ```
 
@@ -196,17 +209,21 @@ In the examples above, we use the same Routers on the client and the server, how
 /* initializeServer */
 
 import { App } from 'brisket';
+import Handles404Router from './application/Handles404Router.js';
+import FooRouter from './foo/FooRouter.js';
+import BarRouter from './bar/BarRouter.js';
+import BazRouter from './baz/BazRouter.js';
 
 // Add Routers
 App.useRouters({
 
-    CatchAllRouter: require('./application/Handles404Router'),
+	CatchAllRouter: Handles404Router,
 
-    routers: [
-        require('./foo/FooRouter'),
-        require('./bar/BarRouter'),
-        require('./baz/BazRouter')
-    ]
+	routers: [
+		FooRouter,
+		BarRouter,
+		BazRouter,
+	],
 
 });
 
@@ -216,29 +233,33 @@ App.start();
 ```js
 /* initializeFoo */
 import { App } from 'brisket';
+import FooRouter from './foo/FooRouter.js';
 
-new require('./foo/FooRouter')();
+new FooRouter();
 
 App.start();
 
-var s = document.createElement('script');
-var h = document.head;
+const s = document.createElement('script');
+const h = document.head;
 
 s.setAttribute('src', '/bundleInitializeOtherRoutes.js');
 
 setTimeout(function(){
-    h.insertBefore(s, null);
-    h = null;
+	h.insertBefore(s, null);
+	h = null;
 },300);
 ```
 
 ```js
 /* initializeOtherRoutes */
 import { App } from 'brisket';
+import Handles404Router from './application/Handles404Router.js';
+import BarRouter from './bar/BarRouter.js';
+import BazRouter from './baz/BazRouter.js';
 
-new require('./application/Handles404Router')();
-new require('./bar/BarRouter')();
-new require('./baz/BazRouter')();
+new Handles404Router();
+new BarRouter();
+new BazRouter();
 
 App.start();
 ```

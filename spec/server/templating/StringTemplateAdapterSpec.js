@@ -1,98 +1,85 @@
-"use strict";
+import Backbone from 'backbone';
+import StringTemplateAdapter from '../../../lib/templating/StringTemplateAdapter.js';
+import View from '../../../lib/viewing/View.js';
 
-describe("StringTemplateAdapter", function() {
-    var StringTemplateAdapter = require("../../../lib/templating/StringTemplateAdapter");
-    var View = require("../../../lib/viewing/View");
-    var Model = require("backbone").Model;
+const Model = Backbone.Model;
 
-    var view;
-    var ExampleView;
-    var model;
+describe('StringTemplateAdapter', function() {
 
-    it("renders template string directly", function() {
-        var SOME_LOCAL_CONSTANT = "slc";
+  let view;
+  let ExampleView;
+  let model;
 
-        ExampleView = View.extend({
+  it('renders template string directly', function() {
+    const SOME_LOCAL_CONSTANT = 'slc';
 
-            templateAdapter: StringTemplateAdapter,
+    ExampleView = View.extend({
 
-            template: "<span class='test'>" + SOME_LOCAL_CONSTANT + "</span>"
+      templateAdapter: StringTemplateAdapter,
 
-        });
+      template: `<span class='test'>${SOME_LOCAL_CONSTANT}</span>`
 
-        view = new ExampleView();
-
-        view.render();
-
-        expect(view.el.innerHTML).toBe('<span class="test">slc</span>');
     });
 
-    it("renders template string function as a string", function() {
-        ExampleView = View.extend({
+    view = new ExampleView();
 
-            templateAdapter: StringTemplateAdapter,
+    view.render();
 
-            template: function() {
-                return "<span class='test'>I should be rendered</span>";
-            }
+    expect(view.el.innerHTML).toBe('<span class="test">slc</span>');
+  });
 
-        });
+  it('renders template string function as a string', function() {
+    ExampleView = View.extend({
 
-        view = new ExampleView();
+      templateAdapter: StringTemplateAdapter,
 
-        view.render();
+      template() {
+        return '<span class=\'test\'>I should be rendered</span>';
+      }
 
-        expect(view.el.innerHTML)
-            .toBe('<span class="test">I should be rendered</span>');
     });
 
-    it("passes view data to template string function as a string", function() {
-        ExampleView = View.extend({
+    view = new ExampleView();
 
-            templateAdapter: StringTemplateAdapter,
+    view.render();
 
-            logic: function() {
-                return {
-                    "logicKey": "logic-value"
-                };
-            },
+    expect(view.el.innerHTML)
+      .toBe('<span class="test">I should be rendered</span>');
+  });
 
-            template: function(data) {
-                var modelKey = data.modelKey;
-                var logicKey = data.logicKey;
+  it('passes view data to template string function as a string', function() {
+    ExampleView = View.extend({
 
-                return "<span class='test'>model: " + modelKey +
-                    ", logic: " + logicKey + "</span>";
-            }
+      templateAdapter: StringTemplateAdapter,
 
-        });
+      logic() {
+        return {
+          'logicKey': 'logic-value'
+        };
+      },
 
-        model = new Model();
-        model.set("modelKey", "model-value");
+      template(data) {
+        const modelKey = data.modelKey;
+        const logicKey = data.logicKey;
 
-        view = new ExampleView({
-            model: model
-        });
+        return `<span class='test'>model: ${modelKey
+        }, logic: ${logicKey}</span>`;
+      }
 
-        view.render();
-
-        expect(view.el.innerHTML)
-            .toBe('<span class="test">model: model-value, logic: logic-value</span>');
     });
+
+    model = new Model();
+    model.set('modelKey', 'model-value');
+
+    view = new ExampleView({
+      model
+    });
+
+    view.render();
+
+    expect(view.el.innerHTML)
+      .toBe('<span class="test">model: model-value, logic: logic-value</span>');
+  });
 
 });
 
-// ----------------------------------------------------------------------------
-// Copyright (C) 2018 Bloomberg Finance L.P.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// ----------------------------- END-OF-FILE ----------------------------------
