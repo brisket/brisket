@@ -27,6 +27,9 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
+      - name: Create report directory
+        run: mkdir -p e2e/playwright-report
+        
       - name: Run e2e tests
         run: npm run e2e-tests
 
