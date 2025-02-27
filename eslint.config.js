@@ -1,5 +1,6 @@
 import js from '@eslint/js';
 import globals from 'globals';
+import stylisticJs from '@stylistic/eslint-plugin-js';
 
 export default [
   js.configs.recommended,
@@ -11,6 +12,9 @@ export default [
         ...globals.node,
         ...globals.jasmine,
       }
+    },
+    plugins: {
+      '@stylistic/js': stylisticJs,
     },
     rules: {
       'indent': ['error', 2],
@@ -35,6 +39,7 @@ export default [
         'allowEmptyCatch': true,
       }],
       'template-curly-spacing': ['error', 'never'],
+      '@stylistic/js/eol-last': ['error', 'always'],
     }
   }
 ];
