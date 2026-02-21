@@ -74,5 +74,7 @@
     "type": "git",
     "url": "https://github.com/brisket/brisket.git"
   },
-  "bugs": "http://github.com/brisket/brisket/issues"
+  "bugs": "http://github.com/brisket/brisket/issues",
+  "license": "MIT",
+  "author": "Wayne Warner"
 }

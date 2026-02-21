@@ -120,3 +120,9 @@ To run benchmarks:
 ```shell
 $ npm run benchmarks
 ```
+
+## License
+
+[MIT](https://opensource.org/licenses/MIT)
+
+Copyright (c) 2026-present, Wayne Warner
