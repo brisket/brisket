@@ -28,19 +28,19 @@ A Layout is an implementation of [Brisket.View](brisket.view.md). Therefore, spe
 ```js
 const Layout = Brisket.Layout.extend({
 
-    template: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>My first Brisket app</title>
-        </head>
-        <body>
-            <main class='main-content'><!-- Views go here --></main>
-        </body>
-        </html>
-    `,
+  template: `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>My first Brisket app</title>
+    </head>
+    <body>
+      <main class='main-content'><!-- Views go here --></main>
+    </body>
+    </html>
+  `,
 
-    content: '.main-content'
+  content: '.main-content',
 
 });
 ```
@@ -48,33 +48,33 @@ const Layout = Brisket.Layout.extend({
 The Layout's template should be the full html for your pages i.e. it should include doctype, head tag, body tag, etc. When you set a template for you layout, you must specify the `content` property. This property should be a selector pointing to the main content element of the template. In this template, the main content element is the element with the class 'main-content'.
 
 ## Using Environment Config In Template
-You will likely want to expose some data from your [environmentConfig](brisket.createserver.md#environmentConfig) to the Layout template. The `environmentConfig` will be accessible to your Layout's methods as `this.environmentConfig`. Expose the environmentConfig through the logic method ([read here for more details](brisket.view.md#exposing-data-to-a-template)).
+You will likely want to expose some data from your [environmentConfig](brisket.createserver.md#environmentConfig) to the Layout template. The `environmentConfig` will be accessible to your Layout's methods as `this.model.get('environmentConfig')`. Expose the environmentConfig through the logic method ([read here for more details](brisket.view.md#exposing-data-to-a-template)).
 
 ```js
 const Layout = Brisket.Layout.extend({
 
-    initialize() {
-        console.log(this.model.get("environmentConfig").some); // data
-    },
+  initialize() {
+    console.log(this.model.get('environmentConfig').some); // data
+  },
 
-    template({ environmentConfig }) {
-        return `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>My first Brisket app</title>
-            </head>
-            <body>
-                <main class='main-content'><!-- Views go here --></main>
-                <div class='environment-some-data'>
-                    ${ environmentConfig.some }
-                </div>
-            </body>
-            </html>
-        `;
-    },
+  template({ environmentConfig }) {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>My first Brisket app</title>
+      </head>
+      <body>
+        <main class='main-content'><!-- Views go here --></main>
+        <div class='environment-some-data'>
+          ${ environmentConfig.some }
+        </div>
+      </body>
+      </html>
+    `;
+  },
 
-    content: '.main-content'
+  content: '.main-content',
 
 });
 ```
@@ -86,43 +86,43 @@ If your layout's display depends on data fetched from an API, implement the `fet
 
 ```js
 const Model = Backbone.Model.extend({
-    url: '/api/model' // returns { some: 'modeldata' }
+    url: '/api/model', // returns { some: 'modeldata' }
 });
 
 const Layout = Brisket.Layout.extend({
 
-    template({ navModel }) {
-        return `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>My first Brisket app</title>
-            </head>
-            <body>
-                <main class='main-content'><!-- Views go here --></main>
-                <div class='environment-some-data'>
-                    ${ navModel.some }
-                </div>
-            </body>
-            </html>
-        `;
-    },
+  template({ navModel }) {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>My first Brisket app</title>
+      </head>
+      <body>
+        <main class='main-content'><!-- Views go here --></main>
+        <div class='environment-some-data'>
+          ${ navModel.some }
+        </div>
+      </body>
+      </html>
+    `;
+  },
 
-    content: '.main-content',
+  content: '.main-content',
 
-    fetchData: function() {
-        this.navModel = new Model();
+  fetchData() {
+    this.navModel = new Model();
 
-        return q.allSettled([
-            navModel.fetch()
-        ]);
-    },
+    return q.allSettled([
+      navModel.fetch(),
+    ]);
+  },
 
-    logic: function() {
-        return {
-            navModel: this.navModel.toJSON()
-        };
+  logic() {
+    return {
+      navModel: this.navModel.toJSON(),
     };
+  },
 
 });
 ```
@@ -135,37 +135,37 @@ Use `setLayoutData` in a route to pass data to your route's Layout:
 ```js
 const Layout = Brisket.Layout.extend({
 
-    initialize() {
-        console.log(this.model.get('key')); // 'value from route'
-        console.log(this.model.get('key2')); // 'value2 from route'
-        console.log(this.model.get('key3')); // 'value3 from route'
-    },
+  initialize() {
+    console.log(this.model.get('key')); // 'value from route'
+    console.log(this.model.get('key2')); // 'value2 from route'
+    console.log(this.model.get('key3')); // 'value3 from route'
+  },
 
-    content: '.main-content',
+  content: '.main-content',
 
-    template({ key }) {
-        return `<div class='main-content'>${ key }</div>`;
-    }
+  template({ key }) {
+    return `<div class='main-content'>${ key }</div>`;
+  },
 
 });
 
 const Router = Brisket.Router.extend({
 
-    layout: Layout,
+  layout: Layout,
 
-    routes: {
-        'route': 'route'
-    },
+  routes: {
+    'route': 'route'
+  },
 
-    route: function(setLayoutData) {
-        setLayoutData('key', 'value from route');
-        setLayoutData({
-            'key2': 'value2 from route',
-            'key3': 'value3 from route'
-        });
+  route(setLayoutData) {
+    setLayoutData('key', 'value from route');
+    setLayoutData({
+      'key2': 'value2 from route',
+      'key3': 'value3 from route',
+    });
 
-        return new Brisket.View();
-    }
+    return new Brisket.View();
+  },
 
 });
 ```
@@ -178,51 +178,51 @@ As you navigate between routes, your route handlers may modify the Layout's stat
 ```js
 const Layout = Brisket.Layout.extend({
 
-    initialize() {
-        this.model.on({
-            'change:be': updateBe
-        }, this);
-    },
+  initialize() {
+    this.model.on({
+      'change:be': updateBe,
+    }, this);
+  },
 
-    content: '.main-content',
+  content: '.main-content',
 
-    template({ be = 'normal' }) {
-        return `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>My first Brisket app</title>
-            </head>
-            <body class='be-${ be }'>
-                <main class='main-content'><!-- Views go here --></main>
-            </body>
-            </html>`;
-    }
+  template({ be = 'normal' }) {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>My first Brisket app</title>
+      </head>
+      <body class='be-${ be }'>
+        <main class='main-content'><!-- Views go here --></main>
+      </body>
+      </html>`;
+  },
 
 });
 
 function updateBe(model, be = 'normal') {
-    document.body.className = document.body.className.replace(/be-[^\b]+/, `be-${ be }`);
+  document.body.className = document.body.className.replace(/be-[^\b]+/, `be-${ be }`);
 }
 
 const SpecialRouter = Brisket.Router.extend({
 
-    layout: Layout,
+  layout: Layout,
 
-    routes: {
-        'normal': 'handleNormal',
-        'special': 'handleSpecial'
-    },
+  routes: {
+    'normal': 'handleNormal',
+    'special': 'handleSpecial',
+  },
 
-    handleNormal() {
-        return new Brisket.View();
-    }
+  handleNormal() {
+    return new Brisket.View();
+  },
 
-    handleSpecial(setLayoutData) {
-        setLayoutData('be', 'special');
+  handleSpecial(setLayoutData) {
+    setLayoutData('be', 'special');
 
-        return new Brisket.View();
-    }
+    return new Brisket.View();
+  },
 
 });
 ```
@@ -235,60 +235,60 @@ To set a default page title for all pages, use layout data:
 ```js
 const Layout = Brisket.Layout.extend({
 
-    initialize() {
-        this.model.on({
-            'change:be': updateBe,
-            'change:title': updateTitle
-        }, this);
-    },
+  initialize() {
+    this.model.on({
+      'change:be': updateBe,
+      'change:title': updateTitle,
+    }, this);
+  },
 
-    content: '.main-content',
+  content: '.main-content',
 
-    template({ be = 'normal', title = 'My Site' }) {
-        return `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>${ title }</title>
-            </head>
-            <body class='be-${ be }'>
-                <main class='main-content'><!-- Views go here --></main>
-            </body>
-            </html>
-        `;
-    }
+  template({ be = 'normal', title = 'My Site' }) {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${ title }</title>
+      </head>
+      <body class='be-${ be }'>
+        <main class='main-content'><!-- Views go here --></main>
+      </body>
+      </html>
+    `;
+  },
 
 });
 
 function updateBe(model, be = 'normal') {
-    document.body.className = document.body.className.replace(/be-[^\b]+/, `be-${ be }`);
+  document.body.className = document.body.className.replace(/be-[^\b]+/, `be-${ be }`);
 }
 
 function updateTitle(model, title = 'My Site') {
-    document.title = title;
+  document.title = title;
 }
 
 const Router = Brisket.Router.extend({
 
-    layout: Layout,
+  layout: Layout,
 
-    routes: {
-        'normal': 'handleNormal',
-        'special': 'handleSpecial'
-    },
+  routes: {
+    'normal': 'handleNormal',
+    'special': 'handleSpecial',
+  },
 
-    handleNormal() {
-        return new Brisket.View();
-    }
+  handleNormal() {
+    return new Brisket.View();
+  }
 
-    handleSpecial(setLayoutData) {
-        setLayoutData({
-            'title': 'Special page',
-            'be': 'special'
-        });
+  handleSpecial(setLayoutData) {
+    setLayoutData({
+      'title': 'Special page',
+      'be': 'special',
+    });
 
-        return new Brisket.View();
-    }
+    return new Brisket.View();
+  },
 
 });
 ```

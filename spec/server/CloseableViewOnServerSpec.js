@@ -1,52 +1,34 @@
-"use strict";
+import _ from 'underscore';
+import CloseableView from '../../lib/viewing/CloseableView.js';
+import Backbone from '../../lib/application/Backbone.js';
+import $ from '../../lib/application/jquery.js';
 
-describe("closing CloseableView on server", function() {
-    var CloseableView = require("../../lib/viewing/CloseableView");
-    var Backbone = require("../../lib/application/Backbone");
-    var Environment = require("../../lib/environment/Environment");
-    var $ = require("../../lib/application/jquery");
-    var _ = require("underscore");
+describe('closing CloseableView on server', function() {
 
-    var ViewThatCloses;
-    var view;
+  let ViewThatCloses;
+  let view;
 
-    describe("#closeAsChild", function() {
+  describe('#closeAsChild', function() {
 
-        beforeEach(function() {
-            Backbone.$ = $;
+    beforeEach(function() {
+      Backbone.$ = $;
 
-            spyOn(Environment, "isServer").and.returnValue(true);
+      ViewThatCloses = Backbone.View.extend(_.extend({}, CloseableView));
+      view = new ViewThatCloses();
 
-            ViewThatCloses = Backbone.View.extend(_.extend({}, CloseableView));
-            view = new ViewThatCloses();
+      spyOn(view, 'onClose');
+      spyOn(view, 'trigger');
+      spyOn(view, 'remove');
+      spyOn(view, 'unbind');
 
-            spyOn(view, "onClose");
-            spyOn(view, "trigger");
-            spyOn(view, "remove");
-            spyOn(view, "unbind");
-
-            view.closeAsChild();
-        });
-
-        it("removes the view from the DOM", function() {
-            expect(view.remove).toHaveBeenCalled();
-        });
-
+      view.closeAsChild();
     });
+
+    it('removes the view from the DOM', function() {
+      expect(view.remove).toHaveBeenCalled();
+    });
+
+  });
 
 });
 
-// ----------------------------------------------------------------------------
-// Copyright (C) 2018 Bloomberg Finance L.P.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// ----------------------------- END-OF-FILE ----------------------------------

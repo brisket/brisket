@@ -1,112 +1,96 @@
-"use strict";
+import Errors from '../../../lib/errors/Errors.js';
 
-describe("Errors", function() {
-    var Errors = require("../../../lib/errors/Errors");
+describe('Errors', function() {
+  let eventHandler;
+  let mockRequest;
+  let error;
 
-    var eventHandler;
-    var mockRequest;
-    var error;
+  beforeEach(function() {
+    eventHandler = jasmine.createSpy('event-handler');
+    mockRequest = {};
+    Errors.onError(eventHandler);
+  });
+
+  describe('when error is a string', function() {
 
     beforeEach(function() {
-        eventHandler = jasmine.createSpy("event-handler");
-        mockRequest = {};
-        Errors.onError(eventHandler);
+      Errors.notify('there was an error', mockRequest);
     });
 
-    describe("when error is a string", function() {
-
-        beforeEach(function() {
-            Errors.notify("there was an error", mockRequest);
-        });
-
-        it("calls event handler with string", function() {
-            expect(eventHandler).toHaveBeenCalledWith(
-                "there was an error",
-                mockRequest
-            );
-        });
-
+    it('calls event handler with string', function() {
+      expect(eventHandler).toHaveBeenCalledWith(
+        'there was an error',
+        mockRequest
+      );
     });
 
-    describe("when error is a plain object", function() {
+  });
 
-        beforeEach(function() {
-            Errors.notify({
-                some: "object"
-            }, mockRequest);
-        });
+  describe('when error is a plain object', function() {
 
-        it("calls event handler with object", function() {
-            expect(eventHandler).toHaveBeenCalledWith({
-                some: "object"
-            }, mockRequest);
-        });
-
+    beforeEach(function() {
+      Errors.notify({
+        some: 'object'
+      }, mockRequest);
     });
 
-    describe("when error is an Error object", function() {
+    it('calls event handler with object', function() {
+      expect(eventHandler).toHaveBeenCalledWith({
+        some: 'object'
+      }, mockRequest);
+    });
 
-        describe("when Error object has stack property (i.e. Node, modern browser)", function() {
+  });
 
-            beforeEach(function() {
-                error = errorWithStack();
-                Errors.notify(error, mockRequest);
-            });
+  describe('when error is an Error object', function() {
 
-            it("calls event handler with error", function() {
-                expect(eventHandler).toHaveBeenCalledWith(
-                    error,
-                    mockRequest
-                );
-            });
+    describe('when Error object has stack property (i.e. Node, modern browser)', function() {
 
-        });
+      beforeEach(function() {
+        error = errorWithStack();
+        Errors.notify(error, mockRequest);
+      });
 
-        describe("when Error object does NOT have stack property (i.e. old browsers)", function() {
-
-            beforeEach(function() {
-                error = errorWithoutStack();
-                Errors.notify(error, mockRequest);
-            });
-
-            it("calls event handler with error", function() {
-                expect(eventHandler).toHaveBeenCalledWith(
-                    error,
-                    mockRequest
-                );
-            });
-
-        });
+      it('calls event handler with error', function() {
+        expect(eventHandler).toHaveBeenCalledWith(
+          error,
+          mockRequest
+        );
+      });
 
     });
 
-    function errorWithStack() {
-        var error = new Error();
-        error.stack = error.stack || {}; // in case test runner is in old browser
+    describe('when Error object does NOT have stack property (i.e. old browsers)', function() {
 
-        return error;
-    }
+      beforeEach(function() {
+        error = errorWithoutStack();
+        Errors.notify(error, mockRequest);
+      });
 
-    function errorWithoutStack() {
-        var error = new Error();
-        delete error.stack;
+      it('calls event handler with error', function() {
+        expect(eventHandler).toHaveBeenCalledWith(
+          error,
+          mockRequest
+        );
+      });
 
-        return error;
-    }
+    });
+
+  });
+
+  function errorWithStack() {
+    const error = new Error();
+    error.stack = error.stack || {}; // in case test runner is in old browser
+
+    return error;
+  }
+
+  function errorWithoutStack() {
+    const error = new Error();
+    delete error.stack;
+
+    return error;
+  }
 
 });
 
-// ----------------------------------------------------------------------------
-// Copyright (C) 2018 Bloomberg Finance L.P.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// ----------------------------- END-OF-FILE ----------------------------------

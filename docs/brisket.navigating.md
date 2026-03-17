@@ -8,7 +8,7 @@ Use `navigateTo` to navigate to a new route.
 
 ```js
 // when in route "A"
-Brisket.navigateTo("B");
+Brisket.navigateTo('B');
 
 // application routes to route "B"
 ```
@@ -28,7 +28,7 @@ Use `replacePath` to change location bar and replace pushState history entry.
 
 ```js
 // when in route "A"
-Brisket.replacePath("B");
+Brisket.replacePath('B');
 
 // application stays on route "A" but current history is route "B"
 ```
@@ -38,7 +38,7 @@ Use `changePath` to change location bar and add an entry to pushState history.
 
 ```js
 // when in route "A"
-Brisket.changePath("B");
+Brisket.changePath('B');
 
 // application stays on route "A" but adds a new history entry - route "B"
 ```

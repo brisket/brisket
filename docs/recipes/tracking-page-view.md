@@ -4,16 +4,16 @@ Tracking Page View
 If you need to track a page view, use [request.onComplete](../brisket.requestobject.md#requestoncompletefn), and [request properties](../brisket.requestobject.md#whats-in-the-request-object):
 
 ```js
-var ga = require("path/to/GoogleAnalyticsLibrary");
-var BookView = require("path/to/BookView");
+import ga from 'path/to/GoogleAnalyticsLibrary.js';
+import BookView from 'path/to/BookView.js';
 
-var BookRouter = Brisket.Router.extend({
+const BookRouter = Brisket.Router.extend({
 
   routes: {
-    'books/:bookId': 'books'
+    'books/:bookId': 'books',
   },
 
-  books: function(bookId, layout, request, response) {
+  book(bookId, layout, request, response) {
 
     request.onComplete(function() {
       ga("set", "referrer", request.referrer);
@@ -23,7 +23,7 @@ var BookRouter = Brisket.Router.extend({
     });
 
     return new BookView();
-  }
+  },
 
 });
 ```

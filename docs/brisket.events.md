@@ -11,6 +11,6 @@ Brisket provides a proxy to Backbone.Events that exposes a noop on the server to
 By default Brisket.Events is already mixed into Brisket.Views. For all other use cases, simply extend from Brisket.Events instead of Backbone.Events:
 
 ```js
-var EventBus = _.clone(Brisket.Events);
-var object = _.extend({}, Brisket.Events);
+const EventBus = _.clone(Brisket.Events);
+const object = _.extend({}, Brisket.Events);
 ```

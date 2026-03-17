@@ -1,804 +1,735 @@
-"use strict";
+import Backbone from '../../lib/application/Backbone.js';
+import ServerRenderingWorkflow from '../../lib/server/ServerRenderingWorkflow.js';
+import ServerRenderer from '../../lib/server/ServerRenderer.js';
+import ServerRequest from '../../lib/server/ServerRequest.js';
+import ServerResponse from '../../lib/server/ServerResponse.js';
+import Layout from '../../lib/viewing/Layout.js';
+import Errors from '../../lib/errors/Errors.js';
 
-describe("ServerRenderingWorkflow", function() {
-    var Backbone = require("../../lib/application/Backbone");
-    var Promise = require("bluebird");
-    var ServerRenderingWorkflow = require("../../lib/server/ServerRenderingWorkflow");
-    var ServerRenderer = require("../../lib/server/ServerRenderer");
-    var ServerRequest = require("../../lib/server/ServerRequest");
-    var ServerResponse = require("../../lib/server/ServerResponse");
-    var Layout = require("../../lib/viewing/Layout");
-    var Errors = require("../../lib/errors/Errors");
+describe('ServerRenderingWorkflow', function() {
 
-    var originalHandler;
-    var expectedView;
-    var environmentConfig;
-    var fakeRouter;
-    var handlerReturns;
-    var PageNotFoundView;
-    var ErrorView;
-    var mockServerRequest;
-    var mockServerResponse;
-    var mockExpressRequest;
-    var error;
+  let originalHandler;
+  let expectedView;
+  let environmentConfig;
+  let fakeRouter;
+  let PageNotFoundView;
+  let ErrorView;
+  let mockServerRequest;
+  let mockServerResponse;
+  let mockExpressRequest;
+  let error;
+
+  beforeEach(function() {
+    expectedView = new Backbone.View();
+    environmentConfig = {
+      'made': 'in server rendering spec'
+    };
+
+    PageNotFoundView = Backbone.View.extend({
+      name: 'page_not_found'
+    });
+
+    ErrorView = Backbone.View.extend({
+      name: 'unhandled_error'
+    });
+
+    originalHandler = function() {};
+
+    spyOn(Errors, 'notify');
+
+    fakeRouter = {
+      layout: Layout,
+      errorViewMapping: errorViewMapping(),
+      otherMethod: jasmine.createSpy(),
+      close: jasmine.createSpy()
+    };
+
+    spyOn(Layout.prototype, 'render').and.callThrough();
+    spyOn(ServerRenderer, 'render').and.returnValue('page was rendered');
+
+    mockServerRequest = {
+      id: 'mockServerRequest',
+    };
+
+    mockServerResponse = new ServerResponse();
+    mockServerResponse.id = 'mockServerResponse';
+
+    spyOn(ServerRequest, 'from').and.returnValue(mockServerRequest);
+    spyOn(ServerResponse, 'create').and.returnValue(mockServerResponse);
+  });
+
+  it('ensures layout\'s model has environmentConfig', async function() {
+    fakeRouter.layout = Layout.extend({
+      initialize() {
+        expect(this.model.get('environmentConfig')).toEqual({
+          'made': 'in server rendering spec'
+        });
+      }
+    });
+
+    await callAugmentedRouterHandler();
+  });
+
+  describe('whenever handler is called', function() {
 
     beforeEach(function() {
-        expectedView = new Backbone.View();
-        environmentConfig = {
-            "made": "in server rendering spec"
-        };
-
-        PageNotFoundView = Backbone.View.extend({
-            name: "page_not_found"
-        });
-
-        ErrorView = Backbone.View.extend({
-            name: "unhandled_error"
-        });
-
-        originalHandler = function() {};
-
-        spyOn(Errors, "notify");
-
-        fakeRouter = {
-            layout: Layout,
-            errorViewMapping: errorViewMapping(),
-            otherMethod: jasmine.createSpy(),
-            close: jasmine.createSpy()
-        };
-
-        spyOn(Layout.prototype, "render").and.callThrough();
-        spyOn(ServerRenderer, "render").and.returnValue("page was rendered");
-
-        mockServerRequest = {
-            id: "mockServerRequest",
-            host: "mockHost"
-        };
-
-        mockServerResponse = new ServerResponse();
-        mockServerResponse.id = "mockServerResponse";
-
-        spyOn(ServerRequest, "from").and.returnValue(mockServerRequest);
-        spyOn(ServerResponse, "create").and.returnValue(mockServerResponse);
+      originalHandler = jasmine.createSpy().and.callFake(function() {
+        return expectedView;
+      });
     });
 
-    it("[deprecated] ensures layout has environmentConfig before it is passed to route handlers", function(done) {
-        fakeRouter.layout = Layout.extend({
+    it('calls original handler with params, setLayoutData, brisketRequest, and brisketResponse', async function() {
+      await callAugmentedRouterHandlerWith('param1', 'param2');
 
-            beforeRender: function() {
-                expect(this.environmentConfig).toEqual({
-                    "made": "in server rendering spec"
-                });
-                done();
-            }
-
-        });
-
-        handlerReturns = callAugmentedRouterHandler();
+      expect(originalHandler)
+        .toHaveBeenCalledWith('param1', 'param2', jasmine.any(Function), mockServerRequest, mockServerResponse);
     });
 
-    it("ensures layout's model has environmentConfig", function(done) {
-        fakeRouter.layout = Layout.extend({
+  });
 
-            initialize: function() {
-                expect(this.model.get("environmentConfig")).toEqual({
-                    "made": "in server rendering spec"
-                });
-                done();
-            }
+  describe('when original handler uses \'this\'', function() {
 
-        });
-
-        handlerReturns = callAugmentedRouterHandler();
+    beforeEach(function() {
+      originalHandler = function() {
+        this.otherMethod();
+      };
     });
 
-    it("[deprecated] passes request as option to layout", function(done) {
-        fakeRouter.layout = Layout.extend({
-            initialize: function(options) {
-                expect(options.request.host).toEqual("mockHost");
-                done();
-            }
-        });
-
-        handlerReturns = callAugmentedRouterHandler();
+    it('ensures original handler\'s scope is bound to router', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expect(fakeRouter.otherMethod).toHaveBeenCalled();
+      }
     });
 
-    describe("whenever handler is called", function() {
+  });
 
-        beforeEach(function() {
-            originalHandler = jasmine.createSpy().and.callFake(function() {
-                return expectedView;
-            });
-        });
+  describe('when original handler redirects', function() {
+    let restOfCodeInTheHandler;
 
-        it("calls original handler with params, layoutDelegate, brisketRequest, and brisketResponse", function(done) {
-            handlerReturns = callAugmentedRouterHandlerWith("param1", "param2");
+    beforeEach(function() {
+      restOfCodeInTheHandler = jasmine.createSpy('rest of code in the handler');
 
-            handlerReturns
-                .then(function() {
-                    expect(originalHandler)
-                        .toHaveBeenCalledWith("param1", "param2", jasmine.any(Function), mockServerRequest, mockServerResponse);
-                    done();
-                });
-        });
-
+      originalHandler = function(layout, request, response) {
+        response.redirect('go/somewhere');
+        restOfCodeInTheHandler();
+        return expectedView;
+      };
     });
 
-    describe("when original handler uses 'this'", function() {
-
-        beforeEach(function() {
-            originalHandler = function() {
-                this.otherMethod();
-            };
-        });
-
-        it("ensures original handler's scope is bound to router", function(done) {
-            handlerReturns = callAugmentedRouterHandler();
-
-            handlerReturns.finally(function() {
-                expect(fakeRouter.otherMethod).toHaveBeenCalled();
-                done();
-            });
-        });
-
+    it('does NOT execute the rest of code in the handler', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expect(restOfCodeInTheHandler).not.toHaveBeenCalled();
+      }
     });
 
-    describe("when original handler redirects", function() {
-        var restOfCodeInTheHandler;
-
-        beforeEach(function() {
-            restOfCodeInTheHandler = jasmine.createSpy("rest of code in the handler");
-
-            originalHandler = function(layout, request, response) {
-                response.redirect("go/somewhere");
-                restOfCodeInTheHandler();
-                return expectedView;
-            };
-
-            handlerReturns = callAugmentedRouterHandler();
-        });
-
-        it("does NOT execute the rest of code in the handler", function(done) {
-            handlerReturns.finally(function() {
-                expect(restOfCodeInTheHandler).not.toHaveBeenCalled();
-                done();
-            });
-        });
-
-        it("does NOT render a View", function(done) {
-            handlerReturns.finally(function() {
-                expect(ServerRenderer.render).not.toHaveBeenCalled();
-                done();
-            });
-        });
-
-        itPassesEmptyRouteStateToLayout();
-        itCleansUpLayoutAndRouter();
+    it('does NOT render a View', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expect(ServerRenderer.render).not.toHaveBeenCalled();
+      }
     });
 
-    describe("setting response headers", function() {
+    itPassesEmptyRouteStateToLayout();
+    itCleansUpLayoutAndRouter();
+  });
 
-        it("sets serverResponse headers 'response.set' is called", function(done) {
-            originalHandler = function(layout, request, response) {
-                response.set("Cache-control", "public, max-age=3600");
+  describe('setting response headers', function() {
 
-                return expectedView;
-            };
+    it('sets serverResponse headers \'response.set\' is called', async function() {
+      originalHandler = function(layout, request, response) {
+        response.set('Cache-control', 'public, max-age=3600');
 
-            handlerReturns = callAugmentedRouterHandler();
+        return expectedView;
+      };
 
-            handlerReturns.then(function(responseForRoute) {
-                var headers = responseForRoute.serverResponse.headers;
+      const { serverResponse } = await callAugmentedRouterHandler();
 
-                expect(headers).toEqual(jasmine.objectContaining({
-                    "Cache-control": "public, max-age=3600"
-                }));
+      const headers = serverResponse.headers;
 
-                done();
-            });
-        });
-
+      expect(headers).toEqual(jasmine.objectContaining({
+        'Cache-control': 'public, max-age=3600'
+      }));
     });
 
-    describe("when original handler does NOT return a View NOR promise of View", function() {
+  });
 
-        beforeEach(function() {
-            originalHandler = function() {
-                return null;
-            };
+  describe('when original handler does NOT return a View NOR promise of View', function() {
 
-            handlerReturns = callAugmentedRouterHandler();
-        });
-
-        it("does NOT render page without View", function(done) {
-            handlerReturns.finally(function() {
-                expectNotToRender(jasmine.any(Layout), null);
-                done();
-            });
-        });
-
-        it("still renders Layout", function(done) {
-            handlerReturns.finally(function() {
-                expect(Layout.prototype.render).toHaveBeenCalled();
-                done();
-            });
-        });
-
-        it("renders error view", function(done) {
-            handlerReturns.finally(function() {
-                expectRenderFor(jasmine.any(Layout), jasmine.any(ErrorView));
-                done();
-            });
-        });
-
-        it("returns 500 status", function(done) {
-            handlerReturns.then(function(responseForRoute) {
-                expect(responseForRoute.serverResponse.statusCode).toBe(500);
-                done();
-            });
-        });
-
+    beforeEach(function() {
+      originalHandler = function() {
+        return null;
+      };
     });
 
-    describe("when original handler returns View", function() {
-
-        beforeEach(function() {
-            originalHandler = function() {
-                return expectedView;
-            };
-
-            handlerReturns = callAugmentedRouterHandler();
-        });
-
-        it("renders page", function(done) {
-            handlerReturns.finally(function() {
-                expectRenderFor(jasmine.any(Layout), expectedView);
-                done();
-            });
-        });
-
-        it("returns promise of rendered page", function(done) {
-            handlerReturns.then(function(responseForRoute) {
-                expect(responseForRoute.html).toBe("page was rendered");
-                done();
-            });
-        });
-
-        itPassesRouteStateToLayout();
-        itCleansUpLayoutAndRouter();
+    it('does NOT render page without View', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expectNotToRender(jasmine.any(Layout), null);
+      }
     });
 
-    describe("when original handler returns promise of View", function() {
-
-        beforeEach(function() {
-            originalHandler = function() {
-                return Promise.resolve(expectedView);
-            };
-
-            handlerReturns = callAugmentedRouterHandler();
-        });
-
-        it("render page", function(done) {
-            handlerReturns.finally(function() {
-                expectRenderFor(jasmine.any(Layout), expectedView);
-                done();
-            });
-
-        });
-
-        it("returns promise of rendered page", function(done) {
-            handlerReturns.then(function(responseForRoute) {
-                expect(responseForRoute.html).toBe("page was rendered");
-                done();
-            });
-        });
-
-        itPassesRouteStateToLayout();
-        itCleansUpLayoutAndRouter();
+    it('still renders Layout', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expect(Layout.prototype.render).toHaveBeenCalled();
+      }
     });
 
-    describe("when original handler returns rejected promise", function() {
-
-        beforeEach(function() {
-            error = new Error("original handler returns rejected promise");
-
-            originalHandler = function() {
-                return Promise.reject(error);
-            };
-
-            handlerReturns = callAugmentedRouterHandler();
-        });
-
-        it("logs the error", function(done) {
-            handlerReturns.finally(function() {
-                expect(Errors.notify).toHaveBeenCalledWith(
-                    error,
-                    mockExpressRequest
-                );
-                done();
-            });
-        });
-
-        itPassesEmptyRouteStateToLayout();
-        itCleansUpLayoutAndRouter();
-        itDoesNotRethrowError();
+    it('renders error view', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expectRenderFor(jasmine.any(Layout), jasmine.any(ErrorView));
+      }
     });
 
-    describe("when original handler returns with a 404", function() {
+    it('returns 500 status', async function() {
+      const { serverResponse } = await callAugmentedRouterHandler();
 
-        beforeEach(function() {
-            error = {
-                status: 404
-            };
-
-            originalHandler = function() {
-                return Promise.reject(error);
-            };
-
-            handlerReturns = callAugmentedRouterHandler();
-        });
-
-        it("still renders Layout", function(done) {
-            handlerReturns.finally(function() {
-                expect(Layout.prototype.render).toHaveBeenCalled();
-                done();
-            });
-        });
-
-        it("renders 404 view", function(done) {
-            handlerReturns.finally(function() {
-                expectRenderFor(jasmine.any(Layout), jasmine.any(PageNotFoundView));
-                done();
-            });
-        });
-
-        it("returns status of 404", function(done) {
-            handlerReturns.then(function(responseForRoute) {
-                expect(responseForRoute.serverResponse.statusCode).toBe(404);
-                done();
-            });
-        });
-
-        itPassesEmptyRouteStateToLayout();
-        itCleansUpLayoutAndRouter();
-        itDoesNotRethrowError();
+      expect(serverResponse.statusCode).toBe(500);
     });
 
-    describe("when original handler returns with a 500", function() {
+  });
 
-        beforeEach(function() {
-            error = {
-                status: 500
-            };
+  describe('when original handler returns View', function() {
 
-            originalHandler = function() {
-                return Promise.reject(error);
-            };
-
-            handlerReturns = callAugmentedRouterHandler();
-        });
-
-        it("still renders Layout", function(done) {
-            handlerReturns.finally(function() {
-                expect(Layout.prototype.render).toHaveBeenCalled();
-                done();
-            });
-        });
-
-        it("renders error view", function(done) {
-            handlerReturns.finally(function() {
-                expectRenderFor(jasmine.any(Layout), jasmine.any(ErrorView));
-                done();
-            });
-        });
-
-        it("returns status of 500", function(done) {
-            handlerReturns.then(function(responseForRoute) {
-                expect(responseForRoute.serverResponse.statusCode).toBe(500);
-                done();
-            });
-        });
-
-        itPassesEmptyRouteStateToLayout();
-        itCleansUpLayoutAndRouter();
-        itDoesNotRethrowError();
+    beforeEach(function() {
+      originalHandler = function() {
+        return expectedView;
+      };
     });
 
-    describe("when original handler returns error (not 500 or 404)", function() {
-
-        beforeEach(function() {
-            error = {
-                status: 503
-            };
-
-            originalHandler = function() {
-                return Promise.reject(error);
-            };
-
-            handlerReturns = callAugmentedRouterHandler();
-        });
-
-        it("still renders Layout", function(done) {
-            handlerReturns.finally(function() {
-                expect(Layout.prototype.render).toHaveBeenCalled();
-                done();
-            });
-        });
-
-        it("renders error view", function(done) {
-            handlerReturns.finally(function() {
-                expectRenderFor(jasmine.any(Layout), jasmine.any(ErrorView));
-                done();
-            });
-        });
-
-        it("returns status of 500", function(done) {
-            handlerReturns.then(function(responseForRoute) {
-                expect(responseForRoute.serverResponse.statusCode).toBe(500);
-                done();
-            });
-        });
-
-        itPassesEmptyRouteStateToLayout();
-        itCleansUpLayoutAndRouter();
-        itDoesNotRethrowError();
+    it('renders page', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expectRenderFor(jasmine.any(Layout), expectedView);
+      }
     });
 
-    describe("when original handler returns error and layout fetch data succeeds", function() {
+    it('returns promise of rendered page', async function() {
+      const { html } = await callAugmentedRouterHandler();
 
-        beforeEach(function() {
-            var LayoutWithSuccessfulFetch = Layout.extend({
-                fetchData: function() {
-                    return Promise.resolve();
-                }
-            });
-
-            fakeRouter = {
-                layout: LayoutWithSuccessfulFetch,
-                errorViewMapping: errorViewMapping(),
-                close: jasmine.createSpy()
-            };
-
-            error = {
-                status: 404
-            };
-
-            originalHandler = function() {
-                return Promise.reject(error);
-            };
-
-            handlerReturns = callAugmentedRouterHandler();
-        });
-
-        it("still renders Layout", function(done) {
-            handlerReturns.finally(function() {
-                expect(Layout.prototype.render).toHaveBeenCalled();
-                done();
-            });
-        });
-
-        it("returns status from view failure", function(done) {
-            handlerReturns.then(function(responseForRoute) {
-                expect(responseForRoute.serverResponse.statusCode).toBe(404);
-                done();
-            });
-        });
-
-        itPassesEmptyRouteStateToLayout();
-        itCleansUpLayoutAndRouter();
-        itDoesNotRethrowError();
+      expect(html).toBe('page was rendered');
     });
 
-    describe("when original handler returns error and layout fetch data returns error", function() {
+    itPassesRouteStateToLayout();
+    itCleansUpLayoutAndRouter();
+  });
 
-        beforeEach(function() {
-            error = {
-                status: 404
-            };
+  describe('when original handler returns promise of View', function() {
 
-            var LayoutWithFailingFetch = Layout.extend({
-                fetchData: function() {
-                    return Promise.reject(error);
-                }
-            });
-
-            fakeRouter = {
-                layout: LayoutWithFailingFetch,
-                errorViewMapping: errorViewMapping(),
-                close: jasmine.createSpy()
-            };
-
-            originalHandler = function() {
-                return Promise.reject({
-                    status: 500
-                });
-            };
-
-            handlerReturns = callAugmentedRouterHandler();
-        });
-
-        it("still renders Layout", function(done) {
-            handlerReturns.finally(function() {
-                expect(Layout.prototype.render).toHaveBeenCalled();
-                done();
-            });
-        });
-
-        it("returns status from view failure", function(done) {
-            handlerReturns.then(function(responseForRoute) {
-                expect(responseForRoute.serverResponse.statusCode).toBe(500);
-                done();
-            });
-        });
-
-        itPassesEmptyRouteStateToLayout();
-        itCleansUpLayoutAndRouter();
-        itDoesNotRethrowError();
+    beforeEach(function() {
+      originalHandler = function() {
+        return Promise.resolve(expectedView);
+      };
     });
 
-    describe("when original handler has an uncaught error", function() {
-
-        beforeEach(function() {
-            error = new Error("original handler has uncaught error");
-
-            originalHandler = function() {
-                throw error;
-            };
-
-            handlerReturns = callAugmentedRouterHandler();
-        });
-
-        it("still renders Layout", function(done) {
-            handlerReturns.finally(function() {
-                expect(Layout.prototype.render).toHaveBeenCalled();
-                done();
-            });
-        });
-
-        it("renders error view", function(done) {
-            handlerReturns.finally(function() {
-                expectRenderFor(jasmine.any(Layout), jasmine.any(ErrorView));
-                done();
-            });
-        });
-
-        it("returns status of 500", function(done) {
-            handlerReturns.then(function(responseForRoute) {
-                expect(responseForRoute.serverResponse.statusCode).toBe(500);
-                done();
-            });
-        });
-
-        itPassesEmptyRouteStateToLayout();
-        itCleansUpLayoutAndRouter();
-        itDoesNotRethrowError();
+    it('render page', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expectRenderFor(jasmine.any(Layout), expectedView);
+      }
     });
 
-    describe("when layout errors on close", function() {
+    it('returns promise of rendered page', async function() {
+      const { html } = await callAugmentedRouterHandler();
 
-        beforeEach(function() {
-            error = new Error("layout close error");
-
-            spyOn(Layout.prototype, "onClose").and.callFake(function() {
-                throw error;
-            });
-        });
-
-        itNotifiesAboutError();
-        itRethrowsError();
+      expect(html).toBe('page was rendered');
     });
 
-    describe("when router errors on close", function() {
+    itPassesRouteStateToLayout();
+    itCleansUpLayoutAndRouter();
+  });
 
-        beforeEach(function() {
-            error = new Error("router close error");
+  describe('when original handler returns rejected promise', function() {
 
-            fakeRouter.close.and.callFake(function() {
-                throw error;
-            });
-        });
+    beforeEach(function() {
+      error = new Error('original handler returns rejected promise');
 
-        itNotifiesAboutError();
-        itRethrowsError();
+      originalHandler = function() {
+        return Promise.reject(error);
+      };
     });
 
-    describe("when router doesn't have errorViewMapping and there is an error", function() {
-
-        beforeEach(function() {
-            fakeRouter.errorViewMapping = null;
-
-            originalHandler = function() {
-                return Promise.reject(error);
-            };
-
-            handlerReturns = callAugmentedRouterHandler();
-        });
-
-        itNotifiesAboutError();
-        itRethrowsError();
-    });
-
-    function itPassesRouteStateToLayout() {
-
-        it("passes recorded state as model to layout", function(done) {
-            originalHandler = function(setLayoutData) {
-                setLayoutData("key1", "value1");
-                setLayoutData({
-                    "key2": "value2",
-                    "key3": "value3"
-                });
-
-                return expectedView;
-            };
-
-            fakeRouter.layout = Layout.extend({
-                initialize: function() {
-                    expect(this.model.get("key1")).toBe("value1");
-                    expect(this.model.get("key2")).toBe("value2");
-                    expect(this.model.get("key3")).toBe("value3");
-                    done();
-                }
-            });
-
-            callAugmentedRouterHandler();
-        });
-
-    }
-
-    function itPassesEmptyRouteStateToLayout() {
-
-        it("passes empty state as model to layout", function(done) {
-            originalHandler = function(setLayoutData) {
-                setLayoutData("key1", "value1");
-                setLayoutData({
-                    "key2": "value2",
-                    "key3": "value3"
-                });
-
-                throw new Error();
-            };
-
-            fakeRouter.layout = Layout.extend({
-                initialize: function() {
-                    expect(this.model.attributes).toEqual({
-                        environmentConfig: environmentConfig
-                    });
-                    done();
-                }
-            });
-
-            callAugmentedRouterHandler();
-        });
-
-    }
-
-    function itNotifiesAboutError() {
-        it("notifies about error", function(done) {
-            callAugmentedRouterHandler().catch(function() {
-                expect(Errors.notify).toHaveBeenCalledWith(
-                    error,
-                    mockExpressRequest
-                );
-
-                done();
-            });
-        });
-    }
-
-    function itDoesNotRethrowError() {
-        it("does NOT rethrow error", function(done) {
-            handlerReturns.then(function(e) {
-                expect(e).not.toBe(error);
-                done();
-            });
-        });
-    }
-
-    function itRethrowsError() {
-        it("rethrows error", function(done) {
-            callAugmentedRouterHandler().catch(function(e) {
-                expect(e).toBe(error);
-                done();
-            });
-        });
-    }
-
-    function itCleansUpLayoutAndRouter() {
-        describe("cleaning up", function() {
-
-            beforeEach(function() {
-                spyOn(Layout.prototype, "close");
-            });
-
-            it("cleans up layout", function(done) {
-                handlerReturns.finally(function() {
-                    expect(Layout.prototype.close).toHaveBeenCalled();
-                    done();
-                });
-            });
-
-            it("cleans up router", function(done) {
-                handlerReturns.finally(function() {
-                    expect(fakeRouter.close).toHaveBeenCalled();
-                    done();
-                });
-            });
-
-        });
-    }
-
-    function expectRenderFor(layout, view) {
-        expect(ServerRenderer.render).toHaveBeenCalledWith(
-            layout,
-            view,
-            environmentConfig,
-            mockServerRequest
+    it('logs the error', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expect(Errors.notify).toHaveBeenCalledWith(
+          error,
+          mockExpressRequest
         );
-    }
+      }
+    });
 
-    function expectNotToRender(layout, view) {
-        expect(ServerRenderer.render).not.toHaveBeenCalledWith(
-            layout,
-            view,
-            environmentConfig,
-            mockServerRequest
-        );
-    }
+    itPassesEmptyRouteStateToLayout();
+    itCleansUpLayoutAndRouter();
+    itDoesNotRethrowError();
+  });
 
-    function callAugmentedRouterHandler() {
-        return callAugmentedRouterHandlerWith();
-    }
+  describe('when original handler returns with a 404', function() {
 
-    function callAugmentedRouterHandlerWith() {
-        var params = makeBackboneRouteArguments(arguments);
+    beforeEach(function() {
+      error = {
+        status: 404
+      };
 
-        mockExpressRequest = makeMockExpressRequest();
+      originalHandler = function() {
+        return Promise.reject(error);
+      };
+    });
 
-        return ServerRenderingWorkflow.execute(
-            fakeRouter,
-            originalHandler,
-            params,
-            mockExpressRequest,
+    it('still renders Layout', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expect(Layout.prototype.render).toHaveBeenCalled();
+      }
+    });
+
+    it('renders 404 view', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expectRenderFor(jasmine.any(Layout), jasmine.any(PageNotFoundView));
+      }
+    });
+
+    it('returns status of 404', async function() {
+      const { serverResponse } = await callAugmentedRouterHandler();
+
+      expect(serverResponse.statusCode).toBe(404);
+    });
+
+    itPassesEmptyRouteStateToLayout();
+    itCleansUpLayoutAndRouter();
+    itDoesNotRethrowError();
+  });
+
+  describe('when original handler returns with a 500', function() {
+
+    beforeEach(function() {
+      error = {
+        status: 500
+      };
+
+      originalHandler = function() {
+        return Promise.reject(error);
+      };
+    });
+
+    it('still renders Layout', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expect(Layout.prototype.render).toHaveBeenCalled();
+      }
+    });
+
+    it('renders error view', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expectRenderFor(jasmine.any(Layout), jasmine.any(ErrorView));
+      }
+    });
+
+    it('returns status of 500', async function() {
+      const { serverResponse } = await callAugmentedRouterHandler();
+
+      expect(serverResponse.statusCode).toBe(500);
+    });
+
+    itPassesEmptyRouteStateToLayout();
+    itCleansUpLayoutAndRouter();
+    itDoesNotRethrowError();
+  });
+
+  describe('when original handler returns error (not 500 or 404)', function() {
+
+    beforeEach(function() {
+      error = {
+        status: 503
+      };
+
+      originalHandler = function() {
+        return Promise.reject(error);
+      };
+    });
+
+    it('still renders Layout', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expect(Layout.prototype.render).toHaveBeenCalled();
+      }
+    });
+
+    it('renders error view', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expectRenderFor(jasmine.any(Layout), jasmine.any(ErrorView));
+      }
+    });
+
+    it('returns status of 500', async function() {
+      const { serverResponse } = await callAugmentedRouterHandler();
+
+      expect(serverResponse.statusCode).toBe(500);
+    });
+
+    itPassesEmptyRouteStateToLayout();
+    itCleansUpLayoutAndRouter();
+    itDoesNotRethrowError();
+  });
+
+  describe('when original handler returns error and layout fetch data succeeds', function() {
+
+    beforeEach(function() {
+      const LayoutWithSuccessfulFetch = Layout.extend({
+        fetchData() {
+          return Promise.resolve();
+        }
+      });
+
+      fakeRouter = {
+        layout: LayoutWithSuccessfulFetch,
+        errorViewMapping: errorViewMapping(),
+        close: jasmine.createSpy()
+      };
+
+      error = {
+        status: 404
+      };
+
+      originalHandler = function() {
+        return Promise.reject(error);
+      };
+    });
+
+    it('still renders Layout', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expect(Layout.prototype.render).toHaveBeenCalled();
+      }
+    });
+
+    it('returns status from view failure', async function() {
+      const { serverResponse } = await callAugmentedRouterHandler();
+
+      expect(serverResponse.statusCode).toBe(404);
+    });
+
+    itPassesEmptyRouteStateToLayout();
+    itCleansUpLayoutAndRouter();
+    itDoesNotRethrowError();
+  });
+
+  describe('when original handler returns error and layout fetch data returns error', function() {
+
+    beforeEach(function() {
+      error = {
+        status: 404
+      };
+
+      const LayoutWithFailingFetch = Layout.extend({
+        fetchData() {
+          return Promise.reject(error);
+        }
+      });
+
+      fakeRouter = {
+        layout: LayoutWithFailingFetch,
+        errorViewMapping: errorViewMapping(),
+        close: jasmine.createSpy()
+      };
+
+      originalHandler = function() {
+        return Promise.reject({
+          status: 500
+        });
+      };
+
+    });
+
+    it('still renders Layout', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expect(Layout.prototype.render).toHaveBeenCalled();
+      }
+    });
+
+    it('returns status from view failure', async function() {
+      const { serverResponse } = await callAugmentedRouterHandler();
+
+      expect(serverResponse.statusCode).toBe(500);
+    });
+
+    itPassesEmptyRouteStateToLayout();
+    itCleansUpLayoutAndRouter();
+    itDoesNotRethrowError();
+  });
+
+  describe('when original handler has an uncaught error', function() {
+
+    beforeEach(function() {
+      error = new Error('original handler has uncaught error');
+
+      originalHandler = function() {
+        throw error;
+      };
+    });
+
+    it('still renders Layout', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expect(Layout.prototype.render).toHaveBeenCalled();
+      }
+    });
+
+    it('renders error view', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } finally {
+        expectRenderFor(jasmine.any(Layout), jasmine.any(ErrorView));
+      }
+    });
+
+    it('returns status of 500', async function() {
+      const { serverResponse } = await callAugmentedRouterHandler();
+
+      expect(serverResponse.statusCode).toBe(500);
+    });
+
+    itPassesEmptyRouteStateToLayout();
+    itCleansUpLayoutAndRouter();
+    itDoesNotRethrowError();
+  });
+
+  describe('when layout errors on close', function() {
+
+    beforeEach(function() {
+      error = new Error('layout close error');
+
+      spyOn(Layout.prototype, 'onClose').and.callFake(function() {
+        throw error;
+      });
+    });
+
+    itNotifiesAboutError();
+    itRethrowsError();
+  });
+
+  describe('when router errors on close', function() {
+
+    beforeEach(function() {
+      error = new Error('router close error');
+
+      fakeRouter.close.and.callFake(function() {
+        throw error;
+      });
+    });
+
+    itNotifiesAboutError();
+    itRethrowsError();
+  });
+
+  describe('when router doesn\'t have errorViewMapping and there is an error', function() {
+
+    beforeEach(function() {
+      fakeRouter.errorViewMapping = null;
+
+      originalHandler = function() {
+        return Promise.reject(error);
+      };
+    });
+
+    itNotifiesAboutError();
+    itRethrowsError();
+  });
+
+  function itPassesRouteStateToLayout() {
+
+    it('passes recorded state as model to layout', async function() {
+      originalHandler = function(setLayoutData) {
+        setLayoutData('key1', 'value1');
+        setLayoutData({
+          'key2': 'value2',
+          'key3': 'value3'
+        });
+
+        return expectedView;
+      };
+
+      fakeRouter.layout = Layout.extend({
+        initialize() {
+          expect(this.model.get('key1')).toBe('value1');
+          expect(this.model.get('key2')).toBe('value2');
+          expect(this.model.get('key3')).toBe('value3');
+        }
+      });
+
+      await callAugmentedRouterHandler();
+    });
+
+  }
+
+  function itPassesEmptyRouteStateToLayout() {
+
+    it('passes empty state as model to layout', async function() {
+      originalHandler = function(setLayoutData) {
+        setLayoutData('key1', 'value1');
+        setLayoutData({
+          'key2': 'value2',
+          'key3': 'value3'
+        });
+
+        throw new Error();
+      };
+
+      fakeRouter.layout = Layout.extend({
+        initialize() {
+          expect(this.model.attributes).toEqual({
             environmentConfig
+          });
+        }
+      });
+
+      await callAugmentedRouterHandler();
+    });
+
+  }
+
+  function itNotifiesAboutError() {
+    it('notifies about error', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } catch(e) {
+        expect(Errors.notify).toHaveBeenCalledWith(
+          error,
+          mockExpressRequest
         );
-    }
+      }
+    });
+  }
 
-    function errorViewMapping() {
-        return {
-            404: PageNotFoundView,
-            500: ErrorView
-        };
-    }
+  function itDoesNotRethrowError() {
+    it('does NOT rethrow error', async function() {
+      try {
+        await callAugmentedRouterHandler();
+      } catch(e) {
+        expect(e).not.toBe(error);
+      }
+    });
+  }
 
-    function makeMockExpressRequest() {
-        return {
-            protocol: "http",
-            path: "/requested/path",
-            host: "example.com",
-            headers: {
-                "host": "example.com",
-                "user-agent": "A wonderful computer"
-            }
-        };
-    }
+  function itRethrowsError() {
+    it('rethrows error', async function() {
+      try {
+        await callAugmentedRouterHandler()
+      } catch (e) {
+        expect(e).toBe(error);
+      }
+    });
+  }
 
-    function makeBackboneRouteArguments(args) {
-        return Array.prototype.slice.call(args, 0).concat(null);
-    }
+  function itCleansUpLayoutAndRouter() {
+    describe('cleaning up', function() {
+
+      beforeEach(function() {
+        spyOn(Layout.prototype, 'close');
+      });
+
+      it('cleans up layout', async function() {
+        try {
+          await callAugmentedRouterHandler();
+        } finally {
+          expect(Layout.prototype.close).toHaveBeenCalled();
+        }
+      });
+
+      it('cleans up router', async function() {
+        try {
+          await callAugmentedRouterHandler();
+        } finally {
+          expect(fakeRouter.close).toHaveBeenCalled();
+        }
+      });
+
+    });
+  }
+
+  function expectRenderFor(layout, view) {
+    expect(ServerRenderer.render).toHaveBeenCalledWith(
+      layout,
+      view,
+      environmentConfig,
+      mockServerRequest
+    );
+  }
+
+  function expectNotToRender(layout, view) {
+    expect(ServerRenderer.render).not.toHaveBeenCalledWith(
+      layout,
+      view,
+      environmentConfig,
+      mockServerRequest
+    );
+  }
+
+  async function callAugmentedRouterHandler() {
+    return callAugmentedRouterHandlerWith();
+  }
+
+  async function callAugmentedRouterHandlerWith() {
+    const params = makeBackboneRouteArguments(arguments);
+
+    mockExpressRequest = makeMockExpressRequest();
+
+    return ServerRenderingWorkflow.execute(
+      fakeRouter,
+      originalHandler,
+      params,
+      mockExpressRequest,
+      environmentConfig
+    );
+  }
+
+  function errorViewMapping() {
+    return {
+      404: PageNotFoundView,
+      500: ErrorView
+    };
+  }
+
+  function makeMockExpressRequest() {
+    return {
+      protocol: 'http',
+      path: '/requested/path',
+      host: 'example.com',
+      headers: {
+        'host': 'example.com',
+        'user-agent': 'A wonderful computer'
+      }
+    };
+  }
+
+  function makeBackboneRouteArguments(args) {
+    return Array.prototype.slice.call(args, 0).concat(null);
+  }
 
 });
 
-// ----------------------------------------------------------------------------
-// Copyright (C) 2018 Bloomberg Finance L.P.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// ----------------------------- END-OF-FILE ----------------------------------

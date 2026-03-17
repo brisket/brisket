@@ -1,59 +1,48 @@
-"use strict";
-
-const Benchmark = require("benchmark");
-const prettyOutput = require("beautify-benchmark");
-const BrisketTesting = require("../testing");
-const View = require("../lib/viewing/View");
+import { Bench } from 'tinybench';
+import BrisketTesting from '../testing.js';
+import View from '../lib/viewing/View.js';
 
 const EmptyView = View.extend();
 
 const ViewWithMarkup = View.extend({
-    template: "<div id='div-0'><span></span></div>"
+  template: '<div id=\'div-0\'><span></span></div>'
 });
 
 const ViewWithALotOfMarkup = View.extend({
 
-    template: function() {
-        let markup = "";
-        let i = 100;
+  template: function() {
+    let markup = '';
+    let i = 100;
 
-        while (i > 0) {
-            markup += "<div id='div-" + i + "'><span></span></div>";
+    while (i > 0) {
+      markup += `<div id='div-${i}'><span></span></div>`;
 
-            i--;
-        }
+      i--;
+    }
 
-        return markup;
-    }()
+    return markup;
+  }()
 
 });
 
 BrisketTesting.setup();
 
-const suite = new Benchmark.Suite("Rendering views", {
-    onStart() {
-        /* eslint-disable no-console */
-        console.log(`${ this.name }:`);
-    }
-});
+const bench = new Bench({ name: 'Rendering views', time: 100 });
 
-suite
-    .add("empty View", function() {
-        (new EmptyView()).render();
-    })
+bench
+  .add('empty View', () => {
+    (new EmptyView()).render();
+  })
 
-    .add("View with markup", function() {
-        (new ViewWithMarkup()).render();
-    })
+  .add('View with markup', () => {
+    (new ViewWithMarkup()).render();
+  })
 
-    .add("View with a lot of markup", function() {
-        (new ViewWithALotOfMarkup()).render();
-    })
+  .add('View with a lot of markup', () => {
+    (new ViewWithALotOfMarkup()).render();
+  });
 
-    .on("cycle", function(event) {
-        prettyOutput.add(event.target);
-    })
-    .on("complete", function() {
-        prettyOutput.log();
-    })
-    .run();
+await bench.run();
+
+console.log(bench.name);
+console.table(bench.table());

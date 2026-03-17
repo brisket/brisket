@@ -12,12 +12,12 @@ Brisket makes standard Backbone modeling tools (`Backbone.Model` and `Backbone.C
 In your app's `Backbone.Model`s and `Backbone.Collection`s, fetch data from the [apis that you specify when you create a Brisket server](brisket.createserver.md#apis):
 
 ```js
-var MyModel = Backbone.Model.extend({
-    url: '/api/path/to/model-data'
+const MyModel = Backbone.Model.extend({
+  url: '/api/path/to/model-data',
 });
 
-var MyCollection = Backbone.Collection.extend({
-    url: '/other-api/path/to/collection-data'
+const MyCollection = Backbone.Collection.extend({
+  url: '/other-api/path/to/collection-data',
 });
 ```
 

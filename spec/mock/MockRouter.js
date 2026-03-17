@@ -1,40 +1,35 @@
-"use strict";
+import _ from 'underscore';
+import View from '../../lib/viewing/View.js';
+import Layout from '../../lib/viewing/Layout.js';
 
-var View = require("../../lib/viewing/View");
-var Layout = require("../../lib/viewing/Layout");
-var noop = require("../../lib/util/noop");
-var _ = require("underscore");
-
-var PageNotFoundView = View.extend({
-    name: "page_not_found"
+const PageNotFoundView = View.extend({
+  name: 'page_not_found'
 });
 
-var ErrorView = View.extend({
-    name: "unhandled_error"
+const ErrorView = View.extend({
+  name: 'unhandled_error'
 });
 
-var ExampleLayout = Layout.extend({
-    template: "<div></div>",
-    content: "div",
-
-    customMethod: noop
+const ExampleLayout = Layout.extend({
+  template: '<div></div>',
+  content: 'div',
 });
 
-var MockRouter = {
+const MockRouter = {
 
-    create: function(options) {
-        return _.extend({
-            layout: ExampleLayout,
-            errorViewMapping: {
-                404: PageNotFoundView,
-                500: ErrorView
-            },
-            onRouteStart: jasmine.createSpy(),
-            onRouteComplete: jasmine.createSpy(),
-            close: jasmine.createSpy()
-        }, options);
-    }
+  create(options) {
+    return _.extend({
+      layout: ExampleLayout,
+      errorViewMapping: {
+        404: PageNotFoundView,
+        500: ErrorView
+      },
+      onRouteStart: jasmine.createSpy(),
+      onRouteComplete: jasmine.createSpy(),
+      close: jasmine.createSpy()
+    }, options);
+  }
 
 };
 
-module.exports = MockRouter;
+export default MockRouter;

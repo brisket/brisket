@@ -1,4 +1,3 @@
 languages:
   JavaScript: true
-exclude_paths:
-- "build_tools/vendor/es5-shim.js"
+  

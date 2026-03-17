@@ -9,26 +9,25 @@ const ErrorView = Brisket.View.extend();
 const BookRouter = Brisket.Router.extend({
 
   errorViewMapping: {
-    500: ErrorView
+    500: ErrorView,
   },
 
   routes: {
-    "books/:id": "book",
-    "library": "library"
+    'books/:id': 'book',
+    'library': 'library',
   },
 
   /*
    * The "book" route throws an error so Brisket displays ErrorView.
    */
-  book(id) {
+  async book(id) {
     const book = new Book({ id: id });
 
-    return book.fetch()
-      .then(() => {
-        throw new Error("There is some problem");
+    await book.fetch();
 
-        return new BookView({ model: book });
-      });
+    throw new Error('There is some problem');
+
+    return new BookView({ model: book });
   },
 
   /*
@@ -36,18 +35,18 @@ const BookRouter = Brisket.Router.extend({
    * when collection fetch fails, show a BrokenLibraryView instead of the
    *  standard ErrorView
    */
-  library(layout, request, response) {
+  async library(layout, request, response) {
     const bookCollection = new BookCollection();
 
-    return bookCollection.fetch()
-      .then(() => {
-        return new LibraryView({ collection: bookCollection });
-      })
-      .catch(() => {
-        response.status(500);
+    try {
+      await bookCollection.fetch();
 
-        return new BrokenLibraryView(); // shows busted shelves
-      });
+      return new LibraryView({ collection: bookCollection });
+    } catch(e) {
+      response.status(500);
+
+      return new BrokenLibraryView(); // shows busted shelves
+    }
   }
 
 });
@@ -61,30 +60,30 @@ const ErrorView = Brisket.View.extend();
 const BookRouter = Brisket.Router.extend({
 
   errorViewMapping: {
-    500: ErrorView
+    500: ErrorView,
   },
 
   routes: {
-    "library": "library"
+    'library': 'library',
   },
 
-  library(layout, request, response) {
+  async library(layout, request, response) {
     const bookCollection = new BookCollection();
 
-    return bookCollection.fetch()
-      .then(function() {
-        return new LibraryView({ collection: bookCollection });
-      })
-      .catch(function(xhr, status, error) {
-        if (status === 410) {
-            response.status(410);
+    try {
+      await bookCollection.fetch();
 
-            return new GoneLibraryView(); // shows a void
-        }
+      return new LibraryView({ collection: bookCollection });
+    } catch({ status }) {
+      if (status === 410) {
+        response.status(410);
 
-        throw error; // rethrow error so that Brisket will show ErrorView
-      });
-  }
+        return new GoneLibraryView(); // shows a void
+      }
+
+      throw error; // rethrow error so that Brisket will show ErrorView
+    }
+  },
 
 });
 ```

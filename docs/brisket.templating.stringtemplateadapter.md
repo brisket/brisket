@@ -7,34 +7,34 @@ A simple implementation of [Brisket.Templating.TemplateAdapter](brisket.templati
 Brisket.Templating.StringTemplateAdapter is the default TemplateAdapter for Brisket.View so you can use it right away:
 
 ```js
-var View = Brisket.View.extend({
+const View = Brisket.View.extend({
 
-    template: `<abbr class="laughing out loud">lol</abbr>`
+  template: `<abbr class="laughing out loud">lol</abbr>`,
 
 });
 
-var view = new View();
+const view = new View();
 console.log(view.render().el.innerHTML); // '<abbr class="laughing out loud">lol</abbr>'
 ```
 
 The StringTemplateAdapter that ships with Brisket can handle data too. For example:
 
 ```js
-var View = Brisket.View.extend({
+const View = Brisket.View.extend({
 
-    template: ({ some }) => {
-        return `<abbr class="laughing out loud">lol ${some}</abbr>`
-    }
+  template: ({ some }) => {
+    return `<abbr class="laughing out loud">lol ${some}</abbr>`,
+  }
 
-    logic: function() {
-        return {
-            some: 'data'
-        };
-    }
+  logic() {
+    return {
+      some: 'data',
+    };
+  },
 
 });
 
-var view = new View();
+const view = new View();
 console.log(view.render().el.innerHTML); // '<abbr class="laughing out loud">lol data</abbr>'
 ```
 

@@ -1,9 +1,6 @@
-"use strict";
-
-const Benchmark = require("benchmark");
-const prettyOutput = require("beautify-benchmark");
-const BrisketTesting = require("../testing");
-const View = require("../lib/viewing/View");
+import { Bench } from 'tinybench';
+import BrisketTesting from '../testing.js';
+import View from '../lib/viewing/View.js';
 
 const ParentView = View.extend();
 const ChildView = View.extend();
@@ -12,32 +9,20 @@ BrisketTesting.setup();
 
 const parentView = new ParentView();
 
-const suite = new Benchmark.Suite("Creating many child views", {
-    onStart() {
-        /* eslint-disable no-console */
-        console.log(`${ this.name }:`);
+const bench = new Bench({ name: 'Creating many child views', time: 100 });
+
+bench
+  .add('with simple View', () => {
+    let i = 100;
+
+    while (i > 0) {
+      parentView.createChildView(ChildView);
+
+      i--;
     }
-});
+  });
 
-suite
-    .add({
-        name: "with simple View",
-        maxTime: 2,
-        "fn": function() {
-            let i = 100;
+await bench.run();
 
-            while (i > 0) {
-                parentView.createChildView(ChildView);
-
-                i--;
-            }
-        }
-    })
-
-    .on("cycle", function(event) {
-        prettyOutput.add(event.target);
-    })
-    .on("complete", function() {
-        prettyOutput.log();
-    })
-    .run();
+console.log(bench.name);
+console.table(bench.table());

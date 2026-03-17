@@ -1,378 +1,357 @@
-"use strict";
+import _ from 'underscore';
+import axios from 'axios';
+import Server from '../../lib/server/Server.js';
+import ServerResponseWorkflow from '../../lib/server/ServerResponseWorkflow.js';
+import ServerDispatcher from '../../lib/server/ServerDispatcher.js';
+import ServerInitializer from '../../lib/server/ServerInitializer.js';
+import App from '../../lib/application/App.js';
+import ForwardClientRequest from '../../lib/server/ForwardClientRequest.js';
 
-describe("Server", function() {
-    var Server = require("../../lib/server/Server");
-    var ServerResponseWorkflow = require("../../lib/server/ServerResponseWorkflow");
-    var ServerDispatcher = require("../../lib/server/ServerDispatcher");
-    var ServerInitializer = require("../../lib/server/ServerInitializer");
-    var App = require("../../lib/application/App");
-    var ForwardClientRequest = require("../../lib/server/ForwardClientRequest");
-    var _ = require("underscore");
+describe('Server', function() {
+
+  beforeEach(function() {
+    spyOn(ServerInitializer, 'forApp');
+  });
+
+  afterEach(function() {
+    App.reset();
+  });
+
+  describe('#create', function() {
+
+    it('initializes server and initializes App', function() {
+      Server.create(validConfig());
+
+      expect(ServerInitializer.forApp).toHaveBeenCalled();
+      expect(ServerInitializer.forApp.calls.count()).toBe(1);
+    });
+
+    it('sets axios adapter to "http"', function() {
+      Server.create(validConfig());
+
+      expect(axios.defaults.adapter).toBe('http');
+    });
+
+    it('adds a middleware for each api in apis configuration', function() {
+      const apiMiddleware = jasmine.createSpy();
+      const otherApiMiddleware = jasmine.createSpy();
+
+      spyOn(ForwardClientRequest, 'toApi').and.callFake(function(apiConfig) {
+        if (apiConfig.host === 'http://api.example.com') {
+          return apiMiddleware;
+        }
+
+        if (apiConfig.host === 'http://other-api.example.com') {
+          return otherApiMiddleware;
+        }
+      });
+
+      const brisketEngine = Server.create(validConfig());
+
+      expectMiddlewareFor(brisketEngine, 'api', apiMiddleware);
+      expectMiddlewareFor(brisketEngine, 'other-api', otherApiMiddleware);
+    });
+
+  });
+
+  describe('apis', function() {
+
+    it('does NOT throw when all apis have host', function() {
+      function creatingServerWithValidApis() {
+        Server.create(validConfig());
+      }
+
+      expect(creatingServerWithValidApis).not.toThrow();
+    });
+
+    it('throws if any api alias does NOT have a valid config', function() {
+      function creatingServerWithApiWithInvalidConfig() {
+        Server.create(validConfigWith({
+          apis: {
+            'api': 'not a valid config'
+          }
+        }));
+      }
+
+      expect(creatingServerWithApiWithInvalidConfig).toThrow();
+    });
+
+    it('throws if any api alias does NOT have a valid host', function() {
+      function creatingServerWithApiWithInvalidHost() {
+        Server.create(validConfigWith({
+          apis: {
+            'api': {
+              host: null
+            }
+          }
+        }));
+      }
+
+      expect(creatingServerWithApiWithInvalidHost).toThrow();
+    });
+
+  });
+
+  describe('environmentConfig', function() {
+    let environmentConfig;
+
+    function appRootWithTrailingSlash() {
+      return Server.create(validConfigWith({
+        environmentConfig: {
+          appRoot: '/bad/'
+        }
+      }));
+    }
+
+    function appRootWithoutLeadingSlash() {
+      return Server.create(validConfigWith({
+        environmentConfig: {
+          appRoot: 'bad'
+        }
+      }));
+    }
+
+    it('is passed to initializers start method', function() {
+      environmentConfig = {
+        some: 'data'
+      };
+
+      Server.create(validConfigWith({
+        environmentConfig
+      }));
+
+      expect(objectPassedToInitializeAppOnServer().environmentConfig)
+        .toEqual(environmentConfig);
+    });
+
+    it('throws an error when appRoot has trailing slash', function() {
+      expect(appRootWithTrailingSlash).toThrow();
+    });
+
+    it('throws an error when appRoot is missing leading slash', function() {
+      expect(appRootWithoutLeadingSlash).toThrow();
+    });
+
+  });
+
+  describe('serverConfig', function() {
+    let serverConfig;
 
     beforeEach(function() {
-        spyOn(ServerInitializer, "forApp");
+      serverConfig = {
+        some: 'data'
+      };
+
+      Server.create(validConfigWith({
+        serverConfig
+      }));
     });
 
-    afterEach(function() {
-        App.reset();
+    it('it\'s properties are passed to server initializers start method', function() {
+      expect(objectPassedToInitializeAppOnServer().serverConfig)
+        .toHaveKeyValue('some', 'data');
     });
 
-    describe("#create", function() {
-
-        it("initializes server and initializes App", function() {
-            Server.create(validConfig());
-
-            expect(ServerInitializer.forApp).toHaveBeenCalled();
-            expect(ServerInitializer.forApp.calls.count()).toBe(1);
-        });
-
-        it("adds a middleware for each api in apis configuration", function() {
-            var apiMiddleware = jasmine.createSpy();
-            var otherApiMiddleware = jasmine.createSpy();
-
-            spyOn(ForwardClientRequest, "toApi").and.callFake(function(apiConfig) {
-                if (apiConfig.host === "http://api.example.com") {
-                    return apiMiddleware;
-                }
-
-                if (apiConfig.host === "http://other-api.example.com") {
-                    return otherApiMiddleware;
-                }
-            });
-
-            var brisketEngine = Server.create(validConfig());
-
-            expectMiddlewareFor(brisketEngine, "api", apiMiddleware);
-            expectMiddlewareFor(brisketEngine, "other-api", otherApiMiddleware);
-        });
-
-    });
-
-    describe("apis", function() {
-
-        it("does NOT throw when all apis have host", function() {
-            function creatingServerWithValidApis() {
-                Server.create(validConfig());
-            }
-
-            expect(creatingServerWithValidApis).not.toThrow();
-        });
-
-        it("throws if any api alias does NOT have a valid config", function() {
-            function creatingServerWithApiWithInvalidConfig() {
-                Server.create(validConfigWith({
-                    apis: {
-                        "api": "not a valid config"
-                    }
-                }));
-            }
-
-            expect(creatingServerWithApiWithInvalidConfig).toThrow();
-        });
-
-        it("throws if any api alias does NOT have a valid host", function() {
-            function creatingServerWithApiWithInvalidHost() {
-                Server.create(validConfigWith({
-                    apis: {
-                        "api": {
-                            host: null
-                        }
-                    }
-                }));
-            }
-
-            expect(creatingServerWithApiWithInvalidHost).toThrow();
-        });
-
-    });
-
-    describe("environmentConfig", function() {
-        var environmentConfig;
-
-        function appRootWithTrailingSlash() {
-            return Server.create(validConfigWith({
-                environmentConfig: {
-                    appRoot: "/bad/"
-                }
-            }));
+    it('exposes apis to server initializers through serverConfig', function() {
+      expect(objectPassedToInitializeAppOnServer().serverConfig['apis']).toEqual({
+        'api': {
+          host: 'http://api.example.com'
+        },
+        'other-api': {
+          host: 'http://other-api.example.com'
         }
+      });
+    });
 
-        function appRootWithoutLeadingSlash() {
-            return Server.create(validConfigWith({
-                environmentConfig: {
-                    appRoot: "bad"
-                }
-            }));
+  });
+
+  describe('#sendResponseFromApp', function() {
+    let middleware;
+    let environmentConfig;
+    let mockRequest;
+    let mockResponse;
+    let mockNext;
+    let mockServerResponse;
+    let mockCallback;
+
+    beforeEach(function() {
+      environmentConfig = {};
+      middleware = Server.sendResponseFromApp(environmentConfig);
+
+      mockRequest = {
+        path: '/aRoute',
+        headers: {
+          host: 'http://www.example.com:8080'
         }
+      };
 
-        it("is passed to initializers start method", function() {
-            environmentConfig = {
-                some: "data"
-            };
+      mockResponse = {};
+      mockNext = jasmine.createSpy();
 
-            Server.create(validConfigWith({
-                environmentConfig: environmentConfig
-            }));
+      spyOn(ServerDispatcher, 'dispatch');
+      spyOn(ServerResponseWorkflow, 'sendResponseFor');
+    });
 
-            expect(objectPassedToInitializeAppOnServer().environmentConfig)
-                .toEqual(environmentConfig);
-        });
+    it('lets client app know when server does NOT have cookies', function() {
+      middleware(mockRequest, mockResponse, mockNext);
+      expect(environmentConfig['brisket:wantsCookies']).toBe(false);
+    });
 
-        it("throws an error when appRoot has trailing slash", function() {
-            expect(appRootWithTrailingSlash).toThrow();
-        });
+    it('lets client app know when server has cookies', function() {
+      mockRequest.cookies = {};
+      middleware(mockRequest, mockResponse, mockNext);
+      expect(environmentConfig['brisket:wantsCookies']).toBe(true);
+    });
 
-        it("throws an error when appRoot is missing leading slash", function() {
-            expect(appRootWithoutLeadingSlash).toThrow();
-        });
+    it('dispatches to server app with leading slash of request path stripped', function() {
+      middleware(mockRequest, mockResponse, mockNext);
+      expect(ServerDispatcher.dispatch.calls.mostRecent().args[0]).toBe('aRoute');
+    });
+
+    it('dispatches to server app with request host', function() {
+      middleware(mockRequest, mockResponse, mockNext);
+      expect(ServerDispatcher.dispatch.calls.mostRecent().args[1]).toBe(mockRequest);
+    });
+
+    it('dispatches to server app with client config', function() {
+      middleware(mockRequest, mockResponse, mockNext);
+      expect(ServerDispatcher.dispatch.calls.mostRecent().args[2]).toBe(environmentConfig);
+    });
+
+    describe('when app CANNOT handle a request', function() {
+
+      beforeEach(function() {
+        ServerDispatcher.dispatch.and.returnValue(null);
+      });
+
+      it('forwards onto next middleware', function() {
+        middleware(mockRequest, mockResponse, mockNext);
+        expect(mockNext).toHaveBeenCalled();
+      });
+
+      it('does NOT send server app response', function() {
+        middleware(mockRequest, mockResponse, mockNext);
+        expect(ServerResponseWorkflow.sendResponseFor).not.toHaveBeenCalled();
+      });
 
     });
 
-    describe("serverConfig", function() {
-        var serverConfig;
+    describe('when app CAN handle a request', function() {
 
-        beforeEach(function() {
-            serverConfig = {
-                some: "data"
-            };
-
-            Server.create(validConfigWith({
-                serverConfig: serverConfig
-            }));
+      beforeEach(function() {
+        ServerDispatcher.dispatch.and.returnValue({
+          content: 'html'
         });
+      });
 
-        it("it's properties are passed to server initializers start method", function() {
-            expect(objectPassedToInitializeAppOnServer().serverConfig)
-                .toHaveKeyValue("some", "data");
-        });
-
-        it("exposes apis to server initializers through serverConfig", function() {
-            expect(objectPassedToInitializeAppOnServer().serverConfig["apis"]).toEqual({
-                "api": {
-                    host: "http://api.example.com"
-                },
-                "other-api": {
-                    host: "http://other-api.example.com"
-                }
-            });
-        });
+      it('sends app response', function() {
+        middleware(mockRequest, mockResponse, mockNext);
+        expect(ServerResponseWorkflow.sendResponseFor)
+          .toHaveBeenCalledWith('html', mockResponse, mockNext);
+      });
 
     });
 
-    describe("#sendResponseFromApp", function() {
-        var middleware;
-        var environmentConfig;
-        var mockRequest;
-        var mockResponse;
-        var mockNext;
-        var mockServerResponse;
-        var mockCallback;
+    describe('onRouteHandled', function() {
 
-        beforeEach(function() {
-            environmentConfig = {};
-            middleware = Server.sendResponseFromApp(environmentConfig);
-
-            mockRequest = {
-                path: "/aRoute",
-                headers: {
-                    host: "http://www.example.com:8080"
-                }
-            };
-
-            mockResponse = {};
-            mockNext = jasmine.createSpy();
-
-            spyOn(ServerDispatcher, "dispatch");
-            spyOn(ServerResponseWorkflow, "sendResponseFor");
-        });
-
-        it("lets client app know when server does NOT have cookies", function() {
-            middleware(mockRequest, mockResponse, mockNext);
-            expect(environmentConfig["brisket:wantsCookies"]).toBe(false);
-        });
-
-        it("lets client app know when server has cookies", function() {
-            mockRequest.cookies = {};
-            middleware(mockRequest, mockResponse, mockNext);
-            expect(environmentConfig["brisket:wantsCookies"]).toBe(true);
-        });
-
-        it("[deprecated] lets client app know if it should NOT redirect on new layout", function() {
-            middleware = Server.sendResponseFromApp(environmentConfig, null, false);
-            middleware(mockRequest, mockResponse, mockNext);
-            expect(environmentConfig["brisket:layoutRedirect"]).toBe(false);
-        });
-
-        it("[deprecated] lets client app know if it should redirect on new layout", function() {
-            middleware = Server.sendResponseFromApp(environmentConfig, null, true);
-            middleware(mockRequest, mockResponse, mockNext);
-            expect(environmentConfig["brisket:layoutRedirect"]).toBe(true);
-        });
-
-        it("dispatches to server app with leading slash of request path stripped", function() {
-            middleware(mockRequest, mockResponse, mockNext);
-            expect(ServerDispatcher.dispatch.calls.mostRecent().args[0]).toBe("aRoute");
-        });
-
-        it("dispatches to server app with request host", function() {
-            middleware(mockRequest, mockResponse, mockNext);
-            expect(ServerDispatcher.dispatch.calls.mostRecent().args[1]).toBe(mockRequest);
-        });
-
-        it("dispatches to server app with client config", function() {
-            middleware(mockRequest, mockResponse, mockNext);
-            expect(ServerDispatcher.dispatch.calls.mostRecent().args[2]).toBe(environmentConfig);
-        });
-
-        describe("when app CANNOT handle a request", function() {
-
-            beforeEach(function() {
-                ServerDispatcher.dispatch.and.returnValue(null);
-            });
-
-            it("forwards onto next middleware", function() {
-                middleware(mockRequest, mockResponse, mockNext);
-                expect(mockNext).toHaveBeenCalled();
-            });
-
-            it("does NOT send server app response", function() {
-                middleware(mockRequest, mockResponse, mockNext);
-                expect(ServerResponseWorkflow.sendResponseFor).not.toHaveBeenCalled();
-            });
-
-        });
-
-        describe("when app CAN handle a request", function() {
-
-            beforeEach(function() {
-                ServerDispatcher.dispatch.and.returnValue({
-                    content: "html"
-                });
-            });
-
-            it("sends app response", function() {
-                middleware(mockRequest, mockResponse, mockNext);
-                expect(ServerResponseWorkflow.sendResponseFor)
-                    .toHaveBeenCalledWith("html", mockResponse, mockNext);
-            });
-
-        });
-
-        describe("onRouteHandled", function() {
-
-            beforeEach(function() {
-                mockServerResponse = {
-                    content: "html",
-                    handler: {
-                        rawRoute: "rawRoute"
-                    }
-                };
-
-                ServerDispatcher.dispatch.and.returnValue(mockServerResponse);
-            });
-
-            describe("when a server response callback handler is passed in", function() {
-
-                beforeEach(function() {
-                    mockCallback = jasmine.createSpy("mockCallback");
-
-                    middleware = Server.sendResponseFromApp(
-                        environmentConfig,
-                        mockCallback
-                    );
-
-                    middleware(mockRequest, mockResponse, mockNext);
-                });
-
-                it("fires the callback with the request and the actual route", function() {
-                    expect(mockCallback).toHaveBeenCalledWith({
-                        request: mockRequest,
-                        route: mockServerResponse.handler.rawRoute
-                    });
-                });
-
-            });
-
-            describe("when NO server response callback handler is passed in", function() {
-
-                beforeEach(function() {
-                    middleware = Server.sendResponseFromApp(
-                        environmentConfig,
-                        mockRequest.path,
-                        null
-                    );
-                });
-
-                it("doesn't not error out", function() {
-                    expect(function() {
-                        middleware(mockRequest, mockResponse, mockNext);
-                    }).not.toThrow();
-                });
-
-            });
-        });
-
-    });
-
-    function validConfig() {
-        return {
-            apis: {
-                "api": {
-                    host: "http://api.example.com"
-                },
-                "other-api": {
-                    host: "http://other-api.example.com"
-                }
-            }
+      beforeEach(function() {
+        mockServerResponse = {
+          content: 'html',
+          handler: {
+            rawRoute: 'rawRoute'
+          }
         };
-    }
 
-    function validConfigWith(customSettings) {
-        return _.extend(validConfig(), customSettings);
-    }
+        ServerDispatcher.dispatch.and.returnValue(mockServerResponse);
+      });
 
-    function objectPassedToInitializeAppOnServer() {
-        return ServerInitializer.forApp.calls.mostRecent().args[0];
-    }
+      describe('when a server response callback handler is passed in', function() {
 
-    function expectMiddlewareFor(brisketEngine, api, middleware) {
-        var expressLayers = brisketEngine._router.stack;
-        var matched = {};
+        beforeEach(function() {
+          mockCallback = jasmine.createSpy('mockCallback');
 
-        for (var i = expressLayers.length - 1; i !== 0; i--) {
-            var expressLayer = expressLayers[i];
-            var regexp = expressLayer.regexp;
+          middleware = Server.sendResponseFromApp(
+            environmentConfig,
+            mockCallback
+          );
 
-            if (matched[api]) {
-                throw new Error("expected ONLY 1 middleware for " + api + " on brisketEngine");
-            }
+          middleware(mockRequest, mockResponse, mockNext);
+        });
 
-            if (
-                regexp.test("/" + api + "/path/to/data") &&
-                !regexp.test("anything else")
-            ) {
-                matched[api] = true;
-                expect(expressLayer.handle).toBe(middleware);
-                return;
-            }
+        it('fires the callback with the request and the actual route', function() {
+          expect(mockCallback).toHaveBeenCalledWith({
+            request: mockRequest,
+            route: mockServerResponse.handler.rawRoute
+          });
+        });
+
+      });
+
+      describe('when NO server response callback handler is passed in', function() {
+
+        beforeEach(function() {
+          middleware = Server.sendResponseFromApp(
+            environmentConfig,
+            mockRequest.path,
+            null
+          );
+        });
+
+        it('doesn\'t not error out', function() {
+          expect(function() {
+            middleware(mockRequest, mockResponse, mockNext);
+          }).not.toThrow();
+        });
+
+      });
+    });
+
+  });
+
+  function validConfig() {
+    return {
+      apis: {
+        'api': {
+          host: 'http://api.example.com'
+        },
+        'other-api': {
+          host: 'http://other-api.example.com'
         }
+      }
+    };
+  }
 
-        throw new Error("expected a middleware for " + api + " on brisketEngine");
+  function validConfigWith(customSettings) {
+    return _.extend(validConfig(), customSettings);
+  }
+
+  function objectPassedToInitializeAppOnServer() {
+    return ServerInitializer.forApp.calls.mostRecent().args[0];
+  }
+
+  function expectMiddlewareFor(brisketEngine, api, middleware) {
+    const expressLayers = brisketEngine.router.stack;
+    const matched = {};
+
+    for (let i = expressLayers.length - 1; i !== 0; i--) {
+      const expressLayer = expressLayers[i];
+      const matchers = expressLayer.matchers || [];
+
+      if (matched[api]) {
+        throw new Error(`expected ONLY 1 middleware for ${api} on brisketEngine`);
+      }
+      if (
+        matchers.some(matcher => matcher(`/${api}/path/to/data`)) &&
+        !matchers.some(matcher => matcher('anything else'))
+      ) {
+        matched[api] = true;
+        expect(expressLayer.handle).toBe(middleware);
+        return;
+      }
     }
+
+    throw new Error(`expected a middleware for ${api} on brisketEngine`);
+  }
 
 });
 
-// ----------------------------------------------------------------------------
-// Copyright (C) 2018 Bloomberg Finance L.P.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// ----------------------------- END-OF-FILE ----------------------------------

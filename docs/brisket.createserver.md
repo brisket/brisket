@@ -15,12 +15,12 @@ Use apis configuration to specify the apis that your application will hit:
 
 ```js
 apis: {
-    'api': {
-        host: 'http://api.example.com',
-        proxy: 'http://proxy.example.com',
-        timeout: 5000 // milliseconds
-    },
-    'other-api': { host: 'http://other-api.example.com' }
+  'api': {
+    host: 'http://api.example.com',
+    proxy: 'http://proxy.example.com',
+    timeout: 5000, // milliseconds
+  },
+  'other-api': { host: 'http://other-api.example.com' },
 }
 ```
 
@@ -32,20 +32,20 @@ For each api, you can specify the host, proxy and timeout (in milliseconds). Bri
 `environmentConfig` is a hash of key/values that will be available to all application initializers. `environmentConfig` will be available as `options.environmentConfig`:
 
 ```js
-var App = Brisket.App;
+import { App } from 'brisket';
 
 App.addServerInitializer(function(options) {
-    var environmentConfig = options.environmentConfig;
+    const environmentConfig = options.environmentConfig;
 });
 
-var brisketServer = Brisket.createServer({
-    apis: {
-        'api': { host: 'http://api.example.com' }
-    },
+const brisketServer = Brisket.createServer({
+  apis: {
+    'api': { host: 'http://api.example.com' },
+  },
 
-    environmentConfig: {
-        some: 'data',
-    }
+  environmentConfig: {
+    some: 'data',
+  },
 });
 ```
 
@@ -53,12 +53,12 @@ var brisketServer = Brisket.createServer({
 This is the root of your application as far as pushState is concerned. If you deploy your application somewhere other than the root of your server, use this setting to tell Brisket where it is. This will be passed to [Backbone.start](http://backbonejs.org/#History-start)
 
 ```js
-var brisketServer = Brisket.createServer({
-    apis: {
-        'api': { host: 'http://api.example.com' }
-    },
+const brisketServer = Brisket.createServer({
+  apis: {
+    'api': { host: 'http://api.example.com' },
+  },
 
-    environmentConfig: { appRoot: '/path/to/app/' }
+  environmentConfig: { appRoot: '/path/to/app/' },
 });
 ```
 
@@ -66,48 +66,44 @@ var brisketServer = Brisket.createServer({
 `serverConfig` is a hash of key/values that will **ONLY** be available to your App's server initializers. In the server initializers, `serverConfig` will be available as `options.serverConfig`:
 
 ```js
-var App = Brisket.App;
+import { App } from 'brisket';
 
 App.addServerInitializer(function(options) {
-    var environmentConfig = options.environmentConfig;
+    const environmentConfig = options.environmentConfig;
 });
 
-var brisketServer = Brisket.createServer({
-    apis: {
-        'api': { host: 'http://api.example.com' }
-    },
+const brisketServer = Brisket.createServer({
+  apis: {
+    'api': { host: 'http://api.example.com' },
+  },
 
-    serverConfig: { some: 'data' }
+  serverConfig: { some: 'data' },
 });
 
 App.addClientInitializer(function(options) {
-    console.log(options.serverConfig); // undefined
+  console.log(options.serverConfig); // undefined
 });
 ```
 
 `serverConfig` is a good place to put any values that your end-users should not see but are necessary to run the server.
 
-#### redirectOnNewLayout
-Set `redirectOnNewLayout` to true to force Brisket to do a redirect on the client side when the next route uses a different Layout. When `redirectOnNewLayout` is false, Brisket will throw an error when navigating to a route with a different Layout.
-
-```
-var brisketServer = Brisket.createServer({
-    apis: {
-        'api': { host: 'http://api.example.com' }
-    },
-    redirectOnNewLayout: true
+```js
+const brisketServer = Brisket.createServer({
+  apis: {
+    'api': { host: 'http://api.example.com' },
+  },
 });
 ```
 
 #### debug
 Set `debug` to true to enable instrumentation with [Backbone Debugger](https://chrome.google.com/webstore/detail/backbone-debugger/bhljhndlimiafopmmhjlgfpnnchjjbhd?hl=en):
 
-```
-var brisketServer = Brisket.createServer({
-    apis: {
-        'api': { host: 'http://api.example.com' }
-    },
-    debug: true
+```js
+const brisketServer = Brisket.createServer({
+  apis: {
+    'api': { host: 'http://api.example.com' },
+  },
+  debug: true,
 });
 ```
 

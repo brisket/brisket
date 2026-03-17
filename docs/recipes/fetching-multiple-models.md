@@ -5,17 +5,17 @@ Let's say you had to build a simple page that only displays the details about a 
 details about the `Book` and then return a `BookView`:
 
 ```js
-var BookRouter = Brisket.Router.extend({
+const BookRouter = Brisket.Router.extend({
 
-    "book/:id": "book",
+  'book/:id': 'book',
 
-    book: function(id) {
-        var book = new Book({ id: id });
+  async book(id) {
+    const book = new Book({ id: id });
 
-        return book.fetch().then(function() {
-            return new BookView({ model: book });
-        });
-    }
+    await book.fetch();
+
+    return new BookView({ model: book });
+  },
 
 });
 ```
@@ -26,30 +26,28 @@ from another endpoint, you have to fetch the `Book` and its `Comments` separatel
 
 
 ```js
-var Book = require("./your/path/to/Book");
-var BookView = require("./your/path/to/BookView");
-var CommentCollection = require("./your/path/to/CommentCollection");
-var Promise = require("bluebird");
+import Book from './your/path/to/Book.js';
+import BookView from './your/path/to/BookView.js';
+import CommentCollection from './your/path/to/CommentCollection.js';
 
-var BookRouter = Brisket.Router.extend({
+const BookRouter = Brisket.Router.extend({
 
-  "book/:bookId": "book",
+  'book/:bookId': 'book',
 
-  book: function(bookId) {
-    var book = new Book({ id: bookId });
-    var commentCollection = new CommentCollection({ bookId: bookId });
+  async book(bookId) {
+    const book = new Book({ id: bookId });
+    const commentCollection = new CommentCollection({ bookId: bookId });
 
-    return Promise.all([
-        book.fetch(),
-        commentCollection.fetch()
-      ])
-      .then(function() {
-        return new BookView({
-          model: book,
-          comments: commentCollection
-        });
-      });
-    }
+    await Promise.all([
+      book.fetch(),
+      commentCollection.fetch(),
+    ]);
+
+    return new BookView({
+      model: book,
+      comments: commentCollection,
+    });
+  },
 
 });
 ```
@@ -63,36 +61,32 @@ If successfully fetching the comments is more of a nice to have, you can do:
 
 
 ```js
-var Book = require("./your/path/to/Book");
-var BookView = require("./your/path/to/BookView");
-var CommentCollection = require("./your/path/to/CommentCollection");
-var Promise = require("bluebird");
+import Book from './your/path/to/Book.js';
+import BookView from './your/path/to/BookView.js';
+import CommentCollection from './your/path/to/CommentCollection.js';
 
-var BookRouter = Brisket.Router.extend({
+const BookRouter = Brisket.Router.extend({
 
-  "book/:bookId": "book",
+  'book/:bookId': 'book',
 
-  book: function(bookId) {
-    var book = new Book({ id: bookId });
-    var commentCollection = new CommentCollection({ bookId: bookId });
+  async book(bookId) {
+    const book = new Book({ id: bookId });
+    const commentCollection = new CommentCollection({ bookId: bookId });
 
-    return Promise.settle([
-        book.fetch(),
-        commentCollection.fetch() // might fail, and that's ok
-      ])
-      .then(function(results) {
-        var bookFetched = results[0];
+    const [{ reason: bookFetchedReason }] = await Promise.allSettled([
+      book.fetch(),
+      commentCollection.fetch(), // might fail, and that's ok
+    ]);
 
-        if (bookFetched.isRejected()) {  // verify that book was fetched successfully
-            throw bookFetched.reason();  // if not, rethrow the reason the fetch failed
-        }
-
-        return new BookView({
-          model: book,
-          comments: commentCollection
-        });
-      });
+    if (bookFetchedReason) {  // verify that book was fetched successfully
+      throw bookFetchedReason;  // if not, rethrow the reason the fetch failed
     }
+
+    return new BookView({
+      model: book,
+      comments: commentCollection,
+    });
+  },
 
 });
 ```

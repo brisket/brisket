@@ -60,7 +60,7 @@ Now that you have a working app, check out our [Recipes](docs/recipes/README.md)
 * [**Brisket.Layout**](docs/brisket.layout.md): A specialized View that handles meta tags, page title, etc.
 * [**Brisket.Templating.TemplateAdapter**](docs/brisket.templating.templateadapter.md): Inherit from this to tell Brisket how to render templates.
 * [**Brisket.Templating.StringTemplateAdapter**](docs/brisket.templating.stringtemplateadapter.md): The default template adapter. Set a View's template key to be a string template to get started.
-* Brisket.version: The version of Brisket. On the client, the version can be accessed by `window.Brisket.version`.
+* Brisket.version: The version of Brisket. On the client, the version can also be accessed by `window.BrisketConfig.version`.
 * [**Brisket.onError**](docs/brisket.onerror.md): Registers error callback.
 
 ## Using Brisket in your project
@@ -121,26 +121,8 @@ To run benchmarks:
 $ npm run benchmarks
 ```
 
-## Troubleshoot
-
-### `jsdom` error with Legacy Node.js and io.js
-
-For Node.js 0.10.x, 0.11.x and 0.12.x, specify the version of [jsdom](https://github.com/tmpvar/jsdom) to be v3.x,
-
-```bash
-rm -rf ./node_modules/brisket/node_modules/jsdom
-npm install jsdom@3 --save
-```
-
-For io.js, specify the version of [jsdom](https://github.com/tmpvar/jsdom) to be v6.x,
-
-```bash
-rm -rf ./node_modules/brisket/node_modules/jsdom
-npm install jsdom@6 --save
-```
-
 ## License
-Apache License (Version 2). See license text in [LICENSE](LICENSE).
 
-## Copyrights and Names
-Brisket originated at [Bloomberg Finance LP](http://bloomberg.com). The name 'Brisket' is a service mark of [Bloomberg LP](http://bloomberg.com).
+[MIT](https://opensource.org/licenses/MIT)
+
+Copyright (c) 2026-present, Wayne Warner

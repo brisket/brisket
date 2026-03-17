@@ -1,133 +1,123 @@
-"use strict";
+import ClientRenderingWorkflow from '../../../lib/client/ClientRenderingWorkflow.js';
+import View from '../../../lib/viewing/View.js';
+import MockRouter from '../../mock/MockRouter.js';
 
-describe("Client side rendering order", function() {
-    var ClientRenderingWorkflow = require("../../../lib/client/ClientRenderingWorkflow");
-    var View = require("../../../lib/viewing/View");
-    var MockRouter = require("../../mock/MockRouter");
+describe('Client side rendering order', function() {
 
-    var renderingOrder;
-    var expectedView;
-    var originalHandler;
-    var mockRouter;
+  let renderingOrder;
+  let expectedView;
+  let originalHandler;
+  let mockRouter;
 
-    beforeEach(function() {
-        ClientRenderingWorkflow.reset();
+  beforeEach(function() {
+    ClientRenderingWorkflow.reset();
 
-        expectedView = newExpectedView();
-        renderingOrder = [];
+    expectedView = newExpectedView();
+    renderingOrder = [];
 
-        mockRouter = MockRouter.create();
+    mockRouter = MockRouter.create();
 
-        spyRenderingFor(mockRouter);
+    spyRenderingFor(mockRouter);
 
-        originalHandler = function(layout) {
-            renderingOrder.push("route handler runs");
+    originalHandler = function(setLayoutData) {
+      renderingOrder.push('route handler runs');
 
-            layout.customMethod();
+      setLayoutData('custom', 'data');
 
-            return expectedView;
-        };
+      return expectedView;
+    };
 
+  });
+
+  afterEach(function() {
+    ClientRenderingWorkflow.reset();
+  });
+
+  it('maintains a predictable rendering lifecycle for layout AND view on first request', async function() {
+    try {
+      await runFirstRequest();
+    } finally {
+      expect(renderingOrder).toEqual([
+        'route handler runs',
+        'layout fetches data',
+        'layout reattaches',
+        'layout renders',
+        'view for route renders',
+        'layout enters DOM',
+        'view for route enters DOM',
+      ]);
+    }
+  });
+
+  it('maintains a predictable rendering lifecycle for layout ' +
+        'AND view on all other requests when layout does NOT change',
+  async function() {
+    try {
+      await runAnotherRequest();
+    } finally {
+      expect(renderingOrder).toEqual([
+        'route handler runs',
+        'view for route renders',
+        'view for route enters DOM',
+      ]);
+    }
+  });
+
+  function runRequest(router) {
+    return ClientRenderingWorkflow.execute(router, originalHandler, []);
+  }
+
+  function runFirstRequest() {
+    return runRequest(mockRouter);
+  }
+
+  function runAnotherRequest() {
+    return runRequest(mockRouter).then(function() {
+      renderingOrder = [];
+      expectedView = newExpectedView();
+
+      return runRequest(mockRouter);
+    });
+  }
+
+  function spyRenderingFor(router) {
+    spyOn(router.layout.prototype, 'fetchData').and.callFake(function() {
+      renderingOrder.push('layout fetches data');
     });
 
-    afterEach(function() {
-        ClientRenderingWorkflow.reset();
+    spyOn(router.layout.prototype, 'reattach').and.callFake(function() {
+      renderingOrder.push('layout reattaches');
     });
 
-    it("maintains a predictable rendering lifecycle for layout AND view on first request", function(done) {
-        runFirstRequest().finally(function() {
-            expect(renderingOrder).toEqual([
-                "route handler runs",
-                "layout fetches data",
-                "layout reattaches",
-                "layout renders",
-                "[deprecated] layout instructions from route handler run",
-                "view for route renders",
-                "layout enters DOM",
-                "view for route enters DOM"
-            ]);
+    const originalLayoutRender = router.layout.prototype.render;
 
-            done();
-        });
+    spyOn(router.layout.prototype, 'render').and.callFake(function() {
+      renderingOrder.push('layout renders');
+
+      originalLayoutRender.apply(this, arguments);
     });
 
-    it("maintains a predictable rendering lifecycle for layout " +
-        "AND view on all other requests when layout does NOT change",
-        function(done) {
-            runAnotherRequest().finally(function() {
-                expect(renderingOrder).toEqual([
-                    "route handler runs",
-                    "layout back to normal",
-                    "[deprecated] layout instructions from route handler run",
-                    "view for route renders",
-                    "view for route enters DOM"
-                ]);
+    spyOn(router.layout.prototype, 'onDOM').and.callFake(function() {
+      renderingOrder.push('layout enters DOM');
 
-                done();
-            });
-        });
+      this.isInDOM = true;
+    });
+  }
 
-    function runRequest(router) {
-        return ClientRenderingWorkflow.execute(router, originalHandler, []);
-    }
+  function newExpectedView() {
+    const view = new View();
 
-    function runFirstRequest() {
-        return runRequest(mockRouter);
-    }
+    spyOn(view, 'render').and.callFake(function() {
+      renderingOrder.push('view for route renders');
 
-    function runAnotherRequest() {
-        return runRequest(mockRouter).then(function() {
-            renderingOrder = [];
-            expectedView = newExpectedView();
+      return this;
+    });
 
-            return runRequest(mockRouter);
-        });
-    }
+    spyOn(view, 'onDOM').and.callFake(function() {
+      renderingOrder.push('view for route enters DOM');
+    });
 
-    function spyRenderingFor(router) {
-        spyOn(router.layout.prototype, "fetchData").and.callFake(function() {
-            renderingOrder.push("layout fetches data");
-        });
-
-        spyOn(router.layout.prototype, "reattach").and.callFake(function() {
-            renderingOrder.push("layout reattaches");
-        });
-
-        spyOn(router.layout.prototype, "render").and.callFake(function() {
-            renderingOrder.push("layout renders");
-
-            this.hasBeenRendered = true;
-        });
-
-        spyOn(router.layout.prototype, "customMethod").and.callFake(function() {
-            renderingOrder.push("[deprecated] layout instructions from route handler run");
-        });
-
-        spyOn(router.layout.prototype, "backToNormal").and.callFake(function() {
-            renderingOrder.push("layout back to normal");
-        });
-
-        spyOn(router.layout.prototype, "onDOM").and.callFake(function() {
-            renderingOrder.push("layout enters DOM");
-
-            this.isInDOM = true;
-        });
-    }
-
-    function newExpectedView() {
-        var view = new View();
-
-        spyOn(view, "render").and.callFake(function() {
-            renderingOrder.push("view for route renders");
-
-            return this;
-        });
-
-        spyOn(view, "onDOM").and.callFake(function() {
-            renderingOrder.push("view for route enters DOM");
-        });
-
-        return view;
-    }
+    return view;
+  }
 
 });

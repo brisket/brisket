@@ -17,23 +17,23 @@ An extension of Backbone.View that provides a Rendering Workflow, Child View Man
 In a typical Backbone app, you have to implement your Views' `render` methods. Generally that looks something like this:
 
 ```js
-var View = Backbone.View.extend({
-    render: function() {
-        this.el.innerHTML = 'some content';
+const View = Backbone.View.extend({
+  render() {
+    this.el.innerHTML = 'some content';
 
-        return this;
-    }
+    return this;
+  },
 });
 ```
 
 In Brisket, we hijack the `render` method to keep your Views environment agnostic. When `render` is called on a Brisket.View, you can expect that the `template` that you have specified in your View definition will be rendered into your View's internal `el`. The Brisket implementation of `render` also returns the view so that you can chain. For example:
 
 ```js
-var View = Brisket.View.extend({
-    template: '<div class="myView">some content</div>'
+const View = Brisket.View.extend({
+  template: '<div class="myView">some content</div>',
 });
 
-var view = new View();
+const view = new View();
 console.log(view.render().el.innerHTML); // '<div class="myView">some content</div>'
 ```
 
@@ -59,7 +59,7 @@ During a View's [Rendering Workflow](rendering.workflow.md), on both the server 
 Triggers when the View enters the DOM.
 
 ```js
-var view = new Brisket.View();
+const view = new Brisket.View();
 
 view.on('on-dom', function() {
   // do something now that view has entered dom;
@@ -70,7 +70,7 @@ view.on('on-dom', function() {
 Triggers when the View is closed.
 
 ```js
-var view = new Brisket.View();
+const view = new Brisket.View();
 
 view.on('close', function() {
   // do something when view is closed
@@ -81,23 +81,23 @@ view.on('close', function() {
 By default, all Brisket.Views use [Brisket.Templating.StringTemplateAdapter](brisket.templating.stringtemplateadapter.md) to render templates. To specify a TemplateAdapter other than the default, set the templateAdapter field on a View:
 
 ```js
-var AddsSmilesTemplateAdapter = TemplateAdapter.extend({
+const AddsSmilesTemplateAdapter = TemplateAdapter.extend({
 
-    templateToHTML: function(template, data) {
-        return template + ' :) :)';
-    }
-
-});
-
-var SmileView = Brisket.View.extend({
-
-    templateAdapter: AddsSmilesTemplateAdapter,
-
-    template: '3 smiles look like :)'
+  templateToHTML(template, data) {
+    return template + ' :) :)';
+  },
 
 });
 
-var view = new SmileView();
+const SmileView = Brisket.View.extend({
+
+  templateAdapter: AddsSmilesTemplateAdapter,
+
+  template: '3 smiles look like :)',
+
+});
+
+const view = new SmileView();
 console.log(view.render().el.innerHTML); // '3 smiles look like :) :) :)'
 ```
 
@@ -108,28 +108,28 @@ With just about every templating engine, you will end up passing data from your 
 By default, Brisket will pass a json representation (model.toJSON()) of the View's `model` to the template as data. Using Mustache as an example:
 
 ```js
-var MustacheTemplateAdapter = TemplateAdapter.extend({
+const MustacheTemplateAdapter = TemplateAdapter.extend({
 
-    templateToHTML: function(template, data, partials) {
-        return Mustache.render(template, data, partials);
-    }
-
-});
-
-var Model = Backbone.Model.extend();
-
-var View = Brisket.View.extend({
-
-    templateAdapter: MustacheTemplateAdapter,
-
-    template: '{{field}}'
+  templateToHTML(template, data, partials) {
+    return Mustache.render(template, data, partials);
+  },
 
 });
 
-var model = new Model();
+const Model = Backbone.Model.extend();
+
+const View = Brisket.View.extend({
+
+  templateAdapter: MustacheTemplateAdapter,
+
+  template: '{{field}}',
+
+});
+
+const model = new Model();
 model.set('field', 'data');
 
-var view = new View({ model: model });
+const view = new View({ model: model });
 console.log(view.render().el.innerHTML); // 'data'
 ```
 
@@ -142,33 +142,33 @@ While the data in your model may be sufficient to construct the template, someti
 ```
 
 ```js
-var MustacheTemplateAdapter = TemplateAdapter.extend({
+const MustacheTemplateAdapter = TemplateAdapter.extend({
 
-    templateToHTML: function(template, data, partials) {
-        return Mustache.render(template, data, partials);
-    }
+  templateToHTML(template, data, partials) {
+    return Mustache.render(template, data, partials);
+  },
 
 });
 
-var Model = Backbone.Model.extend();
+const Model = Backbone.Model.extend();
 
-var View = Brisket.View.extend({
+const View = Brisket.View.extend({
 
-    templateAdapter: MustacheTemplateAdapter,
+  templateAdapter: MustacheTemplateAdapter,
 
-    template: '{{field}} {{fromLogic}}',
+  template: '{{field}} {{fromLogic}}',
 
-    logic: function() {
-        return {
-            fromLogic: 'otherData'
-        };
-    }
+  logic() {
+    return {
+      fromLogic: 'otherData',
+    };
+  },
 });
 
-var model = new Model();
+const model = new Model();
 model.set('field', 'data');
 
-var view = new View({ model: model });
+const view = new View({ model: model });
 console.log(view.render().el.innerHTML); // 'data otherData'
 ```
 
@@ -183,31 +183,31 @@ In some cases however you may not have a Backbone.Model as the `model` but you h
 ```
 
 ```js
-var MustacheTemplateAdapter = TemplateAdapter.extend({
+const MustacheTemplateAdapter = TemplateAdapter.extend({
 
-    templateToHTML: function(template, data, partials) {
-        return Mustache.render(template, data, partials);
-    }
+  templateToHTML(template, data, partials) {
+    return Mustache.render(template, data, partials);
+  },
 
 });
 
-var Model = Backbone.Model.extend();
+const Model = Backbone.Model.extend();
 
-var View = Brisket.View.extend({
+const View = Brisket.View.extend({
 
-    templateAdapter: MustacheTemplateAdapter,
+  templateAdapter: MustacheTemplateAdapter,
 
-    template: '{{fromCustomModel}}',
+  template: '{{fromCustomModel}}',
 
-    modelForView: function() {
-        return {
-            fromCustomModel: 'customData'
-        };
-    }
+  modelForView() {
+    return {
+      fromCustomModel: 'customData',
+    };
+  },
 });
 
-var model = new Model();
-var view = new View();
+const model = new Model();
+const view = new View();
 console.log(view.render().el.innerHTML); // 'customData'
 ```
 
@@ -221,19 +221,19 @@ Please go [**here**](brisket.childviews.md) to read about child views.
 ## Rerendering A View
 To rerender a View after it's been rendered, call render again and it will re-render in place:
 
-```
-var View = Brisket.View.extend({
-    template({ count }) {
-      return count;
-    }
+```js
+const View = Brisket.View.extend({
+  template({ count }) {
+    return count;
+  },
 });
 
-var model = new Backbone.Model({ count: 0 });
-var view = new View({ model });
+const model = new Backbone.Model({ count: 0 });
+const view = new View({ model });
 
 view.render().el.innerHTML; // <div>0</div>
 
-model.set("count", 1);
+model.set('count', 1);
 
 view.render().el.innerHTML; // <div>1</div>
 ```

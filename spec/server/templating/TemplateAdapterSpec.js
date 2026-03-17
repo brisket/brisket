@@ -1,60 +1,45 @@
-"use strict";
+import TemplateAdapter from '../../../lib/templating/TemplateAdapter.js';
 
-describe("TemplateAdapter", function() {
-    var TemplateAdapter = require("../../../lib/templating/TemplateAdapter");
+describe('TemplateAdapter', function() {
 
-    var ExampleTemplateAdapter;
-    var NthTemplateAdapter;
+  let ExampleTemplateAdapter;
+  let NthTemplateAdapter;
 
-    it("can be extended", function() {
-        ExampleTemplateAdapter = TemplateAdapter.extend();
+  it('can be extended', function() {
+    ExampleTemplateAdapter = TemplateAdapter.extend();
 
-        expect(TemplateAdapter.isPrototypeOf(ExampleTemplateAdapter)).toBe(true);
+    expect(Object.prototype.isPrototypeOf.call(TemplateAdapter, ExampleTemplateAdapter)).toBe(true);
+  });
+
+  it('can be extended with custom properties', function() {
+    ExampleTemplateAdapter = TemplateAdapter.extend({
+      'some': 'property'
     });
 
-    it("can be extended with custom properties", function() {
-        ExampleTemplateAdapter = TemplateAdapter.extend({
-            "some": "property"
-        });
+    expect(ExampleTemplateAdapter).toHaveKeyValue('some', 'property');
+  });
 
-        expect(ExampleTemplateAdapter).toHaveKeyValue("some", "property");
-    });
+  it('requires that you implement templateToHTML', function() {
 
-    it("requires that you implement templateToHTML", function() {
+    const executingTemplateToHTMLWithoutImplementing = function() {
+      ExampleTemplateAdapter = TemplateAdapter.extend();
+      ExampleTemplateAdapter.templateToHTML('some template', {
+        some: 'data'
+      }, {
+        a: 'partial'
+      });
+    };
 
-        var executingTemplateToHTMLWithoutImplementing = function() {
-            ExampleTemplateAdapter = TemplateAdapter.extend();
-            ExampleTemplateAdapter.templateToHTML("some template", {
-                some: "data"
-            }, {
-                a: "partial"
-            });
-        };
+    expect(executingTemplateToHTMLWithoutImplementing).toThrow();
+  });
 
-        expect(executingTemplateToHTMLWithoutImplementing).toThrow();
-    });
+  it('\'s subclasses can be extended', function() {
+    ExampleTemplateAdapter = TemplateAdapter.extend();
+    NthTemplateAdapter = ExampleTemplateAdapter.extend();
 
-    it("'s subclasses can be extended", function() {
-        ExampleTemplateAdapter = TemplateAdapter.extend();
-        NthTemplateAdapter = ExampleTemplateAdapter.extend();
-
-        expect(ExampleTemplateAdapter.isPrototypeOf(NthTemplateAdapter)).toBe(true);
-        expect(TemplateAdapter.isPrototypeOf(NthTemplateAdapter)).toBe(true);
-    });
+    expect(Object.prototype.isPrototypeOf.call(ExampleTemplateAdapter, NthTemplateAdapter)).toBe(true);
+    expect(Object.prototype.isPrototypeOf.call(TemplateAdapter, NthTemplateAdapter)).toBe(true);
+  });
 
 });
 
-// ----------------------------------------------------------------------------
-// Copyright (C) 2018 Bloomberg Finance L.P.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// ----------------------------- END-OF-FILE ----------------------------------

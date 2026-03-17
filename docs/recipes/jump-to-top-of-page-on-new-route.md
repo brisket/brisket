@@ -2,22 +2,21 @@ Jump To Top Of Page On New Route
 ================================
 
 ```js
-var BaseRouter = Brisket.Router.extend({
+const BaseRouter = Brisket.Router.extend({
 
-  onRouteComplete: function(layout, request) {
-
+  onRouteComplete(layout, request) {
     // Not scrolling on the first request makes refreshing the page
     // feel more natural
     if (request.isFirstRequest) {
-        return;
+      return;
     }
 
     window.scrollTo(0, 0);
-  }
+  },
 
 });
 
-var BookRouter = BaseRouter.extend({
+const BookRouter = BaseRouter.extend({
    ...
 });
 

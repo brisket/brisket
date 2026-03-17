@@ -13,29 +13,28 @@ The last parameter of every route handler is a Brisket response object - an envi
 ### Last parameter of a route handler
 
 ```js
-var BookRouter = Brisket.Router.extend({
+const BookRouter = Brisket.Router.extend({
 
   routes: {
     'books': 'books',
-    'books/:id': 'book'
+    'books/:id': 'book',
   },
 
-  books: function(layout, request, response) {
+  books(layout, request, response) {
     response.status(201); // server will respond with 201
 
     return new BookView();
   },
 
-  book: function(id, layout, request, response) {
-    var book = new Book({ id: id });
+  async book(id, layout, request, response) {
+    const book = new Book({ id: id });
 
     response.status(204); // server will respond with 204
 
-    return book.fetch()
-      .then(function() {
-        return new BookView({ model: book });
-      });
-  }
+    await book.fetch();
+    
+    return new BookView({ model: book });
+  },
 
 });
 ```
@@ -43,11 +42,11 @@ var BookRouter = Brisket.Router.extend({
 ### Third parameter of onRouteStart callback
 
 ```js
-var Router = Brisket.Router.extend({
+const Router = Brisket.Router.extend({
 
-  onRouteStart: function(layout, request, response) {
+  onRouteStart(layout, request, response) {
     response.status(202); // current history will be replaced with 'another/route'
-  }
+  },
 
 });
 ```
@@ -68,7 +67,7 @@ response.set('Content-Type', 'text/plain');
 response.set({
   'Content-Type': 'text/plain',
   'Vary': 'Accept-Encoding',
-  'ETag': '12345'
+  'ETag': '12345',
 });
 ```
 

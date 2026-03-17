@@ -13,29 +13,28 @@ The second to last parameter of every route handler is a Brisket request object 
 ### Second to last parameter of a route handler
 
 ```js
-var BookRouter = Brisket.Router.extend({
+const BookRouter = Brisket.Router.extend({
 
   routes: {
     'books': 'books',
-    'books/:id': 'book'
+    'books/:id': 'book',
   },
 
-  books: function(layout, request, response) {
+  books(layout, request, response) {
     console.log(request.host); // 'example.com:8080'
 
     return new BookView();
   },
 
-  book: function(id, layout, request, response) {
-    var book = new Book({ id: id });
+  async book(id, layout, request, response) {
+    const book = new Book({ id: id });
 
     console.log(request.isNotClick); // true/false
 
-    return book.fetch()
-      .then(function() {
-        return new BookView({ model: book });
-      });
-  }
+    await book.fetch();
+
+    return new BookView({ model: book });
+  },
 
 });
 ```
@@ -43,15 +42,15 @@ var BookRouter = Brisket.Router.extend({
 ### Second parameter of router callbacks
 
 ```js
-var Router = Brisket.Router.extend({
+const Router = Brisket.Router.extend({
 
-  onRouteStart: function(layout, request, response) {
+  onRouteStart(layout, request, response) {
     console.log(request.isFirstRequest); // true/false
   },
 
-  onRouteComplete: function(layout, request, response) {
+  onRouteComplete(layout, request, response) {
     console.log(request.requestId); // 1, 2, 3,...
-  }
+  },
 
 });
 ```
